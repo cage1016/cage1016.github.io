@@ -216,11 +216,11 @@
     </summary>
     
     
-      <category term="GCP" scheme="http://kaichu.io/tags/GCP/"/>
-    
       <category term="cloudfunctions" scheme="http://kaichu.io/tags/cloudfunctions/"/>
     
       <category term="googlemaps" scheme="http://kaichu.io/tags/googlemaps/"/>
+    
+      <category term="GCP" scheme="http://kaichu.io/tags/GCP/"/>
     
   </entry>
   
@@ -645,11 +645,11 @@
     </summary>
     
     
-      <category term="GAE" scheme="http://kaichu.io/tags/GAE/"/>
-    
       <category term="Python" scheme="http://kaichu.io/tags/Python/"/>
     
       <category term="virtualenv" scheme="http://kaichu.io/tags/virtualenv/"/>
+    
+      <category term="GAE" scheme="http://kaichu.io/tags/GAE/"/>
     
       <category term="Shell" scheme="http://kaichu.io/tags/Shell/"/>
     
