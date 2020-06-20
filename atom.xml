@@ -40,9 +40,9 @@
     </summary>
     
     
-      <category term="docker" scheme="http://kaichu.io/tags/docker/"/>
-    
       <category term="iOS" scheme="http://kaichu.io/tags/iOS/"/>
+    
+      <category term="docker" scheme="http://kaichu.io/tags/docker/"/>
     
       <category term="annie" scheme="http://kaichu.io/tags/annie/"/>
     
@@ -72,9 +72,9 @@
     
       <category term="GAE" scheme="http://kaichu.io/tags/GAE/"/>
     
-      <category term="Google compute engine" scheme="http://kaichu.io/tags/Google-compute-engine/"/>
-    
       <category term="Golang" scheme="http://kaichu.io/tags/Golang/"/>
+    
+      <category term="Google compute engine" scheme="http://kaichu.io/tags/Google-compute-engine/"/>
     
       <category term="websocket" scheme="http://kaichu.io/tags/websocket/"/>
     
@@ -252,11 +252,11 @@
     </summary>
     
     
-      <category term="GCP" scheme="http://kaichu.io/tags/GCP/"/>
-    
       <category term="cloudfunctions" scheme="http://kaichu.io/tags/cloudfunctions/"/>
     
       <category term="googlemaps" scheme="http://kaichu.io/tags/googlemaps/"/>
+    
+      <category term="GCP" scheme="http://kaichu.io/tags/GCP/"/>
     
   </entry>
   
