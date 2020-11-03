@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="en"><head><meta name="generator" content="Hexo 3.9.0"><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title>Gokit microservice demo · Kaichu.io</title><meta name="description" content="Gokit microservice demo - KAI CHU CHUNG"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="stylesheet" href="/css/customize.css"><link rel="search" type="application/opensearchdescription+xml" href="http://kaichu.io/atom.xml" title="Kaichu.io"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://twitter.com/CageChung" target="_blank" class="nav-list-link">TWITTER</a></li><li class="nav-list-item"><a href="https://github.com/cage1016" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="http://www.slideshare.net/cagechung" target="_blank" class="nav-list-link">SLIDESHARE</a></li><li class="nav-list-item"><a href="https://www.linkedin.com/in/kaichuchung" target="_blank" class="nav-list-link">LINKEDIN</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">Gokit microservice demo</h1><div class="post-info">Nov 3, 2020</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>小弟在 GDG Devfest 2019 分享過 <a href="https://www.slideshare.net/cagechung/gdg-devfest-2019-build-go-kit-microservices-at-kubernetes-with-ease" target="_blank" rel="noopener">Build go kit microservices at kubernetes with ease</a>，Gokit 是一個建立 microservice 的 toolkit，Gokit 提出 <code>Transport</code> <code>Endpoint</code> <code>Service</code> 三種概念來幫助開始者進行架構分離，對單一微服務進行架構強制分離或許會增加程式碼的閱讀性，不過對一定規模的微服務來說，一致性的程式架構分離反而會增加多人開發的效率</p>
+<h2 id="cage1016-ms-demo"><a href="#cage1016-ms-demo" class="headerlink" title="cage1016/ms-demo"></a>cage1016/ms-demo</h2><table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>add</td>
+<td>Expose Sum method</td>
+</tr>
+<tr>
+<td>tictac</td>
+<td>Expose Tic/Tac method</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://github.com/cage1016/ms-demo" target="_blank" rel="noopener">cage1016/ms-demo: gokit microservice demo</a> 提供了使用 gokit 建立的 kubernetes/istio 的 manifest, 可以讓使用者快速的練習基於 kubernetes/istio 來搭建 gokit 微服務</p>
+<a id="more"></a>
+<h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><ol>
+<li>Run <code>skaffold run</code> (first time will be slow)</li>
+<li><p>Set the <code>ADD_HTTP_LB_URL/ADD_GRPC_LB_URL</code> &amp; <code>TICTAC_HTTP_LB_URL/TICTAC_GRPC_LB_URL</code> environment variable in your shell to the public IP/port of the Kubernetes loadBalancer</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> ADD_HTTP_LB_PORT=$(kubectl get service add-external -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="http")].port&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> ADD_GRPC_LB_PORT=$(kubectl get service add-external -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="grpc")].port&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> ADD_LB_HOST=$(kubectl get service add-external -o jsonpath=<span class="string">'&#123;.status.loadBalancer.ingress[0].hostname&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> ADD_HTTP_LB_URL=<span class="variable">$ADD_LB_HOST</span>:<span class="variable">$ADD_HTTP_LB_PORT</span></span><br><span class="line"><span class="built_in">export</span> ADD_GRPC_LB_URL=<span class="variable">$ADD_LB_HOST</span>:<span class="variable">$ADD_GRPC_LB_PORT</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$ADD_HTTP_LB_URL</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$ADD_GRPC_LB_URL</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> TICTAC_HTTP_LB_PORT=$(kubectl get service tictac-external -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="http")].port&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> TICTAC_GRPC_LB_PORT=$(kubectl get service tictac-external -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="grpc")].port&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> TICTAC_LB_HOST=$(kubectl get service tictac-external -o jsonpath=<span class="string">'&#123;.status.loadBalancer.ingress[0].hostname&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> TICTAC_HTTP_LB_URL=<span class="variable">$TICTAC_LB_HOST</span>:<span class="variable">$TICTAC_HTTP_LB_PORT</span></span><br><span class="line"><span class="built_in">export</span> TICTAC_GRPC_LB_URL=<span class="variable">$TICTAC_LB_HOST</span>:<span class="variable">$TICTAC_GRPC_LB_PORT</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$TICTAC_HTTP_LB_URL</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$TICTAC_GRPC_LB_URL</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Access by command</p>
+<ul>
+<li><p>sum method</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="variable">$ADD_HTTP_LB_URL</span>/sum -d <span class="string">'&#123;"a": 1, "b":1&#125;'</span></span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">grpcurl -d <span class="string">'&#123;"a": 1, "b":1&#125;'</span> -plaintext -proto ./pb/add/add.proto <span class="variable">$ADD_GRPC_LB_URL</span> pb.Add.Sum</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>tic method</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="variable">$TICTAC_HTTP_LB_URL</span>/tic</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class="variable">$TICTAC_GRPC_LB_URL</span> pb.Tictac.Tic</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>tac method</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="variable">$TICTAC_HTTP_LB_URL</span>/tac</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class="variable">$TICTAC_GRPC_LB_URL</span> pb.Tictac.Tac</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Apply istio manifests <code>kubectl apply -f deployments/istio-manifests</code></p>
+</li>
+<li><p>Set the <code>GATEWAY_HTTP_URL/GATEWAY_GRPC_URL</code> environment variable in your shell to the public IP/port of the Istio Ingress gateway.</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> INGRESS_HTTP_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="http2")].port&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> INGRESS_GRPC_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=<span class="string">'&#123;.spec.ports[?(@.name=="https")].port&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath=<span class="string">'&#123;.status.loadBalancer.ingress[0].hostname&#125;'</span>)</span><br><span class="line"><span class="built_in">export</span> GATEWAY_HTTP_URL=<span class="variable">$INGRESS_HOST</span>:<span class="variable">$INGRESS_HTTP_PORT</span></span><br><span class="line"><span class="built_in">export</span> GATEWAY_GRPC_URL=<span class="variable">$INGRESS_HOST</span>:<span class="variable">$INGRESS_GRPC_PORT</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$GATEWAY_HTTP_URL</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$GATEWAY_GRPC_URL</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Access by command</p>
+<ul>
+<li><p>sum method</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="variable">$GATEWAY_HTTP_URL</span>/api/v1/add/sum -d <span class="string">'&#123;"a": 1, "b":1&#125;'</span></span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">grpcurl -d <span class="string">'&#123;"a": 1, "b":1&#125;'</span> -plaintext -proto ./pb/add/add.proto <span class="variable">$GATEWAY_GRPC_URL</span> pb.Add.Sum</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>tic method</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="variable">$GATEWAY_HTTP_URL</span>/api/v1/tictac/tic</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class="variable">$GATEWAY_GRPC_URL</span> pb.Tictac.Tic</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>tac method</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="variable">$GATEWAY_HTTP_URL</span>/api/v1/tictac/tac</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class="variable">$GATEWAY_GRPC_URL</span> pb.Tictac.Tac</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="CleanUP"><a href="#CleanUP" class="headerlink" title="CleanUP"></a>CleanUP</h3><p><code>skaffold delete</code></p>
+<p>or </p>
+<p><code>kubectl delete -f deployments/istio-manifests</code></p>
+</div></article></div></section><footer><div class="paginator"><a href="/2020/06/20/ios-ringtone-maker-from-youtube/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'kaichuio';
+var disqus_identifier = '2020/11/03/gokit-ms-demo/';
+var disqus_title = 'Gokit microservice demo';
+var disqus_url = 'http://kaichu.io/2020/11/03/gokit-ms-demo/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//kaichuio.disqus.com/count.js" async></script><div class="copyright"><p>© 2015 - 2020 <a href="http://kaichu.io">KAI CHU CHUNG</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-65308340-1",'auto');ga('send','pageview');</script></body></html>
