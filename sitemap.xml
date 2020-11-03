@@ -2,233 +2,233 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://kaichu.io/2018/08/20/gdg-summit-2018-and-google-io-2018/</loc>
+    <loc>http://kaichu.io/2015/07/27/gae-todomvc/</loc>
     
-    <lastmod>2020-11-03T08:34:33.988Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2019/10/04/skaffold-debug-goland/</loc>
-    
-    <lastmod>2020-11-03T08:33:33.422Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2020/06/20/ios-ringtone-maker-from-youtube/</loc>
-    
-    <lastmod>2020-06-20T04:20:43.718Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2020/03/16/gae-custom-ws/</loc>
-    
-    <lastmod>2020-03-16T07:53:39.362Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/02/21/golang-regex/</loc>
-    
-    <lastmod>2020-03-16T07:53:39.362Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2016/08/04/golang-serve-static-site/</loc>
-    
-    <lastmod>2020-03-16T07:53:39.362Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/08/30/go-regex-notebook/</loc>
-    
-    <lastmod>2020-03-16T07:50:01.829Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/05/07/echo-custom-context/</loc>
-    
-    <lastmod>2020-03-16T07:39:17.203Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2016/10/31/gae-go-image-api/</loc>
-    
-    <lastmod>2020-03-16T07:39:15.402Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2015/08/17/copy-2-clipboard-with-ease/</loc>
-    
-    <lastmod>2018-06-14T15:39:00.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2018/06/14/copy2clipboardwitheasy/</loc>
-    
-    <lastmod>2018-06-14T15:38:02.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/09/09/screenshot-as-a-service/</loc>
-    
-    <lastmod>2017-09-08T16:39:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/08/18/cloudfunctions-google-maps-services/</loc>
-    
-    <lastmod>2017-08-17T16:45:45.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/</loc>
-    
-    <lastmod>2017-07-12T14:57:27.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/06/08/weddingcnp-via-gcp/</loc>
-    
-    <lastmod>2017-07-12T14:57:23.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/</loc>
-    
-    <lastmod>2017-07-12T14:57:14.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/</loc>
-    
-    <lastmod>2017-07-12T14:57:10.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2016/03/28/gae-link-pip-helper/</loc>
-    
-    <lastmod>2017-05-03T09:46:22.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2016/09/20/atom-sync-settings/</loc>
-    
-    <lastmod>2017-05-03T09:21:59.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2016/09/21/gvm-install-go1-4/</loc>
-    
-    <lastmod>2016-09-21T14:40:21.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2016/08/22/retrain-inception-model-for-nas/</loc>
-    
-    <lastmod>2016-09-02T02:02:41.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2015/07/05/life-dot-com-text-copy/</loc>
-    
-    <lastmod>2016-08-03T15:21:02.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io//404.html</loc>
-    
-    <lastmod>2016-08-03T13:34:59.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2015/08/14/webpack-es6-demo/</loc>
-    
-    <lastmod>2016-08-03T13:14:27.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2015/07/12/my-first-post/</loc>
-    
-    <lastmod>2016-08-03T13:14:20.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2015/09/30/managed-vms-lab/</loc>
-    
-    <lastmod>2016-08-03T13:14:14.000Z</lastmod>
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://kaichu.io/2015/07/28/gcsiterator/</loc>
     
-    <lastmod>2016-08-03T13:14:03.000Z</lastmod>
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://kaichu.io/2015/07/27/gae-todomvc/</loc>
+    <loc>http://kaichu.io/2018/08/20/gdg-summit-2018-and-google-io-2018/</loc>
     
-    <lastmod>2016-08-03T13:13:56.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kaichu.io/2016/03/10/gae-appcfg-update-403/</loc>
-    
-    <lastmod>2016-08-03T13:13:17.000Z</lastmod>
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://kaichu.io/2015/10/04/docker-notebook-1/</loc>
+    <loc>http://kaichu.io/2017/08/30/go-regex-notebook/</loc>
     
-    <lastmod>2016-08-03T13:13:01.000Z</lastmod>
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/02/21/golang-regex/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2016/08/04/golang-serve-static-site/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2016/09/21/gvm-install-go1-4/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2020/06/20/ios-ringtone-maker-from-youtube/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2015/07/05/life-dot-com-text-copy/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2015/09/30/managed-vms-lab/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2015/07/12/my-first-post/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2016/08/22/retrain-inception-model-for-nas/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/09/09/screenshot-as-a-service/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2019/10/04/skaffold-debug-goland/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2015/08/14/webpack-es6-demo/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/06/08/weddingcnp-via-gcp/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.165Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://kaichu.io/2015/07/21/adc/</loc>
     
-    <lastmod>2016-08-03T13:11:21.000Z</lastmod>
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2016/09/20/atom-sync-settings/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/08/18/cloudfunctions-google-maps-services/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2015/08/17/copy-2-clipboard-with-ease/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2018/06/14/copy2clipboardwitheasy/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://kaichu.io/2015/11/01/django-getting-started/</loc>
     
-    <lastmod>2016-08-03T13:10:22.000Z</lastmod>
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://kaichu.io/2016/04/14/django-oscar-i18n/</loc>
     
-    <lastmod>2016-08-03T13:09:30.000Z</lastmod>
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2015/10/04/docker-notebook-1/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2017/05/07/echo-custom-context/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2016/03/10/gae-appcfg-update-403/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2020/03/16/gae-custom-ws/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2016/10/31/gae-go-image-api/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io/2016/03/28/gae-link-pip-helper/</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://kaichu.io//404.html</loc>
+    
+    <lastmod>2020-11-03T08:41:53.161Z</lastmod>
     
   </url>
   
