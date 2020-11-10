@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PyCharm on KaiChu</title><link>https://kaichu.io/tags/pycharm/</link><description>Recent content in PyCharm on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 01 Nov 2015 23:39:07 +0800</lastBuildDate><atom:link href="https://kaichu.io/tags/pycharm/index.xml" rel="self" type="application/rss+xml"/><item><title>django getting started</title><link>https://kaichu.io/posts/django-getting-started/</link><pubDate>Sun, 01 Nov 2015 23:39:07 +0800</pubDate><guid>https://kaichu.io/posts/django-getting-started/</guid><description>&lt;p>Django Quick Getting Started&lt;/p>
+&lt;ul>
+&lt;li>pip&lt;/li>
+&lt;li>virtualenv&lt;/li>
+&lt;li>virtualenvwrapper&lt;/li>
+&lt;li>Django&lt;/li>
+&lt;li>&lt;a href="https://github.com/twoscoops/django-twoscoops-project">twoscoops/django-twoscoops-project&lt;/a>&lt;/li>
+&lt;li>PyCharm&lt;/li>
+&lt;/ul>
+&lt;p>簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm&lt;/p></description></item></channel></rss>

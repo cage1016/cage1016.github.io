@@ -1,0 +1,95 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>[筆記] docker 1.8.2 rc ｜ KaiChu</title><meta name=description content="在 Mac os x 開發 docker，因為 Mac 無法原生支援 Docker，所以在 docker 1.7 以前的版上就必需透過 boot2docker，boot2docker 會在本機的 VirtualBox 上安裝一個虛擬機。Docker client 機乎是接近原生的狀態跑在 Mac 上，只不過 Docker 的 server 是跑在 boot2docker 的虛擬機中.
+   picture: https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.iocss/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/docker-notebook-1/>[筆記] docker 1.8.2 rc</a></h2><span class=date>2015.10.04</span></div><div class="post_content markdown"><p>在 Mac os x 開發 docker，因為 Mac 無法原生支援 Docker，所以在 docker 1.7 以前的版上就必需透過 <code>boot2docker</code>，<code>boot2docker</code>
+會在本機的 VirtualBox 上安裝一個虛擬機。Docker client 機乎是接近原生的狀態跑在 Mac 上，只不過 Docker 的 server 是跑在 <code>boot2docker</code> 的虛擬機中.</p><p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/images/posts/docker_on_linux_macosx.jpg data-caption><img src=https://kaichu.io/images/posts/docker_on_linux_macosx.jpg></a></div>picture: <a href=https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide>https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide</a></p><p>XD</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>WARNING: The <span class=s1>&#39;boot2docker&#39;</span> <span class=nb>command</span> line interface is officially deprecated.
+
+Please switch to Docker Machine <span class=o>(</span>https://docs.docker.com/machine/<span class=o>)</span> ASAP.
+
+Docker Toolbox <span class=o>(</span>https://docker.com/toolbox<span class=o>)</span> is the recommended install method.
+</code></pre></div><p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/images/posts/mac-page-two.png data-caption><img src=https://kaichu.io/images/posts/mac-page-two.png></a></div>picture: <a href=https://docs.docker.com/installation/mac/#installation>https://docs.docker.com/installation/mac/#installation</a></p><p>docker 社群開發的速度非常的快速，而 docker 1.8 之後就有了比較大的變化。安裝的工具也發生了變化，
+多了 <a href=http://docs.docker.com/mac/step_one/#step-2-install-docker-toolbox>Docker Toolbox</a>，官方的安裝步驟 for Mac <a href=http://docs.docker.com/mac/step_one/>點我</a></p><p>安裝完了 Docker Toolbox 之後，可以直接在 <code>Launchpad</code> 上尋找 <code>Docker Quickstart Terminal</code>，執行之後終端機會進行 VirtualBox 初始化，
+並建立 default 的虛擬機(在 1.7 版時則是利用 <code>boot2docker</code> 來建立虛擬機，並會在 VirtualBox 中建立一個名為 <code>boot2docker-vm</code> 的虛擬機)。</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ bash --login <span class=s1>&#39;/Applications/Docker/Docker Quickstart Terminal.app/Contents/Resources/Scripts/start.sh&#39;</span>
+Machine default already exists in VirtualBox.
+Starting machine default...
+Started machines may have new IP addresses. You may need to re-run the <span class=sb>`</span>docker-machine env<span class=sb>`</span> command.
+Setting environment variables <span class=k>for</span> machine default...
+
+
+                        <span class=c1>##         .</span>
+                  <span class=c1>## ## ##        ==</span>
+               <span class=c1>## ## ## ## ##    ===</span>
+           /<span class=s2>&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;\___/ ===
+</span><span class=s2>      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~~ ~ /  ===- ~~~
+</span><span class=s2>           \______ o           __/
+</span><span class=s2>             \    \         __/
+</span><span class=s2>              \____\_______/
+</span><span class=s2>
+</span><span class=s2>
+</span><span class=s2>docker is configured to use the default machine with IP 192.168.99.100
+</span><span class=s2>For help getting started, check out the docs at https://docs.docker.com
+</span></code></pre></div><p>接著利用 <code>docker-machine</code> 來查詢目前那些 Docker host</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ docker-machine ls
+NAME      ACTIVE   DRIVER       STATE     URL                         SWARM
+default   *        virtualbox   Running   tcp://192.168.99.100:2376
+dev                virtualbox   Stopped
+</code></pre></div><h2 id=simple-demo>Simple Demo</h2><p>接下來利用簡單的步驟來試範在 Docker 上跑一個 Nginx 並透過設定對外開放 port 讓外部可以直接存取到 Nginx 的頁面</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh><span class=c1># 確認 docker-machine env 狀態 (我們以預設的 Docker host - default)</span>
+$ docker-machine env default
+
+<span class=c1># 必要時重置一下 shell 環境</span>
+<span class=c1># eval &#34;$(docker-machine env default)&#34;</span>
+
+<span class=c1># 建立資料夾</span>
+$ mkdir web <span class=o>&amp;&amp;</span> <span class=nb>cd</span> web
+
+<span class=c1># 執行一個 container</span>
+<span class=c1># -d daemon: 設定 container 跑在背景執行</span>
+<span class=c1># -p expose port: 設定 container 的 port 與 docker host 的 port mapping, Nginx 預設 port 為 80</span>
+<span class=c1># --name 指定一個名子給 container</span>
+$ docker run -d -p 80:80 --name web nginx
+
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                         NAMES
+e6644e903590        nginx               <span class=s2>&#34;nginx -g &#39;daemon off&#34;</span>   <span class=m>3</span> seconds ago       Up <span class=m>4</span> seconds        0.0.0.0:80-&gt;80/tcp, 443/tcp   web
+
+<span class=c1># 訪問 Nginx</span>
+$ curl http://<span class=k>$(</span>docker-machine ip default<span class=k>)</span>:80
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+&lt;style&gt;
+    body <span class=o>{</span>
+        width: 35em<span class=p>;</span>
+        margin: <span class=m>0</span> auto<span class=p>;</span>
+        font-family: Tahoma, Verdana, Arial, sans-serif<span class=p>;</span>
+    <span class=o>}</span>
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Welcome to nginx!&lt;/h1&gt;
+&lt;p&gt;If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.&lt;/p&gt;
+
+&lt;p&gt;For online documentation and support please refer to
+&lt;a <span class=nv>href</span><span class=o>=</span><span class=s2>&#34;http://nginx.org/&#34;</span>&gt;nginx.org&lt;/a&gt;.&lt;br/&gt;
+Commercial support is available at
+&lt;a <span class=nv>href</span><span class=o>=</span><span class=s2>&#34;http://nginx.com/&#34;</span>&gt;nginx.com&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Thank you <span class=k>for</span> using nginx.&lt;/em&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div><h2 id=tips>Tips:</h2><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ docker info
+Get http:///var/run/docker.sock/v1.20/info: dial unix /var/run/docker.sock: no such file or directory.
+* Are you trying to connect to a TLS-enabled daemon without TLS?
+* Is your docker daemon up and running?
+</code></pre></div><p>如果遇到這個問題，只有重置一下 <code>docker-machine</code> 即可，Docker 還很貼心的告訴你如何重置 shell <code>eval "$(docker-machine env default)"</code></p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ docker-machine env default
+<span class=nb>export</span> <span class=nv>DOCKER_TLS_VERIFY</span><span class=o>=</span><span class=s2>&#34;1&#34;</span>
+<span class=nb>export</span> <span class=nv>DOCKER_HOST</span><span class=o>=</span><span class=s2>&#34;tcp://192.168.99.100:2376&#34;</span>
+<span class=nb>export</span> <span class=nv>DOCKER_CERT_PATH</span><span class=o>=</span><span class=s2>&#34;/Users/cage/.docker/machine/machines/default&#34;</span>
+<span class=nb>export</span> <span class=nv>DOCKER_MACHINE_NAME</span><span class=o>=</span><span class=s2>&#34;default&#34;</span>
+<span class=c1># Run this command to configure your shell:</span>
+<span class=c1># eval &#34;$(docker-machine env default)&#34;</span>
+</code></pre></div><h1 id=相關參考資料>相關參考資料</h1><ol><li><a href=https://joshhu.gitbooks.io/docker_theory_install/content/DockerBible/mac_osboot2docker.html>Mac OS下的boot2docker | 最完整的Docker聖經 - Docker原理圖解及全環境安裝</a></li><li><a href=http://blog.csdn.net/pinxue/article/details/45370579>在 Mac OS X 系统里使用 Docker - 品雪其寒 - 博客频道 - CSDN.NET</a></li><li><a href=https://docs.docker.com/installation/mac/#installation>Installation on Mac OS X</a></li></ol></div><div class=post_footer></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/docker/>docker</a>
+<a href=https://kaichu.io/tags/docker-machine/>docker-machine</a>
+<a href=https://kaichu.io/tags/boot2docker/>boot2docker</a>
+<a href=https://kaichu.io/tags/nginx/>nginx</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"kaichuchung"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
+<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

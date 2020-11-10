@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>KaiChu</title><link>https://kaichu.io/</link><description>Recent content on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 03 Nov 2020 17:50:10 +0000</lastBuildDate><atom:link href="https://kaichu.io/index.xml" rel="self" type="application/rss+xml"/><item><title>About</title><link>https://kaichu.io/about/</link><pubDate>Mon, 09 Nov 2020 13:58:08 +0800</pubDate><guid>https://kaichu.io/about/</guid><description> Cloud GDE GDG Cloud Taipei co-organizers</description></item><item><title>Gokit microservice demo</title><link>https://kaichu.io/posts/gokit-ms-demo/</link><pubDate>Tue, 03 Nov 2020 17:50:10 +0000</pubDate><guid>https://kaichu.io/posts/gokit-ms-demo/</guid><description>&lt;p>小弟在 GDG Devfest 2019 分享過 &lt;a href="https://www.slideshare.net/cagechung/gdg-devfest-2019-build-go-kit-microservices-at-kubernetes-with-ease">Build go kit microservices at kubernetes with ease&lt;/a>，Gokit 是一個建立 microservice 的 toolkit，Gokit 提出 &lt;code>Transport&lt;/code> &lt;code>Endpoint&lt;/code> &lt;code>Service&lt;/code> 三種概念來幫助開始者進行架構分離，對單一微服務進行架構強制分離或許會增加程式碼的閱讀性，不過對一定規模的微服務來說，一致性的程式架構分離反而會增加多人開發的效率&lt;/p>
+&lt;h2 id="cage1016ms-demo">cage1016/ms-demo&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Service&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>add&lt;/td>
+&lt;td>Expose Sum method&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>tictac&lt;/td>
+&lt;td>Expose Tic/Tac method&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;a href="https://github.com/cage1016/ms-demo">cage1016/ms-demo: gokit microservice demo&lt;/a> 提供了使用 gokit 建立的 kubernetes/istio 的 manifest, 可以讓使用者快速的練習基於 kubernetes/istio 來搭建 gokit 微服務&lt;/p></description></item><item><title>iOS ringtone maker from YouTube video</title><link>https://kaichu.io/posts/ios-ringtone-maker-from-youtube/</link><pubDate>Sat, 20 Jun 2020 12:13:48 +0000</pubDate><guid>https://kaichu.io/posts/ios-ringtone-maker-from-youtube/</guid><description>&lt;p>最近大竹弟打電話問說 iOS 鈴聲在 Garageband 上面製作的檔案怎麼這麼大，其實只有 5 秒的鈴聲&lt;/p>
+&lt;p>先來說一下 iPhone 上配置客製的鈴聲有二種方式&lt;/p>
+&lt;ul>
+&lt;li>iTunes&lt;/li>
+&lt;li>Garageband 上編輯直接輸出至鈴聲&lt;/li>
+&lt;/ul>
+&lt;p>由於 macOS 10.15 版本就沒有 itunes 可以用，所以基本上網路的教學大也是直接在 Garageband 上直接編輯後直接輸出至 iPhone 的鈴聲&lt;/p>
+&lt;p>以前我自己也是換過不少鈴聲，以前是透過 &lt;a href="https://sur.ly/o/audiko.tw/AA000014">Free Ringtones for Android and iPhone. Free Ringtone Maker - Audiko&lt;/a> 選擇喜歡的檔案下載安裝&lt;/p>
+&lt;p>雖然現成的工具方便，不過有時候找不到自己喜歡的歌曲，那就土砲一個吧&lt;/p></description></item><item><title>Establishing a Websocket PUBSUB server with NATS and Google App Engine</title><link>https://kaichu.io/posts/gae-custom-ws/</link><pubDate>Mon, 16 Mar 2020 02:00:55 +0000</pubDate><guid>https://kaichu.io/posts/gae-custom-ws/</guid><description>在設計 API server 的時候會有遇到即時訊息傳遞的需求，同步可以用 GRPC 建立連線來溝通，為了降低系統的耦合性，可以選擇非同步的方式。而 PubSub 結合 websocket 是常用的方式。對於一位 Gopher 來說，NATS 是 CNCF 下面中關於訊息傳遞的開源專案且對</description></item><item><title>Skaffold debug goland</title><link>https://kaichu.io/posts/skaffold-debug-goland/</link><pubDate>Fri, 04 Oct 2019 01:03:16 +0000</pubDate><guid>https://kaichu.io/posts/skaffold-debug-goland/</guid><description>&lt;p>今年的 &lt;a href="https://inthecloud.withgoogle.com/summit-tpe-19/agenda.html">Google Cloud Summit 台北場&lt;/a> 於 9/24 在內湖萬豪酒店舉行，在主題演講中再次聽到 &lt;a href="https://cloud.google.com/code">Cloud Code&lt;/a> 的部份也看到比較有感覺的 Live demo&lt;/p>
+&lt;blockquote>
+&lt;p>Cloud Code 隨附的工具能協助您以輕鬆快速的方式編寫、部署及偵錯雲端原生的應用程式。這項產品提供 Visual Studio Code 和 IntelliJ 等 IDE 的擴充功能，方便您在 Kubernetes 上針對程式碼快速進行疊代、偵錯及部署等作業。
+ 
+Cloud Code 是基於 &lt;a href="https://github.com/GoogleContainerTools/skaffold">GoogleContainerTools/skaffold: Easy and Repeatable Kubernetes Development&lt;/a> 為基礎上再整合 Visual Studio Code 和 IntelliJ IDE, 讓開發者可以直接在 IDE 上就可以快速開發 Kubernetes 上的應用程式&lt;/p>
+&lt;/blockquote>
+&lt;p>基本上來說 Cloud Code 給 Visual Studio Code 和 IntelliJ IDE 的 plugin 就是基於 skaffold 打造的(如下圖)，當你在 Visual Studio Code 執行(cmd+shift+p) &lt;code>Cloud Code: Continues Deploy&lt;/code> 的 log 就會知道&lt;/p>
+&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" />
+&lt;/a>
+&lt;/div></description></item><item><title>Global GDG Leaders Summit 2018 and Google I/O 2018 經驗分享</title><link>https://kaichu.io/posts/gdg-summit-2018-and-google-io-2018/</link><pubDate>Mon, 20 Aug 2018 10:53:15 +0000</pubDate><guid>https://kaichu.io/posts/gdg-summit-2018-and-google-io-2018/</guid><description>&lt;p>補作業&lt;/p>
+&lt;div id="Container" style="padding-bottom:56.25%; position:relative; display:block; width: 100%">
+&lt;iframe id="googleSlideIframe" width="100%" height="100%" src="https://docs.google.com/presentation/d/e/2PACX-1vQvBqMYvYRhwQBqcnr-gn__cwyvmsBInyHAANba7loo4NIsm_3W00-XkEK4-n5Vd0HgQ1P2RJcFIEeL/embed?start=false&amp;amp;loop=false&amp;amp;delayms=3000" frameborder="0" allowfullscreen=""
+style="position:absolute; top:0; left: 0">&lt;/iframe>
+&lt;/div></description></item><item><title>workflow recipe - Copy2ClipboardWithEasy</title><link>https://kaichu.io/posts/copy2clipboardwitheasy/</link><pubDate>Thu, 14 Jun 2018 23:23:04 +0000</pubDate><guid>https://kaichu.io/posts/copy2clipboardwitheasy/</guid><description>&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/ad1280x800.jpg" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/ad1280x800.jpg" />
+&lt;/a>
+&lt;/div>
+&lt;p>小弟之前在在 Chrome Extension Store 上發佈了一個簡單的小工具 &lt;a href="https://chrome.google.com/webstore/detail/copy-2-clipboard-with-eas/hiiobhaaokpmdmkkcaokdlanlemmcoah">copy 2 clipboard with ease - Chrome Web Store&lt;/a> 可以快速的複製頁面的 titl/url&lt;/p>
+&lt;h2 id="ios---workflow">iOS - WorkFlow&lt;/h2>
+&lt;blockquote>
+&lt;p>Workflows combine a bunch of steps across apps into a single tap. Collect workflows like these to save time and effort every day&lt;/p>
+&lt;/blockquote>
+&lt;p>一個可以在 iOS 透過拖拖拉拉的方式進行有一點像寫程式的感覺來組合各種元件來達到一些特定的功能&lt;/p>
+&lt;h3 id="copy2clipboardwitheasy">Copy2ClipboardWithEasy&lt;/h3>
+&lt;blockquote>
+&lt;p>類似 Chrome Extension - copy 2 clipboard with ease 的功能，可以在 iOS 中進行 url/title 的複製操作&lt;/p>
+&lt;/blockquote>
+&lt;p>
+&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/ios-workflow-1.PNG" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/ios-workflow-1.PNG" />
+&lt;/a>
+&lt;/div>
+&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/ios-workflow-2.PNG" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/ios-workflow-2.PNG" />
+&lt;/a>
+&lt;/div>&lt;/p></description></item><item><title>Screenshot as a Service</title><link>https://kaichu.io/posts/screenshot-as-a-service/</link><pubDate>Sat, 09 Sep 2017 00:23:00 +0000</pubDate><guid>https://kaichu.io/posts/screenshot-as-a-service/</guid><description>&lt;p>&lt;a href="https://gcpugtw.kktix.cc/events/meetup201709">GCPUG Taiwan Meetup #29&lt;/a> Screenshot as a service&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;a href="https://github.com/cage1016/screenshot-as-a-service-demo">cage1016/screenshot-as-a-service-demo: GCPUG Taiwan Meetup #29: screenshot as a service demo code&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>{% pdf &lt;a href="https://www.slideshare.net/slideshow/embed_code/key/o68LfhCpXHlFqz">https://www.slideshare.net/slideshow/embed_code/key/o68LfhCpXHlFqz&lt;/a> %}&lt;/p></description></item><item><title>notebook - golang regexp</title><link>https://kaichu.io/posts/go-regex-notebook/</link><pubDate>Wed, 30 Aug 2017 21:41:49 +0000</pubDate><guid>https://kaichu.io/posts/go-regex-notebook/</guid><description>&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/go-regexp-notebook-1.png" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/go-regexp-notebook-1.png" />
+&lt;/a>
+&lt;/div>
+&lt;p>簡單記鎑一下最近在專案上需要利用 regex 來進行字串的拆解&lt;/p></description></item><item><title>CloudFunctions Google maps service</title><link>https://kaichu.io/posts/cloudfunctions-google-maps-services/</link><pubDate>Fri, 18 Aug 2017 00:42:29 +0000</pubDate><guid>https://kaichu.io/posts/cloudfunctions-google-maps-services/</guid><description>&lt;h3 id="waldo-gcp">Waldo-gcp&lt;/h3>
+&lt;p>&lt;a href="https://www.slideshare.net/cagechung/waldogcp">Waldo-gcp&lt;/a> 在 2015 時 Google I/O Extended Taipei 時分享過一個計算最佳路徑的微服務。在提供幾組 Google Maps 上有效的地址，透過 Google Maps Distance Matrix API 來計算出每一個點一點之間的旅行距離及旅行時間。再透過基因演算出計算出周遊一圈旅行最短路徑&lt;/p>
+&lt;div class="highlight">&lt;pre class="chroma">&lt;code class="language-sh" data-lang="sh">&lt;span class="c1"># 提供5組 Google Maps 上有效的地址&lt;/span>
+台北市內湖區瑞光路227號1樓,
+高雄市鼓山區美術東二路106號,
+台南市長榮路一段175號,
+臺北市松山區南京東路五段123巷1弄15號,
+高雄市五福四路131號2樓
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>weddingcnp via GCP - 3. endpointAPI 設計實作</title><link>https://kaichu.io/posts/weddingcnp-via-gcp-3/</link><pubDate>Wed, 12 Jul 2017 22:51:05 +0000</pubDate><guid>https://kaichu.io/posts/weddingcnp-via-gcp-3/</guid><description>此篇就對 Cage &amp;amp; Ping wedding 中實作專案中最為重要的 backend API (endpoint API) 部份進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹 weddingcnp 系例傳送門 weddingcnp via GCP 簡介 weddingcnp via GCP - 1. 專案架構切分 weddingcnp via GCP - 2. 前端頁面設計實作 weddingcnp via GCP - 3. endpointAPI 設計實作</description></item><item><title>weddingcnp via GCP - 2. 前端頁面設計實作</title><link>https://kaichu.io/posts/weddingcnp-via-gcp-2/</link><pubDate>Sun, 18 Jun 2017 21:02:54 +0000</pubDate><guid>https://kaichu.io/posts/weddingcnp-via-gcp-2/</guid><description>此篇就對 Cage &amp;amp; Ping wedding frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作介紹 weddingcnp 系例傳送門 weddingcnp via GCP 簡介 weddingcnp via GCP - 1. 專案架構切分 weddingcnp via GCP - 2. 前端頁面設計實作 weddingcnp via GCP - 3. endpointAPI 設計實作 weddingcnp 前端 vue.js 設計實作 weddingcnp edm 寄送 sendgrid weddingcnp 前端頁面設計實作 Cage &amp;amp; Ping wedding frontend Service(Module)</description></item><item><title>weddingcnp via GCP - 1. 專案架構切分</title><link>https://kaichu.io/posts/weddingcnp-via-gcp-1/</link><pubDate>Mon, 12 Jun 2017 22:14:22 +0000</pubDate><guid>https://kaichu.io/posts/weddingcnp-via-gcp-1/</guid><description>此篇就對 Cage &amp;amp; Ping wedding 中實作的專案架構進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹 weddingcnp 系例傳送門 weddingcnp via GCP 簡介 weddingcnp via GCP - 1. 專案架構切分 weddingcnp via GCP - 2. 前端頁面設計實作 weddingcnp via GCP - 3. endpointAPI 設計實作 weddingcnp 前端 vue.js 設計實作 weddingcnp</description></item><item><title>weddingcnp via GCP</title><link>https://kaichu.io/posts/weddingcnp-via-gcp/</link><pubDate>Thu, 08 Jun 2017 11:11:00 +0000</pubDate><guid>https://kaichu.io/posts/weddingcnp-via-gcp/</guid><description>Cage &amp;amp; Ping wedding 是一個我們為結婚喜宴處理朋友出席報名相關事宜特別開發的網站，所有的服務全部建構在 Google Cloud Platform 上 功能大至如下: 喜宴相關資訊 訂婚場/結婚場時間、地點、交通資訊 出席人數統計(強制使用 Google/Facebook 登入)。訂婚場/結婚</description></item><item><title>Golang regEx parse Facebook Live rtmp</title><link>https://kaichu.io/posts/golang-regex/</link><pubDate>Tue, 21 Feb 2017 22:34:59 +0000</pubDate><guid>https://kaichu.io/posts/golang-regex/</guid><description>最近因為公司專案的關係，開始接觸 Facebook Live API，需要動態的透過 API 去建立一組 Live 直播 並將 rtmp 的整個字串拆解成 ServerUrl 及 StreamKey 二個部份再由 ffmpeg 拿到這個資訊去 streaming。因為 Youtube Data API v3 可以別分拿 StreamName 及 IngestionAddress, 所以只需要對 Facebook 的部份</description></item><item><title>GAE go Image API for GCS</title><link>https://kaichu.io/posts/gae-go-image-api/</link><pubDate>Mon, 31 Oct 2016 21:55:10 +0000</pubDate><guid>https://kaichu.io/posts/gae-go-image-api/</guid><description>&lt;blockquote>
+&lt;p>&lt;a href="https://go-gae-image-api-example-dot-gae-lab-001.appspot.com/">LIVE DEMO&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>在開發 GAE 應用程式時，難免會遇到應用程式需要處理圖片的問題。GAE 的應用程用可以直接存取靜態的資源檔案，這塊直接在 &lt;code>app.yaml&lt;/code> 檔案中設定就可以了，不過也因為 GAE 應用程式的特性，需要將所有的資源上傳一份到 GAE 正式環境中，所以會發現上傳專案的容量大小會爆增(如果你將所有需要的圖檔階直接放在程式內)。&lt;/p>
+&lt;p>專案檔案太大會影響 GAE 在自動擴展的效能，所以盡可能的將不必要的東西移多專案外(圖檔等)&lt;/p></description></item><item><title>解決 gvm install go1.4 安裝錯誤 [筆記]</title><link>https://kaichu.io/posts/gvm-install-go1-4/</link><pubDate>Wed, 21 Sep 2016 22:39:53 +0000</pubDate><guid>https://kaichu.io/posts/gvm-install-go1-4/</guid><description>本來是使用 brew 來管理 golang 的版本，brew 及 brew cask 某些程度是很方便，不過也越來越覺得彈性差了點。繼 node 使用 tj 大神的 tj/n: Node version management 之外，golang 也打算使用 moovweb/gvm: Go Version Manager 來管理版本，不過在照著官方步驟時報錯了，順手記錄了一</description></item><item><title>Atom sync-settings</title><link>https://kaichu.io/posts/atom-sync-settings/</link><pubDate>Tue, 20 Sep 2016 22:58:40 +0000</pubDate><guid>https://kaichu.io/posts/atom-sync-settings/</guid><description>&lt;p>&lt;a href="https://goo.gl/LGBVzh">Atom&lt;/a> 是一個 GitHub 開發的免費、開放原始碼編輯器，目前有非常多的擴充工具可以安裝(&lt;strong>4,913&lt;/strong> packages)，也有非常多的主題佈景可以安裝(&lt;strong>1,645&lt;/strong> themes)，彈性非常的高，你可以打造成自己熟悉的開發環境。&lt;/p>
+&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/atom-sync-settings-02.jpg" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/atom-sync-settings-02.jpg" />
+&lt;/a>
+&lt;/div></description></item><item><title>COSCUP 2016 - NAS也會揀土豆</title><link>https://kaichu.io/posts/retrain-inception-model-for-nas/</link><pubDate>Mon, 22 Aug 2016 17:30:55 +0000</pubDate><guid>https://kaichu.io/posts/retrain-inception-model-for-nas/</guid><description>&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/tensorflow.png" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/tensorflow.png" />
+&lt;/a>
+&lt;/div>
+&lt;p>今年在 &lt;a href="http://coscup.org/2016/schedules.html">COSCUP&lt;/a> 2016 上分享了「&lt;strong>NAS 也可以揀土豆&lt;/strong>」主題。&lt;/p>
+&lt;blockquote>
+&lt;p>TensorFlow 是由 Google 所公布的開源機器學習平台，根據 Github 的數據統計，TensorFlow 成為2016年最受關注的十大開源專案之一。此次分享將介紹，如何在 NAS 上整合TensorFlow 及相關 Open source project，以展示幾種相關的資料分析應用。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="outline">outline&lt;/h2>
+&lt;ul>
+&lt;li>Machine learning&lt;/li>
+&lt;li>Deep learning
+&lt;ul>
+&lt;li>Neural Network&lt;/li>
+&lt;li>Convolutional neural network&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Building a classifier for NAS&lt;/li>
+&lt;li>Study information&lt;/li>
+&lt;/ul></description></item><item><title>golang serving a single page application</title><link>https://kaichu.io/posts/golang-serve-static-site/</link><pubDate>Thu, 04 Aug 2016 10:22:03 +0000</pubDate><guid>https://kaichu.io/posts/golang-serve-static-site/</guid><description>golang serve SPA 最近有前端開發的需求，選用了 react-redux-starter-kit 來進行二次開發，省去一些想要使用 React, redux, redux-router 的基本配置，這樣速度會快一點 因為 react-redux-starter-kit 也使用 webpack 進行程式碼的打包, 所以最後的產出預設在 dist 資料夾中，所以部署時只需要一個簡單的 host server 即可</description></item><item><title>筆記 - django oscar i18n</title><link>https://kaichu.io/posts/django-oscar-i18n/</link><pubDate>Thu, 14 Apr 2016 10:29:17 +0800</pubDate><guid>https://kaichu.io/posts/django-oscar-i18n/</guid><description>&lt;p>&lt;a href="https://github.com/django-oscar/django-oscar">django-oscar&lt;/a> 是一個滿完整的開源的 EC 專案。Oscar 內建 i18n 是使用 &lt;a href="https://www.transifex.com/codeinthehole/django-oscar/">transifex&lt;/a>，依照 django-oscar 的說明，當 django-oscar 進行 master 的發佈時才會去更新相關的翻譯檔案，如果 i18n 的更新速度沒有辦法符合自己的需求有二種方式，1)加入 transifex 專案幫忙翻譯，只是 django-oscar 的更新速度比較慢 2)使用本地的檔案&lt;/p></description></item><item><title>gae link pip helper</title><link>https://kaichu.io/posts/gae-link-pip-helper/</link><pubDate>Mon, 28 Mar 2016 10:23:59 +0800</pubDate><guid>https://kaichu.io/posts/gae-link-pip-helper/</guid><description>&lt;p>Python 的社群非常活躍有非常多好用的套件可以使用，也有 &lt;code>pip&lt;/code> 的套件管理程式來讓開發者管理套件升級、版控等問題&lt;/p></description></item><item><title>gae appcfg update 403</title><link>https://kaichu.io/posts/gae-appcfg-update-403/</link><pubDate>Thu, 10 Mar 2016 10:41:40 +0800</pubDate><guid>https://kaichu.io/posts/gae-appcfg-update-403/</guid><description>&lt;p>當 GAE application 本地開發到一個階段時，就會開始想要上傳至 appengine.google.com 進行線上的測試，這時候便會使 command line 工
+具來上傳專案&lt;/p></description></item><item><title>django getting started</title><link>https://kaichu.io/posts/django-getting-started/</link><pubDate>Sun, 01 Nov 2015 23:39:07 +0800</pubDate><guid>https://kaichu.io/posts/django-getting-started/</guid><description>&lt;p>Django Quick Getting Started&lt;/p>
+&lt;ul>
+&lt;li>pip&lt;/li>
+&lt;li>virtualenv&lt;/li>
+&lt;li>virtualenvwrapper&lt;/li>
+&lt;li>Django&lt;/li>
+&lt;li>&lt;a href="https://github.com/twoscoops/django-twoscoops-project">twoscoops/django-twoscoops-project&lt;/a>&lt;/li>
+&lt;li>PyCharm&lt;/li>
+&lt;/ul>
+&lt;p>簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm&lt;/p></description></item><item><title>[筆記] docker 1.8.2 rc</title><link>https://kaichu.io/posts/docker-notebook-1/</link><pubDate>Sun, 04 Oct 2015 21:51:59 +0800</pubDate><guid>https://kaichu.io/posts/docker-notebook-1/</guid><description>&lt;p>在 Mac os x 開發 docker，因為 Mac 無法原生支援 Docker，所以在 docker 1.7 以前的版上就必需透過 &lt;code>boot2docker&lt;/code>，&lt;code>boot2docker&lt;/code>
+會在本機的 VirtualBox 上安裝一個虛擬機。Docker client 機乎是接近原生的狀態跑在 Mac 上，只不過 Docker 的 server 是跑在 &lt;code>boot2docker&lt;/code> 的虛擬機中.&lt;/p>
+&lt;p>
+&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/docker_on_linux_macosx.jpg" data-caption="">
+&lt;img src="https://kaichu.io/images/posts/docker_on_linux_macosx.jpg" />
+&lt;/a>
+&lt;/div>
+picture: &lt;a href="https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide">https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide&lt;/a>&lt;/p></description></item><item><title>Managed VMs lab</title><link>https://kaichu.io/posts/managed-vms-lab/</link><pubDate>Wed, 30 Sep 2015 14:58:58 +0800</pubDate><guid>https://kaichu.io/posts/managed-vms-lab/</guid><description>&lt;p>&lt;strong>Presentation&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>slide: &lt;a href="https://goo.gl/SwuEvR">GAE Managed VM Introduction - Google Slides&lt;/a>&lt;/li>
+&lt;li>source code: &lt;a href="https://github.com/cage1016/managed-vms-lab">cage1016/managed-vms-lab&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="gae-overview">GAE Overview&lt;/h2>
+&lt;p>&lt;a href="https://cloud.google.com/appengine/docs">Google App Engine&lt;/a> 是 &lt;a href="https://cloud.google.com/">Google Cloud Platform&lt;/a> 中一個 PasS (Platform as a service) 的服務. 在 Pass 的 GAE 中，開發者只需要專注於 &lt;strong>Application&lt;/strong> 及 &lt;strong>Data&lt;/strong>，
+其於的 &lt;strong>Runtime&lt;/strong>、&lt;strong>Middleware&lt;/strong>、&lt;strong>OS&lt;/strong>、&lt;strong>Virtualization&lt;/strong>、&lt;strong>Servers&lt;/strong>、&lt;strong>Storage&lt;/strong>、&lt;strong>Networking&lt;/strong> 則完全被 Google 控制管理。&lt;/p></description></item><item><title>copy 2 clipboard with ease</title><link>https://kaichu.io/posts/copy-2-clipboard-with-ease/</link><pubDate>Mon, 17 Aug 2015 03:26:06 +0000</pubDate><guid>https://kaichu.io/posts/copy-2-clipboard-with-ease/</guid><description>A simple and quick way to copy title and url with ease in chrome browser.
+features There have four options: Copy title url pattern:
+copy title only copy title and url copy title and shorten url copy url only copy shorten url only Copy title, url pattern: the default copy patter is url (title), you can change whatever you want but keep url and title keyword.
+Change log 1.0.1 - pattern input problem and other bug fixed.
+1.0.0 - add options settings sync via Google account between different chrome browser. Change UI themes from Bootstrap to semantic-ui.</description></item><item><title>webpack es6 demo</title><link>https://kaichu.io/posts/webpack-es6-demo/</link><pubDate>Fri, 14 Aug 2015 06:06:37 +0000</pubDate><guid>https://kaichu.io/posts/webpack-es6-demo/</guid><description>&lt;p>最近在&lt;a href="http://www.infoq.com/cn/">InfoQ&lt;/a> 中看到一篇文章 &lt;a href="http://goo.gl/MUBDUV">成為一名優秀的Web前端開發者&lt;/a>，裡面提到學習 &lt;a href="http://www.infoq.com/news/2015/06/ecmascript-2015-es6">ECMAScript 2015&lt;/a> 這一個部份，又因為在 github 看到越來越多 Javascript 專案始用 &lt;strong>ES6&lt;/strong>&lt;/p>
+&lt;blockquote>
+&lt;p>Javascript這個語言，是有「標準規格」的，叫做ECMA-262，這個標準規格，是由ECMA International (European Computer Manufacturers Association International)這個標準組織所制定，所以也稱呼它為ECMAScript。這個規格涵蓋了所有Javascript的核心，是各種Javascript執行環境一定會有的東西。在此之上，瀏覽器內就會額外加入DOM等擴充，而像node.js這樣的伺服器端環境，也有他自己的擴充，不過核心的部份是大家都一樣的。（附帶一提，C#的標準規格也是ECMA制定的） &lt;a href="http://www.codedata.com.tw/javascript/introducing-es6-1-harmony-history/">初探 ES6（1）Harmony 的黑歷史 by fillano | CodeData&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>2015 年的 ECMAScript 是一個顯著的更新。上一次版本 &lt;strong>ES5&lt;/strong> 的標準是在 2009 年訂定的，AngularJS, Aurelia, ReactJS, Ionic 都是架構在 &lt;strong>ES5&lt;/strong> 的基礎上， 不過 ReactJS 也開始支援了 &lt;strong>ES6&lt;/strong>，身為一個前端的工程師也是時候開始學習了&lt;/p></description></item><item><title>GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE</title><link>https://kaichu.io/posts/gcsiterator/</link><pubDate>Tue, 28 Jul 2015 12:03:48 +0800</pubDate><guid>https://kaichu.io/posts/gcsiterator/</guid><description>&lt;p>最近的專案常常需要在 &lt;a href="https://cloud.google.com/appengine/docs/python/">GAE - Python&lt;/a> 跟大 CSV (40MB)檔打交道。在 Python 中利用 &lt;code>csv.reader&lt;/code> &amp;amp; &lt;code>csv.DictReader&lt;/code>
+可以很容易的處理 &lt;code>csv&lt;/code> 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 &lt;strong>60s&lt;/strong>，而 Tasks Request 則有 &lt;strong>10mins&lt;/strong> 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到
+&lt;code>DeadlineExceededErrors&lt;/code> 的雷也會踩到 &lt;code>Exceeded soft private memory limit&lt;/code> 的問題(預設 instance 的記憶體只有 &lt;strong>128MB&lt;/strong>，在處理大 CSV 檔很容易踩到的雷)&lt;/p>
+&lt;p>所以在處理大 CSV 檔最好不要一次就把所有的資料讀到記憶體中，而 GAE 上又有檔案存取的限制，所以大部份會搭配 &lt;a href="https://cloud.google.com/storage/">GCS&lt;/a> 一起使用，
+把檔案放在 GCS 上，由 GAE 透過 &lt;code>google-api-python-client&lt;/code> 到 GCS 進行檔案的存取&lt;/p>
+&lt;p>&lt;code>google-api-python-client&lt;/code> 中實作了 GCS JSON API 的 chunks 下載(&lt;strong>MediaIoBaseDownload&lt;/strong> [4])，在 chunks 下載時就必需另外處理斷行的問題(實作 Python csv.DictReader iterator 內解決斷行問題)&lt;/p></description></item><item><title>GAE-todomvc</title><link>https://kaichu.io/posts/gae-todomvc/</link><pubDate>Mon, 27 Jul 2015 15:24:58 +0800</pubDate><guid>https://kaichu.io/posts/gae-todomvc/</guid><description>&lt;p>最近需要幫內部基於&lt;a href="https://cloud.google.com/appengine/docs/python/">GAE - Python&lt;/a>平台上導入前端的框架，&lt;a href="http://todomvc.com/">TodoMVC&lt;/a>
+是一個非常適合拿來學習前端框架的資源，它以&lt;strong>TodoMVC&lt;/strong>的題目實作目前主流的前端框架(&lt;strong>React&lt;/strong>、&lt;strong>Angular&lt;/strong>、&lt;strong>Vuejs&lt;/strong>、&lt;strong>Ember.js&lt;/strong>、&lt;strong>Polymer&lt;/strong> 等等)，
+你可以看到不同框架的優缺點，選擇一個最適合你的框架來學習。&lt;/p>
+&lt;p>在 &lt;a href="https://github.com/cage1016/gae-todomvc">cage1016/gae-todomvc&lt;/a> 中則選用了 &lt;code>Reactjs (Flux)&lt;/code>、&lt;code>AnguarJs&lt;/code>、&lt;code>Vue.js&lt;/code> 三個前端框架來搭配 GAE-Python + Datastore + Endpoints APIs。&lt;/p></description></item><item><title>Google Announce Application Default Credentials (ADC)</title><link>https://kaichu.io/posts/adc/</link><pubDate>Tue, 21 Jul 2015 10:04:40 +0800</pubDate><guid>https://kaichu.io/posts/adc/</guid><description>&lt;p>今天 Google 公佈了 &lt;a href="http://googlecloudplatform.blogspot.tw/2015/07/Easier-Auth-for-Google-Cloud-APIs-Introducing-the-Application-Default-Credentials-feature.html">Application Default Credentials (ADC)&lt;/a>，一個可以讓使用者更方便在 GCP 上去界接其他的需要使用 OAuth 存取的服務如 &lt;a href="https://cloud-dot-devsite.googleplex.com/storage">Google Cloud Storage&lt;/a>、&lt;a href="https://cloud-dot-devsite.googleplex.com/bigquery">Google BigQuery&lt;/a>。這對常常寫 GAE 的我來說又更方便了。&lt;/p>
+&lt;p>在 GCP 專案建立之後，預設會自動產生 &lt;a href="https://developers.google.com/accounts/docs/OAuth2ServiceAccount">Service Accounts&lt;/a>，
+這些內建的 Service Accounts 在進行 Server to Server 的存取時只需要應用程式本身的認証，直接使用 &lt;code>AppAssertionCredentials&lt;/code> 可以不需透過 &lt;code>Flow&lt;/code> 來建立 &lt;code>Credentials&lt;/code>物件&lt;/p></description></item><item><title>在 Github Pages 建立 Hugo 靜態網站</title><link>https://kaichu.io/posts/my-first-post/</link><pubDate>Sun, 12 Jul 2015 08:41:06 +0800</pubDate><guid>https://kaichu.io/posts/my-first-post/</guid><description>&lt;h3 id="原由">原由&lt;/h3>
+&lt;p>颱風天那都不能去，只好繼續 Coding 人生、看看 Pocket 未讀的文章。不過也因此發現好幾個不錯的東西&lt;/p>
+&lt;ol>
+&lt;li>&lt;a href="http://marcio.io/2015/07/supercharging-atom-editor-for-go-development/">Supercharging the Atom Editor for Go Development · marcio.io&lt;/a>，最近也開始用 Atom 也開始學習 Golang 語言。這一篇作者說明了他自己的使用經驗。&lt;/li>
+&lt;li>&lt;a href="http://ulricqin.com/post/how-to-use-hugo/">使用Hugo搭建免费个人Blog · Ulric Qin&lt;/a> 這一篇文章看到 Hugo，發現在他的 Blog 也是用 Hugo 架的&lt;/li>
+&lt;/ol>
+&lt;p>在 Ulric Quin 的文章中得知他自己的 Blog 是架在大陸的&lt;a href="https://gitcafe.com/">GitCafe&lt;/a>，Hugo 可以直接發佈到 GitCafe &amp;amp; Github 的 Page &lt;strong>免費&lt;/strong>，當然是立刻自己動手玩一玩&lt;/p></description></item><item><title>Life.com text copy</title><link>https://kaichu.io/posts/life-dot-com-text-copy/</link><pubDate>Sun, 05 Jul 2015 06:26:13 -0500</pubDate><guid>https://kaichu.io/posts/life-dot-com-text-copy/</guid><description>Facebook 許多人都有轉載一些文章，看到有些不錯的文章，會想保存到 Evernote 上，Evernote 提供了 Evernote Web Clipper - Chrome Web Store 及 Clearly - Chrome Web Store 可以方便使用直接把面頁的文章快速的存到自己的 Notebook 中。 life.com 是網友滿常轉載的一個媒體之一。不過後來</description></item></channel></rss>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>istio on KaiChu</title><link>https://kaichu.io/tags/istio/</link><description>Recent content in istio on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 03 Nov 2020 17:50:10 +0000</lastBuildDate><atom:link href="https://kaichu.io/tags/istio/index.xml" rel="self" type="application/rss+xml"/><item><title>Gokit microservice demo</title><link>https://kaichu.io/posts/gokit-ms-demo/</link><pubDate>Tue, 03 Nov 2020 17:50:10 +0000</pubDate><guid>https://kaichu.io/posts/gokit-ms-demo/</guid><description>&lt;p>小弟在 GDG Devfest 2019 分享過 &lt;a href="https://www.slideshare.net/cagechung/gdg-devfest-2019-build-go-kit-microservices-at-kubernetes-with-ease">Build go kit microservices at kubernetes with ease&lt;/a>，Gokit 是一個建立 microservice 的 toolkit，Gokit 提出 &lt;code>Transport&lt;/code> &lt;code>Endpoint&lt;/code> &lt;code>Service&lt;/code> 三種概念來幫助開始者進行架構分離，對單一微服務進行架構強制分離或許會增加程式碼的閱讀性，不過對一定規模的微服務來說，一致性的程式架構分離反而會增加多人開發的效率&lt;/p>
+&lt;h2 id="cage1016ms-demo">cage1016/ms-demo&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Service&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>add&lt;/td>
+&lt;td>Expose Sum method&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>tictac&lt;/td>
+&lt;td>Expose Tic/Tac method&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;a href="https://github.com/cage1016/ms-demo">cage1016/ms-demo: gokit microservice demo&lt;/a> 提供了使用 gokit 建立的 kubernetes/istio 的 manifest, 可以讓使用者快速的練習基於 kubernetes/istio 來搭建 gokit 微服務&lt;/p></description></item></channel></rss>

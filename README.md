@@ -1,5 +1,5 @@
 # kaichu.io
 
-This is the html behind [kaichu.io](http://kaichu.io).  It was generated from the code
-in http://github.com/cage1016/kaichu.io.hexo using the [Hexo](https://hexo.io/)
+This is the html behind [kaichu.io](https://kaichu.io).  It was generated from the code
+in https://github.com/cage1016/kaichu.io.hugo using the [Hugo](https://gohugo.io/)
 static site generator.

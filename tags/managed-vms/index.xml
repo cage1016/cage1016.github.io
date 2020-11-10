@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Managed-VMs on KaiChu</title><link>https://kaichu.io/tags/managed-vms/</link><description>Recent content in Managed-VMs on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 30 Sep 2015 14:58:58 +0800</lastBuildDate><atom:link href="https://kaichu.io/tags/managed-vms/index.xml" rel="self" type="application/rss+xml"/><item><title>Managed VMs lab</title><link>https://kaichu.io/posts/managed-vms-lab/</link><pubDate>Wed, 30 Sep 2015 14:58:58 +0800</pubDate><guid>https://kaichu.io/posts/managed-vms-lab/</guid><description>&lt;p>&lt;strong>Presentation&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>slide: &lt;a href="https://goo.gl/SwuEvR">GAE Managed VM Introduction - Google Slides&lt;/a>&lt;/li>
+&lt;li>source code: &lt;a href="https://github.com/cage1016/managed-vms-lab">cage1016/managed-vms-lab&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="gae-overview">GAE Overview&lt;/h2>
+&lt;p>&lt;a href="https://cloud.google.com/appengine/docs">Google App Engine&lt;/a> 是 &lt;a href="https://cloud.google.com/">Google Cloud Platform&lt;/a> 中一個 PasS (Platform as a service) 的服務. 在 Pass 的 GAE 中，開發者只需要專注於 &lt;strong>Application&lt;/strong> 及 &lt;strong>Data&lt;/strong>，
+其於的 &lt;strong>Runtime&lt;/strong>、&lt;strong>Middleware&lt;/strong>、&lt;strong>OS&lt;/strong>、&lt;strong>Virtualization&lt;/strong>、&lt;strong>Servers&lt;/strong>、&lt;strong>Storage&lt;/strong>、&lt;strong>Networking&lt;/strong> 則完全被 Google 控制管理。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,106 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>iOS ringtone maker from YouTube video ｜ KaiChu</title><meta name=description content="最近大竹弟打電話問說 iOS 鈴聲在 Garageband 上面製作的檔案怎麼這麼大，其實只有 5 秒的鈴聲
+先來說一下 iPhone 上配置客製的鈴聲有二種方式
+ iTunes Garageband 上編輯直接輸出至鈴聲  由於 macOS 10.15 版本就沒有 itunes 可以用，所以基本上網路的教學大也是直接在 Garageband 上直接編輯後直接輸出至 iPhone 的鈴聲
+以前我自己也是換過不少鈴聲，以前是透過 Free Ringtones for Android and iPhone. Free Ringtone Maker - Audiko 選擇喜歡的檔案下載安裝
+雖然現成的工具方便，不過有時候找不到自己喜歡的歌曲，那就土砲一個吧"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.iocss/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/ios-ringtone-maker-from-youtube/>iOS ringtone maker from YouTube video</a></h2><span class=date>2020.06.20</span></div><div class="post_content markdown"><p>最近大竹弟打電話問說 iOS 鈴聲在 Garageband 上面製作的檔案怎麼這麼大，其實只有 5 秒的鈴聲</p><p>先來說一下 iPhone 上配置客製的鈴聲有二種方式</p><ul><li>iTunes</li><li>Garageband 上編輯直接輸出至鈴聲</li></ul><p>由於 macOS 10.15 版本就沒有 itunes 可以用，所以基本上網路的教學大也是直接在 Garageband 上直接編輯後直接輸出至 iPhone 的鈴聲</p><p>以前我自己也是換過不少鈴聲，以前是透過 <a href=https://sur.ly/o/audiko.tw/AA000014>Free Ringtones for Android and iPhone. Free Ringtone Maker - Audiko</a> 選擇喜歡的檔案下載安裝</p><p>雖然現成的工具方便，不過有時候找不到自己喜歡的歌曲，那就土砲一個吧</p><h3 id=ios-ringtone-maker-from-youtube-video>iOS ringtone maker from YouTube video</h3><p><a href=https://github.com/cage1016/ios-ringtone-maker-yt>cage1016/ios-ringtone-maker-yt: iOS ringtone maker from Youtube video</a></p><p>基本上的流程</p><ul><li>找到喜歡的 YouTube vide</li><li>找到想要音頻的開始秒數 ex: 00:04:00</li><li>決定鈴聲的秒數 ex: 30</li><li>是否要音頻漸入漸出效果</li><li>直接下 command container 會直接輸出 m4r</li><li>copy 至 iCloud</li><li>在 Garageband 引入 m4r</li><li>輸出至鈴聲</li><li>打完收工</li></ul><h3 id=demo>demo</h3><ol><li>找到一個 YouTube 影片 <a href="https://www.youtube.com/watch?v=Pkh8UtuejGw">Señorita - YouTube</a></li><li>從 22 秒開始</li><li>共 30 秒</li><li>音頻漸入漸出效果: fadein 3 秒， fadeout 3 秒</li></ol><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ docker run --rm -it -v <span class=k>$(</span>PWD<span class=k>)</span>/output:/app/output -e <span class=nv>FADEIN</span><span class=o>=</span><span class=m>3</span> -e <span class=nv>FADEOUT</span><span class=o>=</span><span class=m>3</span> -e <span class=nv>VID</span><span class=o>=</span>Pkh8UtuejGw -e <span class=nv>SS</span><span class=o>=</span>00:00:22 -e <span class=nv>T</span><span class=o>=</span><span class=m>30</span> cage1016/ios-ringtone-maker-yt:latest
+YoutTubeID: Pkh8UtuejGw
+StartTime: 00:00:22
+Duration: <span class=m>30</span>
+FadeIn: <span class=m>3</span>
+FadeOut: <span class=m>3</span>
+
+ Site:      YouTube youtube.com
+ Title:     Shawn Mendes, Camila Cabello - Señorita
+ Type:      video
+ Stream:
+     <span class=o>[</span>140<span class=o>]</span>  -------------------
+     Quality:         audio/mp4<span class=p>;</span> <span class=nv>codecs</span><span class=o>=</span><span class=s2>&#34;mp4a.40.2&#34;</span>
+     Size:            3.17 MiB <span class=o>(</span><span class=m>3325319</span> Bytes<span class=o>)</span>
+     <span class=c1># download with: annie -f 140 ...</span>
+
+ 3.17 MiB / 3.17 MiB <span class=o>[==============================================================================================================================================================================]</span> 100.00% 147.17 KiB/s 22s
+ffmpeg version 4.1.5 Copyright <span class=o>(</span>c<span class=o>)</span> 2000-2020 the FFmpeg developers
+  built with gcc 9.2.0 <span class=o>(</span>Alpine 9.2.0<span class=o>)</span>
+  configuration: --disable-debug --disable-doc --disable-ffplay --enable-shared --enable-avresample --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-gpl --enable-libass --enable-fontconfig --enable-libfreetype --enable-libvidstab --enable-libmp3lame --enable-libopus --enable-libtheora --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libxcb --enable-libx265 --enable-libxvid --enable-libx264 --enable-nonfree --enable-openssl --enable-libfdk_aac --enable-postproc --enable-small --enable-version3 --enable-libbluray --enable-libzmq --extra-libs<span class=o>=</span>-ldl --prefix<span class=o>=</span>/opt/ffmpeg --enable-libopenjpeg --enable-libkvazaar --enable-libaom --extra-libs<span class=o>=</span>-lpthread --enable-libsrt --extra-cflags<span class=o>=</span>-I/opt/ffmpeg/include --extra-ldflags<span class=o>=</span>-L/opt/ffmpeg/lib
+  libavutil      56. 22.100 / 56. 22.100
+  libavcodec     58. 35.100 / 58. 35.100
+  libavformat    58. 20.100 / 58. 20.100
+  libavdevice    58.  5.100 / 58.  5.100
+  libavfilter     7. 40.101 /  7. 40.101
+  libavresample   4.  0.  <span class=m>0</span> /  4.  0.  <span class=m>0</span>
+  libswscale      5.  3.100 /  5.  3.100
+  libswresample   3.  3.100 /  3.  3.100
+  libpostproc    55.  3.100 / 55.  3.100
+Input <span class=c1>#0, mov,mp4,m4a,3gp,3g2,mj2, from &#39;./Pkh8UtuejGw.mp4&#39;:</span>
+  Metadata:
+    major_brand     : dash
+    minor_version   : <span class=m>0</span>
+    compatible_brands: iso6mp41
+    creation_time   : 2020-03-12T06:21:25.000000Z
+  Duration: 00:03:25.43, start: 0.000000, bitrate: <span class=m>129</span> kb/s
+    Stream <span class=c1>#0:0(eng): Audio: aac (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 6 kb/s (default)</span>
+    Metadata:
+      creation_time   : 2020-03-12T06:21:25.000000Z
+      handler_name    : ISO Media file produced by Google Inc.
+Stream mapping:
+  Stream <span class=c1>#0:0 (aac) -&gt; afade</span>
+  areverse -&gt; Stream <span class=c1>#0:0 (libvorbis)</span>
+Press <span class=o>[</span>q<span class=o>]</span> to stop, <span class=o>[</span>?<span class=o>]</span> <span class=k>for</span> <span class=nb>help</span>
+Output <span class=c1>#0, ogg, to &#39;./Pkh8UtuejGw.ogg&#39;:</span>
+  Metadata:
+    major_brand     : dash
+    minor_version   : <span class=m>0</span>
+    compatible_brands: iso6mp41
+    encoder         : Lavf58.20.100
+    Stream <span class=c1>#0:0: Audio: vorbis (libvorbis), 44100 Hz, stereo, fltp (default)</span>
+    Metadata:
+      encoder         : Lavc58.35.100 libvorbis
+      major_brand     : dash
+      minor_version   : <span class=m>0</span>
+      compatible_brands: iso6mp41
+<span class=nv>size</span><span class=o>=</span>    1351kB <span class=nv>time</span><span class=o>=</span>00:00:29.99 <span class=nv>bitrate</span><span class=o>=</span> 368.9kbits/s <span class=nv>speed</span><span class=o>=</span>51.2x
+video:0kB audio:1340kB subtitle:0kB other streams:0kB global headers:4kB muxing overhead: 0.831372%
+ffmpeg version 4.1.5 Copyright <span class=o>(</span>c<span class=o>)</span> 2000-2020 the FFmpeg developers
+  built with gcc 9.2.0 <span class=o>(</span>Alpine 9.2.0<span class=o>)</span>
+  configuration: --disable-debug --disable-doc --disable-ffplay --enable-shared --enable-avresample --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-gpl --enable-libass --enable-fontconfig --enable-libfreetype --enable-libvidstab --enable-libmp3lame --enable-libopus --enable-libtheora --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libxcb --enable-libx265 --enable-libxvid --enable-libx264 --enable-nonfree --enable-openssl --enable-libfdk_aac --enable-postproc --enable-small --enable-version3 --enable-libbluray --enable-libzmq --extra-libs<span class=o>=</span>-ldl --prefix<span class=o>=</span>/opt/ffmpeg --enable-libopenjpeg --enable-libkvazaar --enable-libaom --extra-libs<span class=o>=</span>-lpthread --enable-libsrt --extra-cflags<span class=o>=</span>-I/opt/ffmpeg/include --extra-ldflags<span class=o>=</span>-L/opt/ffmpeg/lib
+  libavutil      56. 22.100 / 56. 22.100
+  libavcodec     58. 35.100 / 58. 35.100
+  libavformat    58. 20.100 / 58. 20.100
+  libavdevice    58.  5.100 / 58.  5.100
+  libavfilter     7. 40.101 /  7. 40.101
+  libavresample   4.  0.  <span class=m>0</span> /  4.  0.  <span class=m>0</span>
+  libswscale      5.  3.100 /  5.  3.100
+  libswresample   3.  3.100 /  3.  3.100
+  libpostproc    55.  3.100 / 55.  3.100
+Input <span class=c1>#0, ogg, from &#39;./Pkh8UtuejGw.ogg&#39;:</span>
+  Duration: 00:00:30.00, start: 0.000000, bitrate: <span class=m>368</span> kb/s
+    Stream <span class=c1>#0:0: Audio: vorbis, 44100 Hz, stereo, fltp, 499 kb/s</span>
+    Metadata:
+      ENCODER         : Lavc58.35.100 libvorbis
+      MAJOR_BRAND     : dash
+      MINOR_VERSION   : <span class=m>0</span>
+      COMPATIBLE_BRANDS: iso6mp41
+Stream mapping:
+  Stream <span class=c1>#0:0 -&gt; #0:0 (vorbis (native) -&gt; aac (native))</span>
+Press <span class=o>[</span>q<span class=o>]</span> to stop, <span class=o>[</span>?<span class=o>]</span> <span class=k>for</span> <span class=nb>help</span>
+Output <span class=c1>#0, ipod, to &#39;./Pkh8UtuejGw.m4a&#39;:</span>
+  Metadata:
+    encoder         : Lavf58.20.100
+    Stream <span class=c1>#0:0: Audio: aac (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s</span>
+    Metadata:
+      COMPATIBLE_BRANDS: iso6mp41
+      MAJOR_BRAND     : dash
+      MINOR_VERSION   : <span class=m>0</span>
+      encoder         : Lavc58.35.100 aac
+<span class=nv>size</span><span class=o>=</span>     479kB <span class=nv>time</span><span class=o>=</span>00:00:30.02 <span class=nv>bitrate</span><span class=o>=</span> 130.8kbits/s <span class=nv>speed</span><span class=o>=</span>55.3x
+video:0kB audio:472kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 1.506557%
+<span class=o>[</span>aac @ 0x562a55f08640<span class=o>]</span> Qavg: 217.142
+</code></pre></div><p>鈴聲直接輸出在執行 docker 路徑下 <code>./output</code></p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ ls ./output/
+Pkh8UtuejGw.m4r
+</code></pre></div><p>剩下的就是將檔案傳至手機，透過 Garageband 輸出至 iPhone</p><p>DONE!</p><p>BTW. 有時候再來弄 UI</p></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/copy2clipboardwitheasy/>workflow recipe - Copy2ClipboardWithEasy</a></li><li><a href=/posts/docker-notebook-1/>[筆記] docker 1.8.2 rc</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/docker/>docker</a>
+<a href=https://kaichu.io/tags/annie/>annie</a>
+<a href=https://kaichu.io/tags/ringtone/>ringtone</a>
+<a href=https://kaichu.io/tags/youtube/>YouTube</a>
+<a href=https://kaichu.io/tags/ios/>iOS</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
+var d=document,s=d.createElement('script');s.async=true;s.src='//'+"kaichuchung"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
+<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
