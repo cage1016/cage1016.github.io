@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>coscup on KaiChu</title><link>https://kaichu.io/tags/coscup/</link><description>Recent content in coscup on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 22 Aug 2016 17:30:55 +0000</lastBuildDate><atom:link href="https://kaichu.io/tags/coscup/index.xml" rel="self" type="application/rss+xml"/><item><title>COSCUP 2016 - NAS也會揀土豆</title><link>https://kaichu.io/posts/retrain-inception-model-for-nas/</link><pubDate>Mon, 22 Aug 2016 17:30:55 +0000</pubDate><guid>https://kaichu.io/posts/retrain-inception-model-for-nas/</guid><description>&lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/tensorflow.png" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/tensorflow.png" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/retrain-inception-model-for-nas/tensorflow.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/retrain-inception-model-for-nas/tensorflow.png" />
 &lt;/a>
 &lt;/div>
 &lt;p>今年在 &lt;a href="http://coscup.org/2016/schedules.html">COSCUP&lt;/a> 2016 上分享了「&lt;strong>NAS 也可以揀土豆&lt;/strong>」主題。&lt;/p>

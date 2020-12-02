@@ -29,7 +29,7 @@ Cloud Code 是基於 &lt;a href="https://github.com/GoogleContainerTools/skaffol
 &lt;/blockquote>
 &lt;p>基本上來說 Cloud Code 給 Visual Studio Code 和 IntelliJ IDE 的 plugin 就是基於 skaffold 打造的(如下圖)，當你在 Visual Studio Code 執行(cmd+shift+p) &lt;code>Cloud Code: Continues Deploy&lt;/code> 的 log 就會知道&lt;/p>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/skaffold-debug-goland/skaffold-go-debug-image-4.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/skaffold-debug-goland/skaffold-go-debug-image-4.png" />
 &lt;/a>
 &lt;/div></description></item></channel></rss>

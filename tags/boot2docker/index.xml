@@ -2,8 +2,8 @@
 會在本機的 VirtualBox 上安裝一個虛擬機。Docker client 機乎是接近原生的狀態跑在 Mac 上，只不過 Docker 的 server 是跑在 &lt;code>boot2docker&lt;/code> 的虛擬機中.&lt;/p>
 &lt;p>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/docker_on_linux_macosx.jpg" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/docker_on_linux_macosx.jpg" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/docker-notebook-1/docker_on_linux_macosx.jpg" data-caption="">
+&lt;img src="https://kaichu.io/posts/docker-notebook-1/docker_on_linux_macosx.jpg" />
 &lt;/a>
 &lt;/div>
 picture: &lt;a href="https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide">https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide&lt;/a>&lt;/p></description></item></channel></rss>

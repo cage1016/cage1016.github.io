@@ -37,16 +37,16 @@ Cloud Code 是基於 &lt;a href="https://github.com/GoogleContainerTools/skaffol
 &lt;/blockquote>
 &lt;p>基本上來說 Cloud Code 給 Visual Studio Code 和 IntelliJ IDE 的 plugin 就是基於 skaffold 打造的(如下圖)，當你在 Visual Studio Code 執行(cmd+shift+p) &lt;code>Cloud Code: Continues Deploy&lt;/code> 的 log 就會知道&lt;/p>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/skaffold-debug-goland/skaffold-go-debug-image-4.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/skaffold-debug-goland/skaffold-go-debug-image-4.png" />
 &lt;/a>
 &lt;/div></description></item><item><title>Global GDG Leaders Summit 2018 and Google I/O 2018 經驗分享</title><link>https://kaichu.io/posts/gdg-summit-2018-and-google-io-2018/</link><pubDate>Mon, 20 Aug 2018 10:53:15 +0000</pubDate><guid>https://kaichu.io/posts/gdg-summit-2018-and-google-io-2018/</guid><description>&lt;p>補作業&lt;/p>
 &lt;div id="Container" style="padding-bottom:56.25%; position:relative; display:block; width: 100%">
 &lt;iframe id="googleSlideIframe" width="100%" height="100%" src="https://docs.google.com/presentation/d/e/2PACX-1vQvBqMYvYRhwQBqcnr-gn__cwyvmsBInyHAANba7loo4NIsm_3W00-XkEK4-n5Vd0HgQ1P2RJcFIEeL/embed?start=false&amp;amp;loop=false&amp;amp;delayms=3000" frameborder="0" allowfullscreen=""
 style="position:absolute; top:0; left: 0">&lt;/iframe>
 &lt;/div></description></item><item><title>workflow recipe - Copy2ClipboardWithEasy</title><link>https://kaichu.io/posts/copy2clipboardwitheasy/</link><pubDate>Thu, 14 Jun 2018 23:23:04 +0000</pubDate><guid>https://kaichu.io/posts/copy2clipboardwitheasy/</guid><description>&lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/ad1280x800.jpg" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/ad1280x800.jpg" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/copy2clipboardwitheasy/ad1280x800.jpg" data-caption="">
+&lt;img src="https://kaichu.io/posts/copy2clipboardwitheasy/ad1280x800.jpg" />
 &lt;/a>
 &lt;/div>
 &lt;p>小弟之前在在 Chrome Extension Store 上發佈了一個簡單的小工具 &lt;a href="https://chrome.google.com/webstore/detail/copy-2-clipboard-with-eas/hiiobhaaokpmdmkkcaokdlanlemmcoah">copy 2 clipboard with ease - Chrome Web Store&lt;/a> 可以快速的複製頁面的 titl/url&lt;/p>
@@ -61,21 +61,21 @@ style="position:absolute; top:0; left: 0">&lt;/iframe>
 &lt;/blockquote>
 &lt;p>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/ios-workflow-1.PNG" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/ios-workflow-1.PNG" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/copy2clipboardwitheasy/ios-workflow-1.PNG" data-caption="">
+&lt;img src="https://kaichu.io/posts/copy2clipboardwitheasy/ios-workflow-1.PNG" />
 &lt;/a>
 &lt;/div>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/ios-workflow-2.PNG" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/ios-workflow-2.PNG" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/copy2clipboardwitheasy/ios-workflow-2.PNG" data-caption="">
+&lt;img src="https://kaichu.io/posts/copy2clipboardwitheasy/ios-workflow-2.PNG" />
 &lt;/a>
 &lt;/div>&lt;/p></description></item><item><title>Screenshot as a Service</title><link>https://kaichu.io/posts/screenshot-as-a-service/</link><pubDate>Sat, 09 Sep 2017 00:23:00 +0000</pubDate><guid>https://kaichu.io/posts/screenshot-as-a-service/</guid><description>&lt;p>&lt;a href="https://gcpugtw.kktix.cc/events/meetup201709">GCPUG Taiwan Meetup #29&lt;/a> Screenshot as a service&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;a href="https://github.com/cage1016/screenshot-as-a-service-demo">cage1016/screenshot-as-a-service-demo: GCPUG Taiwan Meetup #29: screenshot as a service demo code&lt;/a>&lt;/p>
 &lt;/blockquote>
 &lt;p>{% pdf &lt;a href="https://www.slideshare.net/slideshow/embed_code/key/o68LfhCpXHlFqz">https://www.slideshare.net/slideshow/embed_code/key/o68LfhCpXHlFqz&lt;/a> %}&lt;/p></description></item><item><title>notebook - golang regexp</title><link>https://kaichu.io/posts/go-regex-notebook/</link><pubDate>Wed, 30 Aug 2017 21:41:49 +0000</pubDate><guid>https://kaichu.io/posts/go-regex-notebook/</guid><description>&lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/go-regexp-notebook-1.png" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/go-regexp-notebook-1.png" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/go-regex-notebook/go-regexp-notebook-1.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/go-regex-notebook/go-regexp-notebook-1.png" />
 &lt;/a>
 &lt;/div>
 &lt;p>簡單記鎑一下最近在專案上需要利用 regex 來進行字串的拆解&lt;/p></description></item><item><title>CloudFunctions Google maps service</title><link>https://kaichu.io/posts/cloudfunctions-google-maps-services/</link><pubDate>Fri, 18 Aug 2017 00:42:29 +0000</pubDate><guid>https://kaichu.io/posts/cloudfunctions-google-maps-services/</guid><description>&lt;h3 id="waldo-gcp">Waldo-gcp&lt;/h3>
@@ -92,12 +92,12 @@ style="position:absolute; top:0; left: 0">&lt;/iframe>
 &lt;p>在開發 GAE 應用程式時，難免會遇到應用程式需要處理圖片的問題。GAE 的應用程用可以直接存取靜態的資源檔案，這塊直接在 &lt;code>app.yaml&lt;/code> 檔案中設定就可以了，不過也因為 GAE 應用程式的特性，需要將所有的資源上傳一份到 GAE 正式環境中，所以會發現上傳專案的容量大小會爆增(如果你將所有需要的圖檔階直接放在程式內)。&lt;/p>
 &lt;p>專案檔案太大會影響 GAE 在自動擴展的效能，所以盡可能的將不必要的東西移多專案外(圖檔等)&lt;/p></description></item><item><title>解決 gvm install go1.4 安裝錯誤 [筆記]</title><link>https://kaichu.io/posts/gvm-install-go1-4/</link><pubDate>Wed, 21 Sep 2016 22:39:53 +0000</pubDate><guid>https://kaichu.io/posts/gvm-install-go1-4/</guid><description>本來是使用 brew 來管理 golang 的版本，brew 及 brew cask 某些程度是很方便，不過也越來越覺得彈性差了點。繼 node 使用 tj 大神的 tj/n: Node version management 之外，golang 也打算使用 moovweb/gvm: Go Version Manager 來管理版本，不過在照著官方步驟時報錯了，順手記錄了一</description></item><item><title>Atom sync-settings</title><link>https://kaichu.io/posts/atom-sync-settings/</link><pubDate>Tue, 20 Sep 2016 22:58:40 +0000</pubDate><guid>https://kaichu.io/posts/atom-sync-settings/</guid><description>&lt;p>&lt;a href="https://goo.gl/LGBVzh">Atom&lt;/a> 是一個 GitHub 開發的免費、開放原始碼編輯器，目前有非常多的擴充工具可以安裝(&lt;strong>4,913&lt;/strong> packages)，也有非常多的主題佈景可以安裝(&lt;strong>1,645&lt;/strong> themes)，彈性非常的高，你可以打造成自己熟悉的開發環境。&lt;/p>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/atom-sync-settings-02.jpg" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/atom-sync-settings-02.jpg" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/atom-sync-settings/atom-sync-settings-02.jpg" data-caption="">
+&lt;img src="https://kaichu.io/posts/atom-sync-settings/atom-sync-settings-02.jpg" />
 &lt;/a>
 &lt;/div></description></item><item><title>COSCUP 2016 - NAS也會揀土豆</title><link>https://kaichu.io/posts/retrain-inception-model-for-nas/</link><pubDate>Mon, 22 Aug 2016 17:30:55 +0000</pubDate><guid>https://kaichu.io/posts/retrain-inception-model-for-nas/</guid><description>&lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/tensorflow.png" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/tensorflow.png" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/retrain-inception-model-for-nas/tensorflow.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/retrain-inception-model-for-nas/tensorflow.png" />
 &lt;/a>
 &lt;/div>
 &lt;p>今年在 &lt;a href="http://coscup.org/2016/schedules.html">COSCUP&lt;/a> 2016 上分享了「&lt;strong>NAS 也可以揀土豆&lt;/strong>」主題。&lt;/p>
@@ -129,8 +129,8 @@ style="position:absolute; top:0; left: 0">&lt;/iframe>
 會在本機的 VirtualBox 上安裝一個虛擬機。Docker client 機乎是接近原生的狀態跑在 Mac 上，只不過 Docker 的 server 是跑在 &lt;code>boot2docker&lt;/code> 的虛擬機中.&lt;/p>
 &lt;p>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/docker_on_linux_macosx.jpg" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/docker_on_linux_macosx.jpg" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/docker-notebook-1/docker_on_linux_macosx.jpg" data-caption="">
+&lt;img src="https://kaichu.io/posts/docker-notebook-1/docker_on_linux_macosx.jpg" />
 &lt;/a>
 &lt;/div>
 picture: &lt;a href="https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide">https://viget.com/extend/how-to-use-docker-on-os-x-the-missing-guide&lt;/a>&lt;/p></description></item><item><title>Managed VMs lab</title><link>https://kaichu.io/posts/managed-vms-lab/</link><pubDate>Wed, 30 Sep 2015 14:58:58 +0800</pubDate><guid>https://kaichu.io/posts/managed-vms-lab/</guid><description>&lt;p>&lt;strong>Presentation&lt;/strong>:&lt;/p>

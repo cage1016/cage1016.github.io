@@ -6,8 +6,8 @@ Cloud Code 是基於 &lt;a href="https://github.com/GoogleContainerTools/skaffol
 &lt;/blockquote>
 &lt;p>基本上來說 Cloud Code 給 Visual Studio Code 和 IntelliJ IDE 的 plugin 就是基於 skaffold 打造的(如下圖)，當你在 Visual Studio Code 執行(cmd+shift+p) &lt;code>Cloud Code: Continues Deploy&lt;/code> 的 log 就會知道&lt;/p>
 &lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" data-caption="">
-&lt;img src="https://kaichu.io/images/posts/skaffold-go-debug-image-4.png" />
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/skaffold-debug-goland/skaffold-go-debug-image-4.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/skaffold-debug-goland/skaffold-go-debug-image-4.png" />
 &lt;/a>
 &lt;/div></description></item><item><title>Golang regEx parse Facebook Live rtmp</title><link>https://kaichu.io/posts/golang-regex/</link><pubDate>Tue, 21 Feb 2017 22:34:59 +0000</pubDate><guid>https://kaichu.io/posts/golang-regex/</guid><description>最近因為公司專案的關係，開始接觸 Facebook Live API，需要動態的透過 API 去建立一組 Live 直播 並將 rtmp 的整個字串拆解成 ServerUrl 及 StreamKey 二個部份再由 ffmpeg 拿到這個資訊去 streaming。因為 Youtube Data API v3 可以別分拿 StreamName 及 IngestionAddress, 所以只需要對 Facebook 的部份</description></item><item><title>GAE go Image API for GCS</title><link>https://kaichu.io/posts/gae-go-image-api/</link><pubDate>Mon, 31 Oct 2016 21:55:10 +0000</pubDate><guid>https://kaichu.io/posts/gae-go-image-api/</guid><description>&lt;blockquote>
 &lt;p>&lt;a href="https://go-gae-image-api-example-dot-gae-lab-001.appspot.com/">LIVE DEMO&lt;/a>&lt;/p>
