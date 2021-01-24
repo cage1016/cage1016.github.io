@@ -1,231 +1,231 @@
 <!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE ｜ KaiChu</title><meta name=description content="最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 csv.reader &amp;amp; csv.DictReader 可以很容易的處理 csv 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 60s，而 Tasks Request 則有 10mins 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 DeadlineExceededErrors 的雷也會踩到 Exceeded soft private memory limit 的問題(預設 instance 的記憶體只有 128MB，在處理大 CSV 檔很容易踩到的雷)
 所以在處理大 CSV 檔最好不要一次就把所有的資料讀到記憶體中，而 GAE 上又有檔案存取的限制，所以大部份會搭配 GCS 一起使用， 把檔案放在 GCS 上，由 GAE 透過 google-api-python-client 到 GCS 進行檔案的存取
-google-api-python-client 中實作了 GCS JSON API 的 chunks 下載(MediaIoBaseDownload [4])，在 chunks 下載時就必需另外處理斷行的問題(實作 Python csv.DictReader iterator 內解決斷行問題)"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/gcsiterator/>GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE</a></h2><span class=date>2015.07.28</span></div><div class="post_content markdown"><p>最近的專案常常需要在 <a href=https://cloud.google.com/appengine/docs/python/>GAE - Python</a> 跟大 CSV (40MB)檔打交道。在 Python 中利用 <code>csv.reader</code> & <code>csv.DictReader</code>
+google-api-python-client 中實作了 GCS JSON API 的 chunks 下載(MediaIoBaseDownload [4])，在 chunks 下載時就必需另外處理斷行的問題(實作 Python csv.DictReader iterator 內解決斷行問題)"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/gcsiterator/>GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE</a></h2><span class=date>2015.07.28</span></div><div class="post_content markdown"><p>最近的專案常常需要在 <a href=https://cloud.google.com/appengine/docs/python/>GAE - Python</a> 跟大 CSV (40MB)檔打交道。在 Python 中利用 <code>csv.reader</code> & <code>csv.DictReader</code>
 可以很容易的處理 <code>csv</code> 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 <strong>60s</strong>，而 Tasks Request 則有 <strong>10mins</strong> 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到
 <code>DeadlineExceededErrors</code> 的雷也會踩到 <code>Exceeded soft private memory limit</code> 的問題(預設 instance 的記憶體只有 <strong>128MB</strong>，在處理大 CSV 檔很容易踩到的雷)</p><p>所以在處理大 CSV 檔最好不要一次就把所有的資料讀到記憶體中，而 GAE 上又有檔案存取的限制，所以大部份會搭配 <a href=https://cloud.google.com/storage/>GCS</a> 一起使用，
-把檔案放在 GCS 上，由 GAE 透過 <code>google-api-python-client</code> 到 GCS 進行檔案的存取</p><p><code>google-api-python-client</code> 中實作了 GCS JSON API 的 chunks 下載(<strong>MediaIoBaseDownload</strong> [4])，在 chunks 下載時就必需另外處理斷行的問題(實作 Python csv.DictReader iterator 內解決斷行問題)</p><h2 id=gcsiteratorpy>GCSIterator.py</h2><div class=highlight><pre class=chroma><code class=language-python data-lang=python><span class=c1># GCSIterator.py</span>
+把檔案放在 GCS 上，由 GAE 透過 <code>google-api-python-client</code> 到 GCS 進行檔案的存取</p><p><code>google-api-python-client</code> 中實作了 GCS JSON API 的 chunks 下載(<strong>MediaIoBaseDownload</strong> [4])，在 chunks 下載時就必需另外處理斷行的問題(實作 Python csv.DictReader iterator 內解決斷行問題)</p><h2 id=gcsiteratorpy>GCSIterator.py</h2><pre><code class=language-python># GCSIterator.py
 
-<span class=kn>import</span> <span class=nn>random</span>
-<span class=kn>import</span> <span class=nn>re</span>
-<span class=kn>import</span> <span class=nn>logging</span>
-<span class=kn>import</span> <span class=nn>time</span>
+import random
+import re
+import logging
+import time
 
-<span class=kn>from</span> <span class=nn>apiclient.errors</span> <span class=kn>import</span> <span class=n>HttpError</span>
+from apiclient.errors import HttpError
 
-<span class=n>DEFAULT_CHUNK_SIZE</span> <span class=o>=</span> <span class=mi>512</span> <span class=o>*</span> <span class=mi>1024</span>
+DEFAULT_CHUNK_SIZE = 512 * 1024
 
-<span class=k>class</span> <span class=nc>GCSIterator</span><span class=p>(</span><span class=nb>object</span><span class=p>):</span>
-  <span class=s2>&#34;&#34;&#34;
-</span><span class=s2>  Reference:
-</span><span class=s2>  Parsing Large CSV Blobs on Google App Engine by Daniel Thompson @ d4nt
-</span><span class=s2>  http://d4nt.com/parsing-large-csv-blobs-on-google-app-engine
-</span><span class=s2>
-</span><span class=s2>  Implement Google Cloud Storage csv.DictReader Iterator
-</span><span class=s2>  &#34;&#34;&#34;</span>
+class GCSIterator(object):
+  &quot;&quot;&quot;
+  Reference:
+  Parsing Large CSV Blobs on Google App Engine by Daniel Thompson @ d4nt
+  http://d4nt.com/parsing-large-csv-blobs-on-google-app-engine
 
-  <span class=k>def</span> <span class=fm>__init__</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>progress</span><span class=o>=</span><span class=mi>0</span><span class=p>,</span> <span class=n>chunksize</span><span class=o>=</span><span class=n>DEFAULT_CHUNK_SIZE</span><span class=p>):</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_request</span> <span class=o>=</span> <span class=n>request</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_uri</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>uri</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_chunksize</span> <span class=o>=</span> <span class=n>chunksize</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>=</span> <span class=n>progress</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_init_progress</span> <span class=o>=</span> <span class=n>progress</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span> <span class=o>=</span> <span class=bp>None</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=bp>False</span>
+  Implement Google Cloud Storage csv.DictReader Iterator
+  &quot;&quot;&quot;
 
-    <span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span> <span class=o>=</span> <span class=mi>0</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span> <span class=o>=</span> <span class=p>[]</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span> <span class=o>=</span> <span class=bp>None</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=bp>False</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span> <span class=o>=</span> <span class=bp>False</span>
+  def __init__(self, request, progress=0, chunksize=DEFAULT_CHUNK_SIZE):
+    self._request = request
+    self._uri = request.uri
+    self._chunksize = chunksize
+    self._progress = progress
+    self._init_progress = progress
+    self._total_size = None
+    self._done = False
 
-    <span class=bp>self</span><span class=o>.</span><span class=n>_bytes_read</span> <span class=o>=</span> <span class=mi>0</span>
+    self._last_line = &quot;&quot;
+    self._line_num = 0
+    self._lines = []
+    self._buffer = None
+    self._done = False
+    self._done_and_last_line = False
 
-    <span class=c1># Stubs for testing.</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_sleep</span> <span class=o>=</span> <span class=n>time</span><span class=o>.</span><span class=n>sleep</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_rand</span> <span class=o>=</span> <span class=n>random</span><span class=o>.</span><span class=n>random</span>
+    self._bytes_read = 0
 
-  <span class=k>def</span> <span class=fm>__iter__</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
-    <span class=k>return</span> <span class=bp>self</span>
+    # Stubs for testing.
+    self._sleep = time.sleep
+    self._rand = random.random
 
-  <span class=k>def</span> <span class=nf>next</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
-    <span class=k>if</span> <span class=p>(</span><span class=ow>not</span> <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span> <span class=ow>or</span> <span class=nb>len</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_lines</span><span class=p>)</span> <span class=o>==</span> <span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span> <span class=o>+</span> <span class=mi>1</span><span class=p>))</span> <span class=ow>and</span> <span class=ow>not</span> <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span><span class=p>:</span>
-      <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span><span class=p>:</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span><span class=p>[</span><span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span><span class=p>]</span>
+  def __iter__(self):
+    return self
 
-      <span class=k>if</span> <span class=ow>not</span> <span class=bp>self</span><span class=o>.</span><span class=n>_done</span><span class=p>:</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>read</span><span class=p>(</span><span class=mi>3</span><span class=p>)</span>
+  def next(self):
+    if (not self._buffer or len(self._lines) == (self._line_num + 1)) and not self._done_and_last_line:
+      if self._lines:
+        self._last_line = self._lines[self._line_num]
 
-      <span class=k>else</span><span class=p>:</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+      if not self._done:
+        self._buffer, self._done = self.read(3)
 
-      <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s1>&#39;</span><span class=se>\r</span><span class=s1>|</span><span class=se>\n</span><span class=s1>|</span><span class=se>\r\n</span><span class=s1>&#39;</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span><span class=p>)</span>
-      <span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span> <span class=o>=</span> <span class=mi>0</span>
+      else:
+        self._buffer = ''
 
-      <span class=c1># Handle special case where our block just happens to end on a new line</span>
-      <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span><span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>:]</span> <span class=o>==</span> <span class=s2>&#34;</span><span class=se>\n</span><span class=s2>&#34;</span> <span class=ow>or</span> <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span><span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>:]</span> <span class=o>==</span> <span class=s2>&#34;</span><span class=se>\r</span><span class=s2>&#34;</span><span class=p>:</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
+      self._lines = re.split('\r|\n|\r\n', self._buffer)
+      self._line_num = 0
 
-    <span class=k>if</span> <span class=ow>not</span> <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span><span class=p>:</span>
-      <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=ow>and</span> <span class=ow>not</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span><span class=p>:</span>
-        <span class=k>raise</span> <span class=ne>StopIteration</span>
+      # Handle special case where our block just happens to end on a new line
+      if self._buffer[-1:] == &quot;\n&quot; or self._buffer[-1:] == &quot;\r&quot;:
+        self._lines.append(&quot;&quot;)
 
-      <span class=k>else</span><span class=p>:</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span> <span class=o>=</span> <span class=bp>True</span>
+    if not self._buffer:
+      if self._done and not self._last_line:
+        raise StopIteration
 
-    <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span> <span class=o>==</span> <span class=mi>0</span> <span class=ow>and</span> <span class=nb>len</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
-      <span class=c1># print &#39;fixing&#39;</span>
-      <span class=n>result</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span><span class=p>[</span><span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span><span class=p>]</span> <span class=o>+</span> <span class=s2>&#34;</span><span class=se>\n</span><span class=s2>&#34;</span>
+      else:
+        self._done_and_last_line = True
 
-    <span class=k>else</span><span class=p>:</span>
-      <span class=n>result</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span><span class=p>[</span><span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span><span class=p>]</span> <span class=o>+</span> <span class=s2>&#34;</span><span class=se>\n</span><span class=s2>&#34;</span>
+    if self._line_num == 0 and len(self._last_line) &gt; 0:
+      # print 'fixing'
+      result = self._last_line + self._lines[self._line_num] + &quot;\n&quot;
 
-    <span class=c1># check csv header</span>
-    <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_bytes_read</span> <span class=o>==</span> <span class=mi>0</span> <span class=ow>and</span> <span class=bp>self</span><span class=o>.</span><span class=n>_init_progress</span> <span class=o>==</span> <span class=mi>0</span><span class=p>:</span>
-      <span class=c1># if not re.match(&#39;email&#39;, result.lower().replace(&#39;&#34;&#39;, &#39;&#39;)):</span>
-      <span class=c1>#   raise ValueError(&#39;csv header must contain &#34;email or EMAIL&#34; property.&#39;)</span>
-      <span class=c1>#</span>
-      <span class=c1># else:</span>
-      <span class=n>result</span> <span class=o>=</span> <span class=n>result</span><span class=o>.</span><span class=n>lower</span><span class=p>()</span>
+    else:
+      result = self._lines[self._line_num] + &quot;\n&quot;
 
-    <span class=bp>self</span><span class=o>.</span><span class=n>_bytes_read</span> <span class=o>+=</span> <span class=nb>len</span><span class=p>(</span><span class=n>result</span><span class=p>)</span>
-    <span class=k>if</span> <span class=ow>not</span> <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span><span class=p>:</span>
-      <span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span> <span class=o>+=</span> <span class=mi>1</span>
+    # check csv header
+    if self._bytes_read == 0 and self._init_progress == 0:
+      # if not re.match('email', result.lower().replace('&quot;', '')):
+      #   raise ValueError('csv header must contain &quot;email or EMAIL&quot; property.')
+      #
+      # else:
+      result = result.lower()
 
-    <span class=k>else</span><span class=p>:</span>
-      <span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+    self._bytes_read += len(result)
+    if not self._done_and_last_line:
+      self._line_num += 1
 
-    <span class=k>return</span> <span class=n>result</span>
+    else:
+      self._last_line = ''
 
-  <span class=k>def</span> <span class=nf>read</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>num_retries</span><span class=o>=</span><span class=mi>0</span><span class=p>):</span>
-    <span class=s2>&#34;&#34;&#34;Get the next chunk of the download.
-</span><span class=s2>
-</span><span class=s2>    Args:
-</span><span class=s2>      num_retries: Integer, number of times to retry 500&#39;s with randomized
-</span><span class=s2>            exponential backoff. If all retries fail, the raised HttpError
-</span><span class=s2>            represents the last request. If zero (default), we attempt the
-</span><span class=s2>            request only once.
-</span><span class=s2>
-</span><span class=s2>    Returns:
-</span><span class=s2>      (status, done): (MediaDownloadStatus, boolean)
-</span><span class=s2>         The value of &#39;done&#39; will be True when the media has been fully
-</span><span class=s2>         downloaded.
-</span><span class=s2>
-</span><span class=s2>    Raises:
-</span><span class=s2>      apiclient.errors.HttpError if the response was not a 2xx.
-</span><span class=s2>      httplib2.HttpLib2Error if a transport error has occured.
-</span><span class=s2>    &#34;&#34;&#34;</span>
+    return result
 
-    <span class=k>try</span><span class=p>:</span>
+  def read(self, num_retries=0):
+    &quot;&quot;&quot;Get the next chunk of the download.
 
-      <span class=n>headers</span> <span class=o>=</span> <span class=p>{</span>
-        <span class=s1>&#39;range&#39;</span><span class=p>:</span> <span class=s1>&#39;bytes=</span><span class=si>%d</span><span class=s1>-</span><span class=si>%d</span><span class=s1>&#39;</span> <span class=o>%</span> <span class=p>(</span>
-          <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>_chunksize</span><span class=p>)</span>
-      <span class=p>}</span>
-      <span class=n>http</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_request</span><span class=o>.</span><span class=n>http</span>
-      <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;read bytes={:d}-{:d}/{}&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_progress</span><span class=p>,</span>
-                                             <span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>_chunksize</span><span class=p>),</span>
-                                             <span class=nb>str</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span><span class=p>)</span> <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span> <span class=k>else</span> <span class=s1>&#39;*&#39;</span><span class=p>)</span>
-      <span class=n>logging</span><span class=o>.</span><span class=n>info</span><span class=p>(</span><span class=n>msg</span><span class=p>)</span>
-      <span class=k>print</span> <span class=n>msg</span>
+    Args:
+      num_retries: Integer, number of times to retry 500's with randomized
+            exponential backoff. If all retries fail, the raised HttpError
+            represents the last request. If zero (default), we attempt the
+            request only once.
 
-      <span class=k>for</span> <span class=n>retry_num</span> <span class=ow>in</span> <span class=nb>xrange</span><span class=p>(</span><span class=n>num_retries</span> <span class=o>+</span> <span class=mi>1</span><span class=p>):</span>
-        <span class=k>if</span> <span class=n>retry_num</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
-          <span class=bp>self</span><span class=o>.</span><span class=n>_sleep</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_rand</span><span class=p>()</span> <span class=o>*</span> <span class=mi>2</span> <span class=o>**</span> <span class=n>retry_num</span><span class=p>)</span>
-          <span class=n>logging</span><span class=o>.</span><span class=n>warning</span><span class=p>(</span>
-            <span class=s1>&#39;Retry #</span><span class=si>%d</span><span class=s1> for media download: GET </span><span class=si>%s</span><span class=s1>, following status: </span><span class=si>%d</span><span class=s1>&#39;</span>
-            <span class=o>%</span> <span class=p>(</span><span class=n>retry_num</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_uri</span><span class=p>,</span> <span class=n>resp</span><span class=o>.</span><span class=n>status</span><span class=p>))</span>
+    Returns:
+      (status, done): (MediaDownloadStatus, boolean)
+         The value of 'done' will be True when the media has been fully
+         downloaded.
 
-        <span class=n>resp</span><span class=p>,</span> <span class=n>content</span> <span class=o>=</span> <span class=n>http</span><span class=o>.</span><span class=n>request</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_uri</span><span class=p>,</span> <span class=n>headers</span><span class=o>=</span><span class=n>headers</span><span class=p>)</span>
-        <span class=k>if</span> <span class=n>resp</span><span class=o>.</span><span class=n>status</span> <span class=o>&lt;</span> <span class=mi>500</span><span class=p>:</span>
-          <span class=k>break</span>
+    Raises:
+      apiclient.errors.HttpError if the response was not a 2xx.
+      httplib2.HttpLib2Error if a transport error has occured.
+    &quot;&quot;&quot;
 
-      <span class=k>if</span> <span class=n>resp</span><span class=o>.</span><span class=n>status</span> <span class=ow>in</span> <span class=p>[</span><span class=mi>200</span><span class=p>,</span> <span class=mi>206</span><span class=p>]:</span>
-        <span class=k>if</span> <span class=s1>&#39;content-location&#39;</span> <span class=ow>in</span> <span class=n>resp</span> <span class=ow>and</span> <span class=n>resp</span><span class=p>[</span><span class=s1>&#39;content-location&#39;</span><span class=p>]</span> <span class=o>!=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_uri</span><span class=p>:</span>
-          <span class=bp>self</span><span class=o>.</span><span class=n>_uri</span> <span class=o>=</span> <span class=n>resp</span><span class=p>[</span><span class=s1>&#39;content-location&#39;</span><span class=p>]</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>+=</span> <span class=nb>len</span><span class=p>(</span><span class=n>content</span><span class=p>)</span>
+    try:
 
-        <span class=k>if</span> <span class=s1>&#39;content-range&#39;</span> <span class=ow>in</span> <span class=n>resp</span><span class=p>:</span>
-          <span class=n>content_range</span> <span class=o>=</span> <span class=n>resp</span><span class=p>[</span><span class=s1>&#39;content-range&#39;</span><span class=p>]</span>
-          <span class=n>length</span> <span class=o>=</span> <span class=n>content_range</span><span class=o>.</span><span class=n>rsplit</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>,</span> <span class=mi>1</span><span class=p>)[</span><span class=mi>1</span><span class=p>]</span>
-          <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>length</span><span class=p>)</span>
+      headers = {
+        'range': 'bytes=%d-%d' % (
+          self._progress, self._progress + self._chunksize)
+      }
+      http = self._request.http
+      msg = 'read bytes={:d}-{:d}/{}'.format(self._progress,
+                                             (self._progress + self._chunksize),
+                                             str(self._total_size) if self._total_size else '*')
+      logging.info(msg)
+      print msg
 
-        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>==</span> <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span><span class=p>:</span>
-          <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=bp>True</span>
-        <span class=k>return</span> <span class=n>content</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_done</span>
-      <span class=k>else</span><span class=p>:</span>
-        <span class=k>raise</span> <span class=n>HttpError</span><span class=p>(</span><span class=n>resp</span><span class=p>,</span> <span class=n>content</span><span class=p>,</span> <span class=n>uri</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>_uri</span><span class=p>)</span>
+      for retry_num in xrange(num_retries + 1):
+        if retry_num &gt; 0:
+          self._sleep(self._rand() * 2 ** retry_num)
+          logging.warning(
+            'Retry #%d for media download: GET %s, following status: %d'
+            % (retry_num, self._uri, resp.status))
 
-    <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
-      <span class=n>logging</span><span class=o>.</span><span class=n>warning</span><span class=p>(</span><span class=s1>&#39;gcs iterator error manual retry&#39;</span><span class=p>)</span>
-      <span class=n>logging</span><span class=o>.</span><span class=n>error</span><span class=p>(</span><span class=n>e</span><span class=o>.</span><span class=n>message</span><span class=p>)</span>
+        resp, content = http.request(self._uri, headers=headers)
+        if resp.status &lt; 500:
+          break
 
-      <span class=bp>self</span><span class=o>.</span><span class=n>_sleep</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_rand</span><span class=p>()</span> <span class=o>*</span> <span class=mi>2</span> <span class=o>**</span> <span class=mi>2</span><span class=p>)</span>
-      <span class=bp>self</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
-</code></pre></div><p>在 <code>GCSIterator.py</code> 中把 GCS JSON API 的 chunks 下載 csv 資料的程式碼植入 iterator 並解決斷行的問題。</p><h2 id=getting-started>Getting Started</h2><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh><span class=c1># Get gcloud</span>
-$ curl https://sdk.cloud.google.com <span class=p>|</span> bash
+      if resp.status in [200, 206]:
+        if 'content-location' in resp and resp['content-location'] != self._uri:
+          self._uri = resp['content-location']
+        self._progress += len(content)
 
-<span class=c1># Get App Engine component</span>
+        if 'content-range' in resp:
+          content_range = resp['content-range']
+          length = content_range.rsplit('/', 1)[1]
+          self._total_size = int(length)
+
+        if self._progress == self._total_size:
+          self._done = True
+        return content, self._done
+      else:
+        raise HttpError(resp, content, uri=self._uri)
+
+    except Exception as e:
+      logging.warning('gcs iterator error manual retry')
+      logging.error(e.message)
+
+      self._sleep(self._rand() * 2 ** 2)
+      self.read()
+</code></pre><p>在 <code>GCSIterator.py</code> 中把 GCS JSON API 的 chunks 下載 csv 資料的程式碼植入 iterator 並解決斷行的問題。</p><h2 id=getting-started>Getting Started</h2><pre><code class=language-shell># Get gcloud
+$ curl https://sdk.cloud.google.com | bash
+
+# Get App Engine component
 $ gcloud components update app
 $ gcloud components update gae-python
 
-<span class=c1># Clone repo from github</span>
+# Clone repo from github
 $ git clone https://github.com/cage1016/GCSIterator
 
-<span class=c1># Install pip packages</span>
+# Install pip packages
 $ sudo pip install -r requirements.txt -t lib
-</code></pre></div><p>Replace your <code>bucket-name</code> and <code>object-name</code>. You may also modify <code>chunksize</code> at line 24 in <code>main.py</code> file.</p><div class=highlight><pre class=chroma><code class=language-python data-lang=python><span class=c1># main.py</span>
-<span class=o>...</span>
-
-<span class=k>def</span> <span class=nf>get_authenticated_service</span><span class=p>():</span>
-  <span class=n>credentials</span> <span class=o>=</span> <span class=n>GoogleCredentials</span><span class=o>.</span><span class=n>get_application_default</span><span class=p>()</span>
-  <span class=n>http</span> <span class=o>=</span> <span class=n>credentials</span><span class=o>.</span><span class=n>authorize</span><span class=p>(</span><span class=n>httplib2</span><span class=o>.</span><span class=n>Http</span><span class=p>())</span>
-  <span class=k>return</span> <span class=n>discovery_build</span><span class=p>(</span><span class=s1>&#39;storage&#39;</span><span class=p>,</span> <span class=s1>&#39;v1&#39;</span><span class=p>,</span> <span class=n>http</span><span class=o>=</span><span class=n>http</span><span class=p>)</span>
-
-<span class=n>gcs_service</span> <span class=o>=</span> <span class=n>get_authenticated_service</span><span class=p>()</span>
-<span class=n>bucket_name</span> <span class=o>=</span> <span class=s1>&#39;&lt;your-bucket-name&gt;&#39;</span> <span class=c1># waldo-gcp-file</span>
-<span class=n>object_name</span> <span class=o>=</span> <span class=s1>&#39;&lt;your-object-name&gt;&#39;</span> <span class=c1># kaichu_1016_00000100.csv</span>
-
-<span class=n>request</span> <span class=o>=</span> <span class=n>gcs_service</span><span class=o>.</span><span class=n>objects</span><span class=p>()</span><span class=o>.</span><span class=n>get_media</span><span class=p>(</span><span class=n>bucket</span><span class=o>=</span><span class=n>bucket_name</span><span class=p>,</span> <span class=nb>object</span><span class=o>=</span><span class=n>object_name</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s1>&#39;utf8&#39;</span><span class=p>))</span>
-<span class=n>iterator</span> <span class=o>=</span> <span class=n>GCSIterator</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>chunksize</span><span class=o>=</span><span class=mi>512</span><span class=p>)</span>
-
-<span class=n>reader</span> <span class=o>=</span> <span class=n>csv</span><span class=o>.</span><span class=n>DictReader</span><span class=p>(</span><span class=n>iterator</span><span class=p>,</span> <span class=n>skipinitialspace</span><span class=o>=</span><span class=bp>True</span><span class=p>,</span> <span class=n>delimiter</span><span class=o>=</span><span class=s1>&#39;,&#39;</span><span class=p>)</span>
-<span class=k>for</span> <span class=n>row</span> <span class=ow>in</span> <span class=n>reader</span><span class=p>:</span>
-  <span class=k>print</span> <span class=n>row</span>
-</code></pre></div><p>Execute <code>main.py</code></p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh><span class=c1># sample output</span>
-$ python main.py
-<span class=nb>read</span> <span class=nv>bytes</span><span class=o>=</span>0-512/*
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000000@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000000&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000001@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000001&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000002@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000002&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000003@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000003&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000004@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000004&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000005@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000005&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000006@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000006&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000007@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000007&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000008@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000008&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000009@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000009&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000010@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000010&#39;</span><span class=o>}</span>
-<span class=nb>read</span> <span class=nv>bytes</span><span class=o>=</span>513-1025/4411
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000011@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000011&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000012@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000012&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000013@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000013&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000014@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000014&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000015@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000015&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000016@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000016&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000017@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000017&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000018@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000018&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000019@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000019&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000020@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000020&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000021@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000021&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000022@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000022&#39;</span><span class=o>}</span>
-<span class=nb>read</span> <span class=nv>bytes</span><span class=o>=</span>1026-1538/4411
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000023@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000023&#39;</span><span class=o>}</span>
-<span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000024@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000024&#39;</span><span class=o>}</span>
+</code></pre><p>Replace your <code>bucket-name</code> and <code>object-name</code>. You may also modify <code>chunksize</code> at line 24 in <code>main.py</code> file.</p><pre><code class=language-python># main.py
 ...
-</code></pre></div><h2 id=reference>Reference</h2><ol><li><a href=https://cloud.google.com/appengine/docs/python/>GAE - Python</a></li><li><a href=https://docs.python.org/2/library/csv.html>13.1. csv — CSV File Reading and Writing — Python 2.7.10 documentation</a></li><li><a href=https://cloud.google.com/appengine/articles/deadlineexceedederrors>Dealing with DeadlineExceededErrors - App Engine — Google Cloud Platform</a></li><li><a href=https://github.com/google/google-api-python-client/blob/80da1eff23d7dc02d9f66f82754aa86b55f73be6/googleapiclient/http.py#L477>google-api-python-client/http.py at 80da1eff23d7dc02d9f66f82754aa86b55f73be6 · google/google-api-python-client</a></li><li><a href=https://github.com/cage1016/GCSIterator>cage1016/GCSIterator</a></li></ol></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/gae-todomvc/>GAE-todomvc</a></li><li><a href=/posts/adc/>Google Announce Application Default Credentials (ADC)</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/gcs/>GCS</a>
+
+def get_authenticated_service():
+  credentials = GoogleCredentials.get_application_default()
+  http = credentials.authorize(httplib2.Http())
+  return discovery_build('storage', 'v1', http=http)
+
+gcs_service = get_authenticated_service()
+bucket_name = '&lt;your-bucket-name&gt;' # waldo-gcp-file
+object_name = '&lt;your-object-name&gt;' # kaichu_1016_00000100.csv
+
+request = gcs_service.objects().get_media(bucket=bucket_name, object=object_name.encode('utf8'))
+iterator = GCSIterator(request, chunksize=512)
+
+reader = csv.DictReader(iterator, skipinitialspace=True, delimiter=',')
+for row in reader:
+  print row
+</code></pre><p>Execute <code>main.py</code></p><pre><code class=language-shell># sample output
+$ python main.py
+read bytes=0-512/*
+{'email': 'kaichu_1016+00000000@gmail.com', 'name': 'cage00000000'}
+{'email': 'kaichu_1016+00000001@gmail.com', 'name': 'cage00000001'}
+{'email': 'kaichu_1016+00000002@gmail.com', 'name': 'cage00000002'}
+{'email': 'kaichu_1016+00000003@gmail.com', 'name': 'cage00000003'}
+{'email': 'kaichu_1016+00000004@gmail.com', 'name': 'cage00000004'}
+{'email': 'kaichu_1016+00000005@gmail.com', 'name': 'cage00000005'}
+{'email': 'kaichu_1016+00000006@gmail.com', 'name': 'cage00000006'}
+{'email': 'kaichu_1016+00000007@gmail.com', 'name': 'cage00000007'}
+{'email': 'kaichu_1016+00000008@gmail.com', 'name': 'cage00000008'}
+{'email': 'kaichu_1016+00000009@gmail.com', 'name': 'cage00000009'}
+{'email': 'kaichu_1016+00000010@gmail.com', 'name': 'cage00000010'}
+read bytes=513-1025/4411
+{'email': 'kaichu_1016+00000011@gmail.com', 'name': 'cage00000011'}
+{'email': 'kaichu_1016+00000012@gmail.com', 'name': 'cage00000012'}
+{'email': 'kaichu_1016+00000013@gmail.com', 'name': 'cage00000013'}
+{'email': 'kaichu_1016+00000014@gmail.com', 'name': 'cage00000014'}
+{'email': 'kaichu_1016+00000015@gmail.com', 'name': 'cage00000015'}
+{'email': 'kaichu_1016+00000016@gmail.com', 'name': 'cage00000016'}
+{'email': 'kaichu_1016+00000017@gmail.com', 'name': 'cage00000017'}
+{'email': 'kaichu_1016+00000018@gmail.com', 'name': 'cage00000018'}
+{'email': 'kaichu_1016+00000019@gmail.com', 'name': 'cage00000019'}
+{'email': 'kaichu_1016+00000020@gmail.com', 'name': 'cage00000020'}
+{'email': 'kaichu_1016+00000021@gmail.com', 'name': 'cage00000021'}
+{'email': 'kaichu_1016+00000022@gmail.com', 'name': 'cage00000022'}
+read bytes=1026-1538/4411
+{'email': 'kaichu_1016+00000023@gmail.com', 'name': 'cage00000023'}
+{'email': 'kaichu_1016+00000024@gmail.com', 'name': 'cage00000024'}
+...
+</code></pre><h2 id=reference>Reference</h2><ol><li><a href=https://cloud.google.com/appengine/docs/python/>GAE - Python</a></li><li><a href=https://docs.python.org/2/library/csv.html>13.1. csv — CSV File Reading and Writing — Python 2.7.10 documentation</a></li><li><a href=https://cloud.google.com/appengine/articles/deadlineexceedederrors>Dealing with DeadlineExceededErrors - App Engine — Google Cloud Platform</a></li><li><a href=https://github.com/google/google-api-python-client/blob/80da1eff23d7dc02d9f66f82754aa86b55f73be6/googleapiclient/http.py#L477>google-api-python-client/http.py at 80da1eff23d7dc02d9f66f82754aa86b55f73be6 · google/google-api-python-client</a></li><li><a href=https://github.com/cage1016/GCSIterator>cage1016/GCSIterator</a></li></ol></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/gae-todomvc/>GAE-todomvc</a></li><li><a href=/posts/adc/>Google Announce Application Default Credentials (ADC)</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/gcs/>GCS</a>
 <a href=https://kaichu.io/tags/gae/>GAE</a>
 <a href=https://kaichu.io/tags/csv/>csv</a>
 <a href=https://kaichu.io/tags/python/>Python</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
 var d=document,s=d.createElement('script');s.async=true;s.src='//'+"kaichuio"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
-<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script></body></html>
+<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="if(media!='all')media='all'"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/';"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(e){e.classList.add('line-numbers')});"></script></body></html>

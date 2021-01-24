@@ -1,27 +1,27 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>weddingcnp via GCP - 3. endpointAPI 設計實作 ｜ KaiChu</title><meta name=description content="此篇就對 Cage &amp;amp; Ping wedding 中實作專案中最為重要的 backend API (endpoint API) 部份進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹 weddingcnp 系例傳送門 weddingcnp via GCP 簡介 weddingcnp via GCP - 1. 專案架構切分 weddingcnp via GCP - 2. 前端頁面設計實作 weddingcnp via GCP - 3. endpointAPI 設計實作"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/weddingcnp-via-gcp-3/>weddingcnp via GCP - 3. endpointAPI 設計實作</a></h2><span class=date>2017.07.12</span></div><div class="post_content markdown"><p>此篇就對 <a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 中實作專案中最為重要的 backend API (endpoint API) 部份進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹</p><h4 id=weddingcnp-系例傳送門>weddingcnp 系例傳送門</h4><ol><li><a href=https://kaichu.io/2017/06/08/weddingcnp-via-gcp/>weddingcnp via GCP 簡介</a></li><li><a href=https://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/>weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=https://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/>weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=https://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/>weddingcnp via GCP - 3. endpointAPI 設計實作</a></li><li>weddingcnp 前端 vue.js 設計實作</li><li>weddingcnp edm 寄送 sendgrid</li></ol><h4 id=endpointapi-設計實作>endpointAPI 設計實作</h4><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_1.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_1.png></a></div><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_2.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_2.png></a></div><p><a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 的網站大至上可以區分為靜態頁面(frontend Service, Golang) 及負責資料收集的 API (endpoints Service, Python). Google <a href=https://cloud.google.com/endpoints/docs/frameworks/legacy/v1/python/create_api>Endpoints API</a><sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> 是架構在 GAE 上的一個 RPC (remote procedure call) 服務。由於 endpoints API 是基於 <a href=https://cloud.google.com/appengine/docs/standard/python/tools/protorpc/>ProtoRPC remote.Service</a> 實作出來的，所以在實作我們的方法時也是依照 protorpc 的方式來定義，小弟在寫 <a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 這一個網站的時候 Endpoints API 還是 1.0，所以這篇文章還是以 Endpoints API 1.0 來說明</p><h3 id=endpoint-api-demo-project>endpoint API demo project</h3><p>小弟我建立一個比較簡單的範例來說明</p><p><a href=https://github.com/cage1016/endpoint-api-demo>https://github.com/cage1016/endpoint-api-demo</a></p><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash><span class=c1># git clone repo</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>weddingcnp via GCP - 3. endpointAPI 設計實作 ｜ KaiChu</title><meta name=description content="此篇就對 Cage &amp;amp; Ping wedding 中實作專案中最為重要的 backend API (endpoint API) 部份進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹 weddingcnp 系例傳送門 weddingcnp via GCP 簡介 weddingcnp via GCP - 1. 專案架構切分 weddingcnp via GCP - 2. 前端頁面設計實作 weddingcnp via GCP - 3. endpointAPI 設計實作"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/weddingcnp-via-gcp-3/>weddingcnp via GCP - 3. endpointAPI 設計實作</a></h2><span class=date>2017.07.12</span></div><div class="post_content markdown"><p>此篇就對 <a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 中實作專案中最為重要的 backend API (endpoint API) 部份進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹</p><h4 id=weddingcnp-系例傳送門>weddingcnp 系例傳送門</h4><ol><li><a href=https://kaichu.io/2017/06/08/weddingcnp-via-gcp/>weddingcnp via GCP 簡介</a></li><li><a href=https://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/>weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=https://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/>weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=https://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/>weddingcnp via GCP - 3. endpointAPI 設計實作</a></li><li>weddingcnp 前端 vue.js 設計實作</li><li>weddingcnp edm 寄送 sendgrid</li></ol><h4 id=endpointapi-設計實作>endpointAPI 設計實作</h4><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_1.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_1.png></a></div><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_2.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_2.png></a></div><p><a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 的網站大至上可以區分為靜態頁面(frontend Service, Golang) 及負責資料收集的 API (endpoints Service, Python). Google <a href=https://cloud.google.com/endpoints/docs/frameworks/legacy/v1/python/create_api>Endpoints API</a><sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> 是架構在 GAE 上的一個 RPC (remote procedure call) 服務。由於 endpoints API 是基於 <a href=https://cloud.google.com/appengine/docs/standard/python/tools/protorpc/>ProtoRPC remote.Service</a> 實作出來的，所以在實作我們的方法時也是依照 protorpc 的方式來定義，小弟在寫 <a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 這一個網站的時候 Endpoints API 還是 1.0，所以這篇文章還是以 Endpoints API 1.0 來說明</p><h3 id=endpoint-api-demo-project>endpoint API demo project</h3><p>小弟我建立一個比較簡單的範例來說明</p><p><a href=https://github.com/cage1016/endpoint-api-demo>https://github.com/cage1016/endpoint-api-demo</a></p><pre><code class=language-bash># git clone repo
 $ git clone git@github.com:cage1016/endpoint-api-demo.git
 
-<span class=c1># install GAE python requirement packages</span>
+# install GAE python requirement packages
 $ pip install -r requirements.txt -t lib
-Collecting <span class=nv>arrow</span><span class=o>==</span>0.8.0 <span class=o>(</span>from -r requirements.txt <span class=o>(</span>line 1<span class=o>))</span>
-Collecting python-dateutil <span class=o>(</span>from <span class=nv>arrow</span><span class=o>==</span>0.8.0-&gt;-r requirements.txt <span class=o>(</span>line 1<span class=o>))</span>
-  Downloading python_dateutil-2.6.1-py2.py3-none-any.whl <span class=o>(</span>194kB<span class=o>)</span>
-    100% <span class=p>|</span>████████████████████████████████<span class=p>|</span> 194kB 1.2MB/s
-Collecting six&gt;<span class=o>=</span>1.5 <span class=o>(</span>from python-dateutil-&gt;arrow<span class=o>==</span>0.8.0-&gt;-r requirements.txt <span class=o>(</span>line 1<span class=o>))</span>
+Collecting arrow==0.8.0 (from -r requirements.txt (line 1))
+Collecting python-dateutil (from arrow==0.8.0-&gt;-r requirements.txt (line 1))
+  Downloading python_dateutil-2.6.1-py2.py3-none-any.whl (194kB)
+    100% |████████████████████████████████| 194kB 1.2MB/s
+Collecting six&gt;=1.5 (from python-dateutil-&gt;arrow==0.8.0-&gt;-r requirements.txt (line 1))
   Using cached six-1.10.0-py2.py3-none-any.whl
 Installing collected packages: six, python-dateutil, arrow
 Successfully installed arrow python-dateutil-2.2 six-1.10.0
 ...
 
-<span class=c1># run GAE python locally</span>
+# run GAE python locally
 $ dev_appserver.py app.yaml
-INFO     2017-07-12 13:30:19,063 devappserver2.py:116<span class=o>]</span> Skipping SDK update check.
-INFO     2017-07-12 13:30:19,706 api_server.py:312<span class=o>]</span> Starting API server at: http://localhost:51100
-INFO     2017-07-12 13:30:19,710 dispatcher.py:226<span class=o>]</span> Starting module <span class=s2>&#34;default&#34;</span> running at: http://localhost:8080
-INFO     2017-07-12 13:30:19,711 admin_server.py:116<span class=o>]</span> Starting admin server at: http://localhost:8000
+INFO     2017-07-12 13:30:19,063 devappserver2.py:116] Skipping SDK update check.
+INFO     2017-07-12 13:30:19,706 api_server.py:312] Starting API server at: http://localhost:51100
+INFO     2017-07-12 13:30:19,710 dispatcher.py:226] Starting module &quot;default&quot; running at: http://localhost:8080
+INFO     2017-07-12 13:30:19,711 admin_server.py:116] Starting admin server at: http://localhost:8000
 
-<span class=c1># visit http://localhost:8080</span>
-</code></pre></div><p>完全上述步驟後透過瀏覽器訪問 <code>http://localhost:8080/_ah/api/explorer</code> 就可以得到圖一中類似 <a href=https://developers.google.com/apis-explorer/#p/>Google API explorer</a> 風格的本地測試頁面, 這是一個非常方便的工具，可以讓自己在本地透過瀏覽器直接操作自己定義的 endpointAPI</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_3.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_3.png></a></div><h4 id=專案架構>專案架構</h4><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>.
+# visit http://localhost:8080
+</code></pre><p>完全上述步驟後透過瀏覽器訪問 <code>http://localhost:8080/_ah/api/explorer</code> 就可以得到圖一中類似 <a href=https://developers.google.com/apis-explorer/#p/>Google API explorer</a> 風格的本地測試頁面, 這是一個非常方便的工具，可以讓自己在本地透過瀏覽器直接操作自己定義的 endpointAPI</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_3.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-3/weddingcnp-via-gpc-3_3.png></a></div><h4 id=專案架構>專案架構</h4><pre><code>.
 ├── apis                   // endpoint api packages
 │   ├── __init__.py
 │   └── books.py
@@ -33,69 +33,69 @@ INFO     2017-07-12 13:30:19,711 admin_server.py:116<span class=o>]</span> Start
 ├── requirements.txt       // GAE python 引用資源庫
 ├── settings.py            // 專案設定檔
 └── utils.py               // helpers function
-</code></pre></div><p>一個 GAE endpoint API Service 大至上進行簡單的配置可以執行了</p><p><strong>app.yaml</strong></p><div class=highlight><pre class=chroma><code class=language-yaml data-lang=yaml><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
-</span><span class=w>
-</span><span class=w></span><span class=nt>runtime</span><span class=p>:</span><span class=w> </span><span class=l>python27</span><span class=w>
-</span><span class=w></span><span class=nt>api_version</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
-</span><span class=w></span><span class=nt>threadsafe</span><span class=p>:</span><span class=w> </span><span class=kc>yes</span><span class=w>
-</span><span class=w>
-</span><span class=w></span><span class=nt>handlers</span><span class=p>:</span><span class=w>
-</span><span class=w></span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>/_ah/spi/.*</span><span class=w>
-</span><span class=w>  </span><span class=nt>script</span><span class=p>:</span><span class=w> </span><span class=l>app.API</span><span class=w>
-</span><span class=w>  </span><span class=nt>secure</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
-</span><span class=w>
-</span><span class=w></span><span class=nt>libraries</span><span class=p>:</span><span class=w>
-</span><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>endpoints</span><span class=w>
-</span><span class=w>  </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=l>latest</span><span class=w>
-</span></code></pre></div><p><strong>app.yaml</strong> 配置上的重點為在 handlers 區塊加入 <code>/_ah/spi/.*</code> 這一個 route 並將 route 導至 endpoints API server</p><p><strong>app.py</strong></p><div class=highlight><pre class=chroma><code class=language-python data-lang=python><span class=kn>import</span> <span class=nn>endpoints</span>
+</code></pre><p>一個 GAE endpoint API Service 大至上進行簡單的配置可以執行了</p><p><strong>app.yaml</strong></p><pre><code class=language-yaml>module: default
 
-<span class=kn>from</span> <span class=nn>apis</span> <span class=kn>import</span> <span class=n>books</span>
+runtime: python27
+api_version: 1
+threadsafe: yes
 
-<span class=n>API</span> <span class=o>=</span> <span class=n>endpoints</span><span class=o>.</span><span class=n>api_server</span><span class=p>([</span>
-    <span class=n>books</span><span class=o>.</span><span class=n>BooksAPI</span>
-<span class=p>])</span>
-</code></pre></div><p>endpoints api server 由 <code>endpoints.api_server([])</code> 建立, 其中的參數是實作 <code>protorpc.remote.Service</code> 類別的 API, 目前我們只有實作一個 <code>books.BooksAPI</code> 所以只有填入一個</p><p><strong>settings.py</strong></p><div class=highlight><pre class=chroma><code class=language-python data-lang=python><span class=o>...</span>
+handlers:
+- url: /_ah/spi/.*
+  script: app.API
+  secure: always
 
-<span class=n>books_api</span> <span class=o>=</span> <span class=n>endpoints</span><span class=o>.</span><span class=n>api</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;dummy&#39;</span><span class=p>,</span>
-                         <span class=n>version</span><span class=o>=</span><span class=s1>&#39;v1&#39;</span><span class=p>,</span>
-                         <span class=n>description</span><span class=o>=</span><span class=s1>&#39;dummy API&#39;</span><span class=p>,</span>
-                         <span class=n>allowed_client_ids</span><span class=o>=</span><span class=p>[</span><span class=n>CLIENT_ID</span><span class=p>,</span>
-                                             <span class=n>endpoints</span><span class=o>.</span><span class=n>API_EXPLORER_CLIENT_ID</span><span class=p>],</span>
-                         <span class=n>scopes</span><span class=o>=</span><span class=p>[</span><span class=n>endpoints</span><span class=o>.</span><span class=n>EMAIL_SCOPE</span><span class=p>])</span>
-</code></pre></div><p>在我們定義的 <code>protorpc.remote.Service</code> API 上加一個 Decorate<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup> 來描述我們的 API(API 名稱、版號、說明、允許呼叫的 GCP CLIENT_ID, scopes 等等)</p><blockquote><p>@util.positional(2)
+libraries:
+- name: endpoints
+  version: latest
+</code></pre><p><strong>app.yaml</strong> 配置上的重點為在 handlers 區塊加入 <code>/_ah/spi/.*</code> 這一個 route 並將 route 導至 endpoints API server</p><p><strong>app.py</strong></p><pre><code class=language-python>import endpoints
+
+from apis import books
+
+API = endpoints.api_server([
+    books.BooksAPI
+])
+</code></pre><p>endpoints api server 由 <code>endpoints.api_server([])</code> 建立, 其中的參數是實作 <code>protorpc.remote.Service</code> 類別的 API, 目前我們只有實作一個 <code>books.BooksAPI</code> 所以只有填入一個</p><p><strong>settings.py</strong></p><pre><code class=language-python>...
+
+books_api = endpoints.api(name='dummy',
+                         version='v1',
+                         description='dummy API',
+                         allowed_client_ids=[CLIENT_ID,
+                                             endpoints.API_EXPLORER_CLIENT_ID],
+                         scopes=[endpoints.EMAIL_SCOPE])
+</code></pre><p>在我們定義的 <code>protorpc.remote.Service</code> API 上加一個 Decorate<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup> 來描述我們的 API(API 名稱、版號、說明、允許呼叫的 GCP CLIENT_ID, scopes 等等)</p><blockquote><p>@util.positional(2)
 def api(name, version, description=None, hostname=None, audiences=None,
 scopes=None, allowed_client_ids=None, canonical_name=None,
 auth=None, owner_domain=None, owner_name=None, package_path=None,
-frontend_limits=None, title=None, documentation=None, auth_level=None):</p></blockquote><p><strong>api/books.py</strong></p><div class=highlight><pre class=chroma><code class=language-python data-lang=python><span class=nd>@books_api.api_class</span><span class=p>(</span><span class=n>resource_name</span><span class=o>=</span><span class=s2>&#34;books&#34;</span><span class=p>)</span>
-<span class=k>class</span> <span class=nc>BooksAPI</span><span class=p>(</span><span class=n>remote</span><span class=o>.</span><span class=n>Service</span><span class=p>):</span>
-  <span class=s2>&#34;&#34;&#34;
-</span><span class=s2>  Books API
-</span><span class=s2>  &#34;&#34;&#34;</span>
+frontend_limits=None, title=None, documentation=None, auth_level=None):</p></blockquote><p><strong>api/books.py</strong></p><pre><code class=language-python>@books_api.api_class(resource_name=&quot;books&quot;)
+class BooksAPI(remote.Service):
+  &quot;&quot;&quot;
+  Books API
+  &quot;&quot;&quot;
 
-  <span class=nd>@endpoints.method</span><span class=p>(</span><span class=n>BOOKS_LIST_RESOURCE</span><span class=p>,</span> <span class=n>BookForms</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books&#34;</span><span class=p>,</span>
-                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;GET&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;list&#34;</span><span class=p>)</span>
-  <span class=k>def</span> <span class=nf>listBooks</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
-      <span class=s2>&#34;&#34;&#34;List books&#34;&#34;&#34;</span>
-      <span class=o>...</span>
+  @endpoints.method(BOOKS_LIST_RESOURCE, BookForms, path=&quot;books&quot;,
+                    http_method=&quot;GET&quot;, name=&quot;list&quot;)
+  def listBooks(self, request):
+      &quot;&quot;&quot;List books&quot;&quot;&quot;
+      ...
 
-  <span class=nd>@endpoints.method</span><span class=p>(</span><span class=n>BOOKS_CREATE_RESOURCE</span><span class=p>,</span> <span class=n>BookForm</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books&#34;</span><span class=p>,</span>
-                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;POST&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;post&#34;</span><span class=p>)</span>
-  <span class=k>def</span> <span class=nf>addBook</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
-      <span class=s2>&#34;&#34;&#34;Add books&#34;&#34;&#34;</span>
-      <span class=o>...</span>
+  @endpoints.method(BOOKS_CREATE_RESOURCE, BookForm, path=&quot;books&quot;,
+                    http_method=&quot;POST&quot;, name=&quot;post&quot;)
+  def addBook(self, request):
+      &quot;&quot;&quot;Add books&quot;&quot;&quot;
+      ...
 
-  <span class=nd>@endpoints.method</span><span class=p>(</span><span class=n>BOOKS_DELETE_RESOURCE</span><span class=p>,</span> <span class=n>BooleanMessage</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books/{websafeKey}&#34;</span><span class=p>,</span>
-                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;DELETE&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;delete&#34;</span><span class=p>)</span>
-  <span class=k>def</span> <span class=nf>deleteBook</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
-      <span class=s2>&#34;&#34;&#34;Delete book&#34;&#34;&#34;</span>
-      <span class=o>...</span>
+  @endpoints.method(BOOKS_DELETE_RESOURCE, BooleanMessage, path=&quot;books/{websafeKey}&quot;,
+                    http_method=&quot;DELETE&quot;, name=&quot;delete&quot;)
+  def deleteBook(self, request):
+      &quot;&quot;&quot;Delete book&quot;&quot;&quot;
+      ...
 
-  <span class=nd>@endpoints.method</span><span class=p>(</span><span class=n>BOOKS_UPDATE_RESOURCE</span><span class=p>,</span> <span class=n>BookForm</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books/{websafeKey}&#34;</span><span class=p>,</span>
-                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;PUT&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;put&#34;</span><span class=p>)</span>
-  <span class=k>def</span> <span class=nf>updateBook</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
-      <span class=s2>&#34;&#34;&#34;Update book&#34;&#34;&#34;</span>
-      <span class=o>...</span>
-</code></pre></div><p>在定義 resource 下的方法時依然使用 Decorate 的方式來對方法進行設置 (method name, path, http method,
+  @endpoints.method(BOOKS_UPDATE_RESOURCE, BookForm, path=&quot;books/{websafeKey}&quot;,
+                    http_method=&quot;PUT&quot;, name=&quot;put&quot;)
+  def updateBook(self, request):
+      &quot;&quot;&quot;Update book&quot;&quot;&quot;
+      ...
+</code></pre><p>在定義 resource 下的方法時依然使用 Decorate 的方式來對方法進行設置 (method name, path, http method,
 cache control, scopes, audiences, client ids and auth_level 等)</p><blockquote><p>@util.positional(2)
 def method(request_message=message_types.VoidMessage,
 response_message=message_types.VoidMessage,
@@ -106,31 +106,31 @@ cache_control=None,
 scopes=None,
 audiences=None,
 allowed_client_ids=None,
-auth_level=None):</p></blockquote><p>設置完 endpointAPI 的基本架構，剩下的部份就是 GAE Python<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup> 的基本操作，定義 Datastore module、對 Datastore 進行 CRUD 的操作。有興趣的朋友可以把專案 clone 下來玩看看，並試著自己俢改修改會更有感覺。</p><p>endpointAPI 其他的功能還有很多，可以搭配 gRPC<sup id=fnref:4><a href=#fn:4 class=footnote-ref role=doc-noteref>4</a></sup>一起使用、建立 Android/iOS 的 frameworks<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup> 等，詳細的說明可以見官方的文件 <a href=https://cloud.google.com/endpoints/docs/how-to>How-to Guides</a></p><h3 id=curl>curl</h3><p>透過瀏覽器操作過後，透過 curl 操作的結果也是一樣的</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>$ curl http://localhost:8080/_ah/api/dummy/v1/books
+auth_level=None):</p></blockquote><p>設置完 endpointAPI 的基本架構，剩下的部份就是 GAE Python<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup> 的基本操作，定義 Datastore module、對 Datastore 進行 CRUD 的操作。有興趣的朋友可以把專案 clone 下來玩看看，並試著自己俢改修改會更有感覺。</p><p>endpointAPI 其他的功能還有很多，可以搭配 gRPC<sup id=fnref:4><a href=#fn:4 class=footnote-ref role=doc-noteref>4</a></sup>一起使用、建立 Android/iOS 的 frameworks<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup> 等，詳細的說明可以見官方的文件 <a href=https://cloud.google.com/endpoints/docs/how-to>How-to Guides</a></p><h3 id=curl>curl</h3><p>透過瀏覽器操作過後，透過 curl 操作的結果也是一樣的</p><pre><code>$ curl http://localhost:8080/_ah/api/dummy/v1/books
 {
- &#34;items&#34;: [
+ &quot;items&quot;: [
   {
-   &#34;name&#34;: &#34;Shel Silverstein&#34;,
-   &#34;title&#34;: &#34;The Giving Tree&#34;,
-   &#34;websafeKey&#34;: &#34;aghkZXZ-Tm9uZXIZCxIEQm9vayIPVGhlIEdpdmluZyBUcmVlDA&#34;
+   &quot;name&quot;: &quot;Shel Silverstein&quot;,
+   &quot;title&quot;: &quot;The Giving Tree&quot;,
+   &quot;websafeKey&quot;: &quot;aghkZXZ-Tm9uZXIZCxIEQm9vayIPVGhlIEdpdmluZyBUcmVlDA&quot;
   },
   {
-   &#34;name&#34;: &#34;Harper Lee&#34;,
-   &#34;title&#34;: &#34;To Kill a Mockingbird&#34;,
-   &#34;websafeKey&#34;: &#34;aghkZXZ-Tm9uZXIfCxIEQm9vayIVVG8gS2lsbCBhIE1vY2tpbmdiaXJkDA&#34;
+   &quot;name&quot;: &quot;Harper Lee&quot;,
+   &quot;title&quot;: &quot;To Kill a Mockingbird&quot;,
+   &quot;websafeKey&quot;: &quot;aghkZXZ-Tm9uZXIfCxIEQm9vayIVVG8gS2lsbCBhIE1vY2tpbmdiaXJkDA&quot;
   },
   {
-   &#34;name&#34;: &#34;dfad&#34;,
-   &#34;title&#34;: &#34;fdafd&#34;,
-   &#34;websafeKey&#34;: &#34;aghkZXZ-Tm9uZXIPCxIEQm9vayIFZmRhZmQM&#34;
+   &quot;name&quot;: &quot;dfad&quot;,
+   &quot;title&quot;: &quot;fdafd&quot;,
+   &quot;websafeKey&quot;: &quot;aghkZXZ-Tm9uZXIPCxIEQm9vayIFZmRhZmQM&quot;
   }
  ]
 }
-</code></pre></div><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>Endpoints API 2.0 的版本已經出來了，相較於 1.0 改變滿大的，原先像 Google API explorer 的部份由 swagger 取代，詳細的說明請見官網 <a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p>在定義 API 說明時有二種方式。這邊採用的是 <code>@books_api.api_class</code>，在 <code>books_api</code> 下允許定義多組 RESTful resource <a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p><a href=https://github.com/GoogleCloudPlatform/go-endpoints>go-endpoints</a> 其實 go 版的寫法更為簡潔一點 <a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote><p><a href=https://cloud.google.com/endpoints/docs/grpc-service-config>gRPC API Service</a> <a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote><p><a href=https://cloud.google.com/endpoints/docs/frameworks/java/about-cloud-endpoints-frameworks>Cloud Endpoints Frameworks for App Engine</a> <a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/weddingcnp-via-gcp-2/>weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=/posts/weddingcnp-via-gcp-1/>weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=/posts/weddingcnp-via-gcp/>weddingcnp via GCP</a></li><li><a href=/posts/gae-go-image-api/>GAE go Image API for GCS</a></li><li><a href=/posts/gae-link-pip-helper/>gae link pip helper</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/gae/>GAE</a>
+</code></pre><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>Endpoints API 2.0 的版本已經出來了，相較於 1.0 改變滿大的，原先像 Google API explorer 的部份由 swagger 取代，詳細的說明請見官網 <a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p>在定義 API 說明時有二種方式。這邊採用的是 <code>@books_api.api_class</code>，在 <code>books_api</code> 下允許定義多組 RESTful resource <a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p><a href=https://github.com/GoogleCloudPlatform/go-endpoints>go-endpoints</a> 其實 go 版的寫法更為簡潔一點 <a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote><p><a href=https://cloud.google.com/endpoints/docs/grpc-service-config>gRPC API Service</a> <a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote><p><a href=https://cloud.google.com/endpoints/docs/frameworks/java/about-cloud-endpoints-frameworks>Cloud Endpoints Frameworks for App Engine</a> <a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/weddingcnp-via-gcp-2/>weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=/posts/weddingcnp-via-gcp-1/>weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=/posts/weddingcnp-via-gcp/>weddingcnp via GCP</a></li><li><a href=/posts/gae-go-image-api/>GAE go Image API for GCS</a></li><li><a href=/posts/gae-link-pip-helper/>gae link pip helper</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/gae/>GAE</a>
 <a href=https://kaichu.io/tags/gce/>GCE</a>
 <a href=https://kaichu.io/tags/datastore/>Datastore</a>
 <a href=https://kaichu.io/tags/endpointapi/>EndpointAPI</a>
 <a href=https://kaichu.io/tags/sendgrid/>sendgrid</a>
 <a href=https://kaichu.io/tags/api/>API</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
 var d=document,s=d.createElement('script');s.async=true;s.src='//'+"kaichuio"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
-<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script></body></html>
+<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="if(media!='all')media='all'"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/';"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(e){e.classList.add('line-numbers')});"></script></body></html>

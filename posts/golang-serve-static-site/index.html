@@ -1,122 +1,122 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>golang serving a single page application ｜ KaiChu</title><meta name=description content="golang serve SPA 最近有前端開發的需求，選用了 react-redux-starter-kit 來進行二次開發，省去一些想要使用 React, redux, redux-router 的基本配置，這樣速度會快一點 因為 react-redux-starter-kit 也使用 webpack 進行程式碼的打包, 所以最後的產出預設在 dist 資料夾中，所以部署時只需要一個簡單的 host server 即可"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/golang-serve-static-site/>golang serving a single page application</a></h2><span class=date>2016.08.04</span></div><div class="post_content markdown"><h2 id=golang-serve-spa>golang serve SPA</h2><p>最近有前端開發的需求，選用了 <a href=https://github.com/davezuko/react-redux-starter-kit>react-redux-starter-kit</a> 來進行二次開發，省去一些想要使用 React, redux, redux-router 的基本配置，這樣速度會快一點</p><p>因為 <code>react-redux-starter-kit</code> 也使用 webpack 進行程式碼的打包, 所以最後的產出預設在 <code>dist</code> 資料夾中，所以部署時只需要一個簡單的 host server 即可</p><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash><span class=c1># dist example</span>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>golang serving a single page application ｜ KaiChu</title><meta name=description content="golang serve SPA 最近有前端開發的需求，選用了 react-redux-starter-kit 來進行二次開發，省去一些想要使用 React, redux, redux-router 的基本配置，這樣速度會快一點 因為 react-redux-starter-kit 也使用 webpack 進行程式碼的打包, 所以最後的產出預設在 dist 資料夾中，所以部署時只需要一個簡單的 host server 即可"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a><a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a><a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a><a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a><a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a><a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/golang-serve-static-site/>golang serving a single page application</a></h2><span class=date>2016.08.04</span></div><div class="post_content markdown"><h2 id=golang-serve-spa>golang serve SPA</h2><p>最近有前端開發的需求，選用了 <a href=https://github.com/davezuko/react-redux-starter-kit>react-redux-starter-kit</a> 來進行二次開發，省去一些想要使用 React, redux, redux-router 的基本配置，這樣速度會快一點</p><p>因為 <code>react-redux-starter-kit</code> 也使用 webpack 進行程式碼的打包, 所以最後的產出預設在 <code>dist</code> 資料夾中，所以部署時只需要一個簡單的 host server 即可</p><pre><code class=language-bash># dist example
 $ l
-total <span class=m>752</span>
--rw-r--r--  <span class=m>1</span> cage  staff    <span class=m>3317</span> Aug  <span class=m>4</span> 00:22 1.counter.fa53ea42bc9ff9de19bd.js
--rw-r--r--  <span class=m>1</span> cage  staff  <span class=m>144953</span> Aug  <span class=m>4</span> 00:22 app.5d0f2ab61ef7dd5daac5.js
--rw-r--r--  <span class=m>1</span> cage  staff    <span class=m>2619</span> Aug  <span class=m>4</span> 00:22 app.97a1751c9624097874a4b54cb93fa067.css
--rw-r--r--  <span class=m>1</span> cage  staff     <span class=m>173</span> Aug  <span class=m>4</span> 00:33 app.go
--rw-r--r--  <span class=m>1</span> cage  staff   <span class=m>24838</span> Aug  <span class=m>4</span> 00:22 favicon.ico
--rw-r--r--  <span class=m>1</span> cage  staff     <span class=m>103</span> Aug  <span class=m>4</span> 00:22 humans.txt
--rw-r--r--  <span class=m>1</span> cage  staff     <span class=m>604</span> Aug  <span class=m>4</span> 00:22 index.html
--rw-r--r--  <span class=m>1</span> cage  staff      <span class=m>24</span> Aug  <span class=m>4</span> 00:22 robots.txt
--rw-r--r--  <span class=m>1</span> cage  staff  <span class=m>183224</span> Aug  <span class=m>4</span> 00:22 vendor.9012d9d99074521f418e.js
-</code></pre></div><p>考慮效能的問題, 最後打算使用 golang 來當作 host server, golang 內建的 <code>net/http</code> 可以輕鬆的使用 <code>http.FileServer(http.Dir("./"))</code> 來 host 整個靜態目錄</p><div class=highlight><pre class=chroma><code class=language-golang data-lang=golang><span class=kn>package</span> <span class=nx>main</span>
+total 752
+-rw-r--r--  1 cage  staff    3317 Aug  4 00:22 1.counter.fa53ea42bc9ff9de19bd.js
+-rw-r--r--  1 cage  staff  144953 Aug  4 00:22 app.5d0f2ab61ef7dd5daac5.js
+-rw-r--r--  1 cage  staff    2619 Aug  4 00:22 app.97a1751c9624097874a4b54cb93fa067.css
+-rw-r--r--  1 cage  staff     173 Aug  4 00:33 app.go
+-rw-r--r--  1 cage  staff   24838 Aug  4 00:22 favicon.ico
+-rw-r--r--  1 cage  staff     103 Aug  4 00:22 humans.txt
+-rw-r--r--  1 cage  staff     604 Aug  4 00:22 index.html
+-rw-r--r--  1 cage  staff      24 Aug  4 00:22 robots.txt
+-rw-r--r--  1 cage  staff  183224 Aug  4 00:22 vendor.9012d9d99074521f418e.js
+</code></pre><p>考慮效能的問題, 最後打算使用 golang 來當作 host server, golang 內建的 <code>net/http</code> 可以輕鬆的使用 <code>http.FileServer(http.Dir("./"))</code> 來 host 整個靜態目錄</p><pre><code class=language-go>package main
 
-<span class=kn>import</span> <span class=p>(</span>
-	<span class=s>&#34;log&#34;</span>
-	<span class=s>&#34;net/http&#34;</span>
-<span class=p>)</span>
+import (
+	&quot;log&quot;
+	&quot;net/http&quot;
+)
 
-<span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
-	<span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;Listening port 3000...&#34;</span><span class=p>)</span>
-	<span class=nx>log</span><span class=p>.</span><span class=nf>Fatal</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nf>ListenAndServe</span><span class=p>(</span><span class=s>&#34;:3000&#34;</span><span class=p>,</span> <span class=nx>http</span><span class=p>.</span><span class=nf>FileServer</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nf>Dir</span><span class=p>(</span><span class=s>&#34;./&#34;</span><span class=p>))))</span>
-<span class=p>}</span>
-</code></pre></div><p>但是上述的作法基本上是可以動的, 不過如果前端自己有使用到 <code>redux-router</code> 時, golang 並不會將請求導至前端的 router 而是直接得到 golang 404 而不會進到前端 redux-router 訂定的 router (如果有使用 redux-router 對 Notfound 進行處理)</p><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash>http://localhost:3000/dfa
-</code></pre></div><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404-golang.png data-caption><img src=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404-golang.png></a></div><p>所以我們使用了 golang <code>echo</code> 的 web framework, 監聽所有的請求並直接導至 <code>index.html</code> 的前端靜態檔案</p><div class=highlight><pre class=chroma><code class=language-golang data-lang=golang><span class=kn>package</span> <span class=nx>main</span>
+func main() {
+	log.Println(&quot;Listening port 3000...&quot;)
+	log.Fatal(http.ListenAndServe(&quot;:3000&quot;, http.FileServer(http.Dir(&quot;./&quot;))))
+}
+</code></pre><p>但是上述的作法基本上是可以動的, 不過如果前端自己有使用到 <code>redux-router</code> 時, golang 並不會將請求導至前端的 router 而是直接得到 golang 404 而不會進到前端 redux-router 訂定的 router (如果有使用 redux-router 對 Notfound 進行處理)</p><pre><code class=language-bash>http://localhost:3000/dfa
+</code></pre><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404-golang.png data-caption><img src=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404-golang.png></a></div><p>所以我們使用了 golang <code>echo</code> 的 web framework, 監聽所有的請求並直接導至 <code>index.html</code> 的前端靜態檔案</p><pre><code class=language-go>package main
 
-<span class=kn>import</span> <span class=p>(</span>
-	<span class=s>&#34;flag&#34;</span>
-	<span class=s>&#34;fmt&#34;</span>
-	<span class=s>&#34;net/http&#34;</span>
-	<span class=s>&#34;os&#34;</span>
-	<span class=s>&#34;strings&#34;</span>
+import (
+	&quot;flag&quot;
+	&quot;fmt&quot;
+	&quot;net/http&quot;
+	&quot;os&quot;
+	&quot;strings&quot;
 
-	<span class=s>&#34;github.com/labstack/echo&#34;</span>
-	<span class=s>&#34;github.com/labstack/echo/engine/standard&#34;</span>
-	<span class=nx>mw</span> <span class=s>&#34;github.com/labstack/echo/middleware&#34;</span>
-<span class=p>)</span>
+	&quot;github.com/labstack/echo&quot;
+	&quot;github.com/labstack/echo/engine/standard&quot;
+	mw &quot;github.com/labstack/echo/middleware&quot;
+)
 
-<span class=kd>const</span> <span class=p>(</span>
-	<span class=nx>wwwRoot</span> <span class=p>=</span> <span class=s>&#34;./&#34;</span>
-<span class=p>)</span>
+const (
+	wwwRoot = &quot;./&quot;
+)
 
-<span class=kd>var</span> <span class=p>(</span>
-	<span class=nx>httpPort</span> <span class=p>=</span> <span class=nx>flag</span><span class=p>.</span><span class=nf>Int</span><span class=p>(</span><span class=s>&#34;http&#34;</span><span class=p>,</span> <span class=mi>3000</span><span class=p>,</span> <span class=s>&#34;http port number&#34;</span><span class=p>)</span>
-<span class=p>)</span>
+var (
+	httpPort = flag.Int(&quot;http&quot;, 3000, &quot;http port number&quot;)
+)
 
-<span class=kd>func</span> <span class=nf>Init</span><span class=p>()</span> <span class=o>*</span><span class=nx>echo</span><span class=p>.</span><span class=nx>Echo</span> <span class=p>{</span>
+func Init() *echo.Echo {
 
-	<span class=nx>e</span> <span class=o>:=</span> <span class=nx>echo</span><span class=p>.</span><span class=nf>New</span><span class=p>()</span>
+	e := echo.New()
 
-	<span class=nx>e</span><span class=p>.</span><span class=nf>Debug</span><span class=p>()</span>
+	e.Debug()
 
-	<span class=nx>e</span><span class=p>.</span><span class=nf>Use</span><span class=p>(</span><span class=nx>mw</span><span class=p>.</span><span class=nf>Logger</span><span class=p>())</span>
-	<span class=nx>e</span><span class=p>.</span><span class=nf>Use</span><span class=p>(</span><span class=nx>mw</span><span class=p>.</span><span class=nf>Recover</span><span class=p>())</span>
+	e.Use(mw.Logger())
+	e.Use(mw.Recover())
 
-	<span class=nx>e</span><span class=p>.</span><span class=nf>Any</span><span class=p>(</span><span class=s>&#34;/*&#34;</span><span class=p>,</span> <span class=nx>echo</span><span class=p>.</span><span class=nf>HandlerFunc</span><span class=p>(</span><span class=kd>func</span><span class=p>(</span><span class=nx>c</span> <span class=nx>echo</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span> <span class=p>(</span><span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
-		<span class=nx>r</span> <span class=o>:=</span> <span class=nx>c</span><span class=p>.</span><span class=nf>Request</span><span class=p>().(</span><span class=o>*</span><span class=nx>standard</span><span class=p>.</span><span class=nx>Request</span><span class=p>).</span><span class=nx>Request</span>
-		<span class=nx>w</span> <span class=o>:=</span> <span class=nx>c</span><span class=p>.</span><span class=nf>Response</span><span class=p>().(</span><span class=o>*</span><span class=nx>standard</span><span class=p>.</span><span class=nx>Response</span><span class=p>).</span><span class=nx>ResponseWriter</span>
+	e.Any(&quot;/*&quot;, echo.HandlerFunc(func(c echo.Context) (err error) {
+		r := c.Request().(*standard.Request).Request
+		w := c.Response().(*standard.Response).ResponseWriter
 
-		<span class=nx>requestPath</span> <span class=o>:=</span> <span class=nx>r</span><span class=p>.</span><span class=nx>URL</span><span class=p>.</span><span class=nx>Path</span>
-		<span class=nx>fileSystemPath</span> <span class=o>:=</span> <span class=nx>wwwRoot</span> <span class=o>+</span> <span class=nx>r</span><span class=p>.</span><span class=nx>URL</span><span class=p>.</span><span class=nx>Path</span>
-		<span class=nx>endURIPath</span> <span class=o>:=</span> <span class=nx>strings</span><span class=p>.</span><span class=nf>Split</span><span class=p>(</span><span class=nx>requestPath</span><span class=p>,</span> <span class=s>&#34;/&#34;</span><span class=p>)[</span><span class=nb>len</span><span class=p>(</span><span class=nx>strings</span><span class=p>.</span><span class=nf>Split</span><span class=p>(</span><span class=nx>requestPath</span><span class=p>,</span> <span class=s>&#34;/&#34;</span><span class=p>))</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
-		<span class=nx>splitPath</span> <span class=o>:=</span> <span class=nx>strings</span><span class=p>.</span><span class=nf>Split</span><span class=p>(</span><span class=nx>endURIPath</span><span class=p>,</span> <span class=s>&#34;.&#34;</span><span class=p>)</span>
-		<span class=nx>splitLength</span> <span class=o>:=</span> <span class=nb>len</span><span class=p>(</span><span class=nx>splitPath</span><span class=p>)</span>
-		<span class=k>if</span> <span class=nx>splitLength</span> <span class=p>&gt;</span> <span class=mi>1</span> <span class=o>&amp;&amp;</span> <span class=nx>splitPath</span><span class=p>[</span><span class=nx>splitLength</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>!=</span> <span class=s>&#34;go&#34;</span> <span class=p>{</span>
-			<span class=nx>f</span><span class=p>,</span> <span class=kt>error</span> <span class=o>:=</span> <span class=nx>os</span><span class=p>.</span><span class=nf>Stat</span><span class=p>(</span><span class=nx>fileSystemPath</span><span class=p>)</span>
-			<span class=k>if</span> <span class=kt>error</span> <span class=o>==</span> <span class=kc>nil</span> <span class=o>&amp;&amp;</span> <span class=p>!</span><span class=nx>f</span><span class=p>.</span><span class=nf>IsDir</span><span class=p>()</span> <span class=p>{</span>
-				<span class=nx>http</span><span class=p>.</span><span class=nf>ServeFile</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=nx>r</span><span class=p>,</span> <span class=nx>fileSystemPath</span><span class=p>)</span>
-				<span class=k>return</span>
-			<span class=p>}</span>
-		<span class=p>}</span>
-		<span class=nx>http</span><span class=p>.</span><span class=nf>ServeFile</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=nx>r</span><span class=p>,</span> <span class=nx>wwwRoot</span><span class=o>+</span><span class=s>&#34;index.html&#34;</span><span class=p>)</span>
-		<span class=k>return</span>
-	<span class=p>}))</span>
+		requestPath := r.URL.Path
+		fileSystemPath := wwwRoot + r.URL.Path
+		endURIPath := strings.Split(requestPath, &quot;/&quot;)[len(strings.Split(requestPath, &quot;/&quot;))-1]
+		splitPath := strings.Split(endURIPath, &quot;.&quot;)
+		splitLength := len(splitPath)
+		if splitLength &gt; 1 &amp;&amp; splitPath[splitLength-1] != &quot;go&quot; {
+			f, error := os.Stat(fileSystemPath)
+			if error == nil &amp;&amp; !f.IsDir() {
+				http.ServeFile(w, r, fileSystemPath)
+				return
+			}
+		}
+		http.ServeFile(w, r, wwwRoot+&quot;index.html&quot;)
+		return
+	}))
 
-	<span class=k>return</span> <span class=nx>e</span>
-<span class=p>}</span>
+	return e
+}
 
-<span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
-	<span class=nx>flag</span><span class=p>.</span><span class=nf>Parse</span><span class=p>()</span>
+func main() {
+	flag.Parse()
 
-	<span class=nx>server</span> <span class=o>:=</span> <span class=nf>Init</span><span class=p>()</span>
-	<span class=nx>server</span><span class=p>.</span><span class=nf>Run</span><span class=p>(</span><span class=nx>standard</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>`:%d`</span><span class=p>,</span> <span class=o>*</span><span class=nx>httpPort</span><span class=p>)))</span>
-<span class=p>}</span>
-</code></pre></div><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash>http://localhost:3000/dfa
-</code></pre></div><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404.jpg data-caption><img src=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404.jpg></a></div><h2 id=run-spa-as-with-docker-image>run SPA as with docker image</h2><p>處理完 golang 對 single page application 的支援, 進一步簡化部署的流程, 可以將整個 single page application 連同 <code>app.go</code> 利用 golang build 的方式編譯成執行檔, 再將 golang 執行檔透過 <code>Dockerfile</code> 編譯成 docker image, 這樣一來就可以很容易的部署在任何可以執行 container 的環境</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-flow.jpg data-caption><img src=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-flow.jpg></a></div><p>上述一系列的流程我們可以使用 <code>npm run scripts</code> 的方式把它完全串起來來達到一鍵建立 docker image</p><div class=highlight><pre class=chroma><code class=language-Dockerfile data-lang=Dockerfile><span class=k>FROM</span><span class=s> alpine:3.3</span><span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=k>MAINTAINER</span><span class=s> cage.chung &lt;cage.chung@gmail.com&gt;</span><span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=k>WORKDIR</span><span class=s> /go</span><span class=err>
-</span><span class=err></span><span class=k>ADD</span> . /go/<span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=k>EXPOSE</span><span class=s> 3000</span><span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=k>CMD</span> <span class=p>[</span><span class=s2>&#34;./counter&#34;</span><span class=p>]</span><span class=err>
-</span></code></pre></div><p>Dockerfile 檔案中我們需要指定 docker image 啟動時直接執行我們透過 <code>GOOS=linux GOARCH=amd64 go build -o counter</code> 編譯出來的執行檔 <code>counter*</code></p><p>執行自訂義 npm scripts <code>$ npm run docker</code> 成功執行後會自動建立 docker image</p><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash><span class=c1># list docker image</span>
+	server := Init()
+	server.Run(standard.New(fmt.Sprintf(`:%d`, *httpPort)))
+}
+</code></pre><pre><code class=language-bash>http://localhost:3000/dfa
+</code></pre><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404.jpg data-caption><img src=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-404.jpg></a></div><h2 id=run-spa-as-with-docker-image>run SPA as with docker image</h2><p>處理完 golang 對 single page application 的支援, 進一步簡化部署的流程, 可以將整個 single page application 連同 <code>app.go</code> 利用 golang build 的方式編譯成執行檔, 再將 golang 執行檔透過 <code>Dockerfile</code> 編譯成 docker image, 這樣一來就可以很容易的部署在任何可以執行 container 的環境</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-flow.jpg data-caption><img src=https://kaichu.io/posts/golang-serve-static-site/golang-serve-static-site-flow.jpg></a></div><p>上述一系列的流程我們可以使用 <code>npm run scripts</code> 的方式把它完全串起來來達到一鍵建立 docker image</p><pre><code class=language-Dockerfile>FROM alpine:3.3
+
+MAINTAINER cage.chung &lt;cage.chung@gmail.com&gt;
+
+WORKDIR /go
+ADD . /go/
+
+EXPOSE 3000
+
+CMD [&quot;./counter&quot;]
+</code></pre><p>Dockerfile 檔案中我們需要指定 docker image 啟動時直接執行我們透過 <code>GOOS=linux GOARCH=amd64 go build -o counter</code> 編譯出來的執行檔 <code>counter*</code></p><p>執行自訂義 npm scripts <code>$ npm run docker</code> 成功執行後會自動建立 docker image</p><pre><code class=language-bash># list docker image
 $ docker images
 REPOSITORY                                     TAG                 IMAGE ID            CREATED             SIZE
-username/counter                               v0.1.0              1771ddbe0a98        <span class=m>4</span> seconds ago       14.67 MB
-</code></pre></div><p>執行 docker image</p><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash><span class=c1># run docker image</span>
+username/counter                               v0.1.0              1771ddbe0a98        4 seconds ago       14.67 MB
+</code></pre><p>執行 docker image</p><pre><code class=language-bash># run docker image
 $ docker run -d --name counter -p 3000:3000 username/counter:v0.1.0
 f8394fec624a4e3b989f7ce48857f64178e39aa8a5195f39e2d0d5a6572ee55c
 
-<span class=c1># docker ps</span>
+# docker ps
 $ dps
 CONTAINER ID        IMAGE                     COMMAND             CREATED             STATUS              PORTS                    NAMES
-f8394fec624a        username/counter:v0.1.0   <span class=s2>&#34;./counter&#34;</span>         <span class=m>2</span> seconds ago       Up <span class=m>1</span> seconds        0.0.0.0:3000-&gt;3000/tcp   counter
-</code></pre></div><h2 id=repo>repo</h2><p>Demo example <a href=https://github.com/cage1016/golang-serve-spa>cage1016/golang-serve-spa</a></p><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash><span class=c1># clone repo</span>
+f8394fec624a        username/counter:v0.1.0   &quot;./counter&quot;         2 seconds ago       Up 1 seconds        0.0.0.0:3000-&gt;3000/tcp   counter
+</code></pre><h2 id=repo>repo</h2><p>Demo example <a href=https://github.com/cage1016/golang-serve-spa>cage1016/golang-serve-spa</a></p><pre><code class=language-bash># clone repo
 $ git clone git@github.com:cage1016/golang-serve-spa.git
 
-<span class=c1># npm install package</span>
+# npm install package
 $ npm install
 
-<span class=c1># 一鍵建立 docker image</span>
+# 一鍵建立 docker image
 $ npm docker
 
-<span class=c1># docker run</span>
+# docker run
 $ docker run -d --name counter -p 3000:3000 username/counter:v0.1.0
-</code></pre></div></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/webpack-es6-demo/>webpack es6 demo</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/golang/>golang</a>
+</code></pre></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/webpack-es6-demo/>webpack es6 demo</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i><a href=https://kaichu.io/tags/golang/>golang</a>
 <a href=https://kaichu.io/tags/webpack/>webpack</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
 var d=document,s=d.createElement('script');s.async=true;s.src='//'+"kaichuio"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
-<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script></body></html>
+<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\[\[','\]\]']],processEscapes:true,processEnvironments:true,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}});MathJax.Hub.Queue(function(){var all=MathJax.Hub.getAllJax(),i;for(i=0;i<all.length;i+=1){all[i].SourceElement().parentNode.className+=' has-jax';}});</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-65308340-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="if(media!='all')media='all'"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/';"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(e){e.classList.add('line-numbers')});"></script></body></html>
