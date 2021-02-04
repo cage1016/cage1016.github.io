@@ -1,4 +1,141 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>rbac1 on KaiChu</title><link>https://kaichu.io/tags/rbac1/</link><description>Recent content in rbac1 on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 24 Jan 2021 13:03:50 +0800</lastBuildDate><atom:link href="https://kaichu.io/tags/rbac1/index.xml" rel="self" type="application/rss+xml"/><item><title>Rbac1 Design</title><link>https://kaichu.io/posts/rbac1-design/</link><pubDate>Sun, 24 Jan 2021 13:03:50 +0800</pubDate><guid>https://kaichu.io/posts/rbac1-design/</guid><description>&lt;p>權限系統在任何應用程式都是基礎且重要的部份，主要是對不同的人訪問資源進行權限的控制，本篇文章並沒有特別的再說明 Role-Based Access Control, 解釋的文章已經太多了，隨便 Google 都是一堆。最期在公司的專案也是有採用 RBAC 來管控系統的權限，一般的 RBAC0 (最基本的 User - Role - Permission) 的模型大至上可以符合需求，不過在權限配直的時候會有一點重工，所以選擇了有角色繼承的 RBAC1 來進行實作&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>rbac1 on KaiChu</title><link>https://kaichu.io/tags/rbac1/</link><description>Recent content in rbac1 on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 04 Feb 2021 10:52:45 +0800</lastBuildDate><atom:link href="https://kaichu.io/tags/rbac1/index.xml" rel="self" type="application/rss+xml"/><item><title>Postgres Transpose Rows to Columns</title><link>https://kaichu.io/posts/postgres-transpose-rows-to-columns/</link><pubDate>Thu, 04 Feb 2021 10:52:45 +0800</pubDate><guid>https://kaichu.io/posts/postgres-transpose-rows-to-columns/</guid><description>&lt;p>延續上一篇文章 &lt;a href="https://kaichu.io/posts/rbac1-design/">Rbac1 Design ｜ KaiChu&lt;/a>, 我們透過 Postgres 中的 CTE (common table expression) recursive query 來查詢有繼承 Role 的有對應的權限&lt;/p>
+&lt;h3 id="user_id-permission">user_id permission&lt;/h3>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align:left">user_id&lt;/th>
+&lt;th style="text-align:left">key&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">create:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">create:rbac&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">create:users&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">delete:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">delete:rbac&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">delete:users&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">read:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">read:rbac&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">read:users&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">update:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">update:rbac&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">update:users&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">h8Iqlb8Ixc4IltuOoY5QC&lt;/td>
+&lt;td style="text-align:left">create:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">h8Iqlb8Ixc4IltuOoY5QC&lt;/td>
+&lt;td style="text-align:left">delete:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">h8Iqlb8Ixc4IltuOoY5QC&lt;/td>
+&lt;td style="text-align:left">read:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">h8Iqlb8Ixc4IltuOoY5QC&lt;/td>
+&lt;td style="text-align:left">update:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">SbZeBSpuy2OdJ0WZ2Z_Qo&lt;/td>
+&lt;td style="text-align:left">read:devops&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">SJ36zw7nRS4lx18dZlCoo&lt;/td>
+&lt;td style="text-align:left">create:users&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">SJ36zw7nRS4lx18dZlCoo&lt;/td>
+&lt;td style="text-align:left">delete:users&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">SJ36zw7nRS4lx18dZlCoo&lt;/td>
+&lt;td style="text-align:left">read:users&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">SJ36zw7nRS4lx18dZlCoo&lt;/td>
+&lt;td style="text-align:left">update:users&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h3 id="user-vs-resource-permission">user vs resource permission&lt;/h3>
+&lt;blockquote>
+&lt;p>read:R, write:C, delete:D, update:U&lt;/p>
+&lt;/blockquote>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align:left">user_id&lt;/th>
+&lt;th style="text-align:left">devops&lt;/th>
+&lt;th style="text-align:left">rbac&lt;/th>
+&lt;th style="text-align:left">users&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align:left">87gb8fKJHGxh2Pz_Gk_R2&lt;/td>
+&lt;td style="text-align:left">CDRU&lt;/td>
+&lt;td style="text-align:left">CDRU&lt;/td>
+&lt;td style="text-align:left">CDRU&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">h8Iqlb8Ixc4IltuOoY5QC&lt;/td>
+&lt;td style="text-align:left">CDRU&lt;/td>
+&lt;td style="text-align:left">NULL&lt;/td>
+&lt;td style="text-align:left">NULL&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">SbZeBSpuy2OdJ0WZ2Z_Qo&lt;/td>
+&lt;td style="text-align:left">R&lt;/td>
+&lt;td style="text-align:left">NULL&lt;/td>
+&lt;td style="text-align:left">NULL&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">SJ36zw7nRS4lx18dZlCoo&lt;/td>
+&lt;td style="text-align:left">NULL&lt;/td>
+&lt;td style="text-align:left">NULL&lt;/td>
+&lt;td style="text-align:left">CDRU&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>透過 postgres 的 Transpose Rows to Columns 可以得到上面一個人眼比較直覺得大表
+核心的 sql 就是使用 &lt;code>crosstab&lt;/code> 指令, 完整操作請看下方 full sql&lt;/p></description></item><item><title>Rbac1 Design</title><link>https://kaichu.io/posts/rbac1-design/</link><pubDate>Sun, 24 Jan 2021 13:03:50 +0800</pubDate><guid>https://kaichu.io/posts/rbac1-design/</guid><description>&lt;p>權限系統在任何應用程式都是基礎且重要的部份，主要是對不同的人訪問資源進行權限的控制，本篇文章並沒有特別的再說明 Role-Based Access Control, 解釋的文章已經太多了，隨便 Google 都是一堆。最期在公司的專案也是有採用 RBAC 來管控系統的權限，一般的 RBAC0 (最基本的 User - Role - Permission) 的模型大至上可以符合需求，不過在權限配直的時候會有一點重工，所以選擇了有角色繼承的 RBAC1 來進行實作&lt;/p>
 &lt;p>&lt;em>RBAC1&lt;/em>&lt;/p>
 &lt;div class="fancybox">
 &lt;a data-fancybox="gallery" href="https://kaichu.io/posts/rbac1-design/img/rbac1.jpeg" data-caption="">
