@@ -1,20 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>KaiChu</title><link>https://kaichu.io/</link><description>Recent content on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 02 Mar 2021 12:26:26 +0800</lastBuildDate><atom:link href="https://kaichu.io/index.xml" rel="self" type="application/rss+xml"/><item><title>DDD</title><link>https://kaichu.io/posts/ddd/</link><pubDate>Tue, 02 Mar 2021 12:26:26 +0800</pubDate><guid>https://kaichu.io/posts/ddd/</guid><description>&lt;p>image
-&lt;div class="fancybox">
-&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/DDD/img/xx.jpg" data-caption="">
-&lt;img src="https://kaichu.io/posts/DDD/img/xx.jpg" />
-&lt;/a>
-&lt;/div>&lt;/p>
-&lt;p>google slide
-&lt;div id="Container" style="padding-bottom:56.25%; position:relative; display:block; width: 100%">
-&lt;iframe id="googleSlideIframe" width="100%" height="100%" src="" frameborder="0" allowfullscreen=""
-style="position:absolute; top:0; left: 0">&lt;/iframe>
-&lt;/div>&lt;/p>
-&lt;p>slideshare
-&lt;iframe style="width: 100%; height: 500px;" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"
-src="http://www.slideshare.net/slideshow/embed_code/2?rel=0" allowfullscreen webkitallowfullscreen
-mozallowfullscreen> &lt;/iframe>
-&lt;br>&lt;br>&lt;/p>
-&lt;p>read more&lt;/p></description></item><item><title>Postgres Transpose Rows to Columns</title><link>https://kaichu.io/posts/postgres-transpose-rows-to-columns/</link><pubDate>Thu, 04 Feb 2021 10:52:45 +0800</pubDate><guid>https://kaichu.io/posts/postgres-transpose-rows-to-columns/</guid><description>&lt;p>延續上一篇文章 &lt;a href="https://kaichu.io/posts/rbac1-design/">Rbac1 Design ｜ KaiChu&lt;/a>, 我們透過 Postgres 中的 CTE (common table expression) recursive query 來查詢有繼承 Role 的有對應的權限&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>KaiChu</title><link>https://kaichu.io/</link><description>Recent content on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 04 Feb 2021 10:52:45 +0800</lastBuildDate><atom:link href="https://kaichu.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Postgres Transpose Rows to Columns</title><link>https://kaichu.io/posts/postgres-transpose-rows-to-columns/</link><pubDate>Thu, 04 Feb 2021 10:52:45 +0800</pubDate><guid>https://kaichu.io/posts/postgres-transpose-rows-to-columns/</guid><description>&lt;p>延續上一篇文章 &lt;a href="https://kaichu.io/posts/rbac1-design/">Rbac1 Design ｜ KaiChu&lt;/a>, 我們透過 Postgres 中的 CTE (common table expression) recursive query 來查詢有繼承 Role 的有對應的權限&lt;/p>
 &lt;h3 id="user_id-permission">user_id permission&lt;/h3>
 &lt;table>
 &lt;thead>
