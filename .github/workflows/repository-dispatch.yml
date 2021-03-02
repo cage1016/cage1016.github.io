@@ -1,0 +1,18 @@
+name: repository dispatch
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  execute-repository-dispatch:
+    name: publish content to public site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch to update cage1016/cage1016/README.md
+        uses: peter-evans/repository-dispatch@v1.1.3
+        with:
+          token: ${{ secrets.DISPATCH_HOOK_TOKEN }}
+          repository: cage1016/cage1016
+          event-type: readme-update
