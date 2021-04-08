@@ -26,7 +26,7 @@ RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
 USER cnb
 </code></pre><p>產出擴充的 run image</p><pre><code class=language-sh>docker build -t gcr.io/retailbase-dev/ext-run:v1 -f run.Dockerfile .
 </code></pre><p>然後在 pack 中代入 擴充後有 run time</p><pre><code class=language-sh>pack build gcr.io/retailbase-dev/retailbase-organizationsvc:$SHORT_SHA --builder gcr.io/buildpacks/builder:v1 --env GOOGLE_BUILDABLE=cmd/organizationsvc/main.go --run-image gcr.io/retailbase-dev/ext-run:v1
-</code></pre><h4 id=坑三-gcriocloud-buildersgcloud>坑三 gcr.io/cloud-builders/gcloud</h4><blockquote><p>cloudbuild gcr.io/cloud-builders/gcloud 中有整合 pack 的參數，不過沒有辦法追加 runtime 的設定，就算我們擴充了 run time 也無法代入</p></blockquote><pre><code class=language-sh>gcloud builds submit [[SOURCE] --no-source] [--async] [--no-cache]
+</code></pre><h4 id=20210408-update>2021/04/08 update</h4><p>在發 issue <a href=https://github.com/GoogleCloudPlatform/buildpacks/commit/50539bf027fcb907e72f65e50e3ce3904b8821fb>Include tzdata in base images · GoogleCloudPlatform/buildpacks@50539bf</a> 之後，Google 已經在 base image 中加上了 <code>tzdata</code>，這樣就不需要擴充 runtime 來解 Golang panic 的 bug，直接使用原來的 <code>gcr.io/buildpacks/builder:v1</code> 即可</p><h4 id=坑三-gcriocloud-buildersgcloud>坑三 gcr.io/cloud-builders/gcloud</h4><blockquote><p>cloudbuild gcr.io/cloud-builders/gcloud 中有整合 pack 的參數，不過沒有辦法追加 runtime 的設定，就算我們擴充了 run time 也無法代入</p></blockquote><pre><code class=language-sh>gcloud builds submit [[SOURCE] --no-source] [--async] [--no-cache]
         [--disk-size=DISK_SIZE] [--gcs-log-dir=GCS_LOG_DIR]
         [--gcs-source-staging-dir=GCS_SOURCE_STAGING_DIR]
         [--ignore-file=IGNORE_FILE] [--machine-type=MACHINE_TYPE]
