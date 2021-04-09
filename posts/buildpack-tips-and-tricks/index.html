@@ -48,7 +48,14 @@ USER cnb
       - --builder=gcr.io/buildpacks/builder:v1
       - --env=GOOGLE_BUILDABLE=cmd/export/main.go
       - --run-image=gcr.io/retailbase-dev/ext-run:v1
-</code></pre><p>如何自定義 buildpack 就寫在另一篇文章</p><h3 id=reference>Reference</h3><ul><li><a href=https://buildpacks.io/>Cloud Native Buildpacks</a>: Buildpack 官方網站</li><li><a href=https://github.com/GoogleCloudPlatform/buildpacks>GoogleCloudPlatform/buildpacks: Builders and buildpacks designed to run on Google Cloud&rsquo;s container platforms</a>: Google 版的 buildpack</li><li><a href=https://paketo.io/>Paketo Buildpacks - Paketo Buildpacks</a></li><li><a href=https://devcenter.heroku.com/articles/buildpacks>Buildpacks | Heroku Dev Center</a>: Heroku 版的 Buildpack</li><li><a href=https://cloud.google.com/sdk/gcloud/reference/builds/submit>gcloud builds submit  |  Cloud SDK Documentation  |  Google Cloud</a></li></ul></div><div class=post_footer></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
+</code></pre><p>如何自定義 buildpack 就寫在另一篇文章</p><h4 id=20210409-update>2021/04/09 update</h4><p>跟據 <a href=https://github.com/GoogleCloudPlatform/buildpacks#using-with-google-cloud-build>GoogleCloudPlatform/buildpacks</a> 的說明，skaffold team 有提供 <code>gcr.io/k8s-skaffold/pack</code> pack 的 instance 可以直接使用，也就是說不需要自行編譯 community buildpack pack 的方式</p><pre><code class=language-yaml>steps:
+- name: gcr.io/k8s-skaffold/pack
+  entrypoint: pack
+  args:
+    - build
+    - --builder=gcr.io/buildpacks/builder
+    - --publish=gcr.io/$PROJECT_ID/sample-go:$COMMIT_SHA
+</code></pre><h3 id=reference>Reference</h3><ul><li><a href=https://buildpacks.io/>Cloud Native Buildpacks</a>: Buildpack 官方網站</li><li><a href=https://github.com/GoogleCloudPlatform/buildpacks>GoogleCloudPlatform/buildpacks: Builders and buildpacks designed to run on Google Cloud&rsquo;s container platforms</a>: Google 版的 buildpack</li><li><a href=https://paketo.io/>Paketo Buildpacks - Paketo Buildpacks</a></li><li><a href=https://devcenter.heroku.com/articles/buildpacks>Buildpacks | Heroku Dev Center</a>: Heroku 版的 Buildpack</li><li><a href=https://cloud.google.com/sdk/gcloud/reference/builds/submit>gcloud builds submit  |  Cloud SDK Documentation  |  Google Cloud</a></li></ul></div><div class=post_footer></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
 <a href=https://kaichu.io/tags/buildpack/>buildpack</a>
 <a href=https://kaichu.io/tags/gcp/>gcp</a>
 <a href=https://kaichu.io/tags/pack/>pack</a>
