@@ -1,0 +1,58 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>Github Assets Cnb ｜ KaiChu</title><meta name=description content="  在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 dockerfile 透過 curl 指令來獲取檔案，如果是 private repo 時另外配置 TOKEN 即可
+"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a>
+<a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a>
+<a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a>
+<a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a>
+<a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a>
+<a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/github-assets-cnb/>Github Assets Cnb</a></h2><span class=date>2021.04.20</span></div><div class="post_content markdown"><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/github-assets-cnb/img/1.png data-caption><img src=https://kaichu.io/posts/github-assets-cnb/img/1.png></a></div><p>在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 <code>dockerfile</code> 透過 <code>curl</code> 指令來獲取檔案，如果是 private repo 時另外配置 <code>TOKEN</code> 即可</p><p><strong>dockerfile</strong></p><pre><code class=language-dockerfile>ARG GITHUB_TOKEN=&lt;github-token&gt;
+ARG REPO=qeek-dev/apitest-toolchain
+ARG FILE=apitest-toolchain-linux-amd64
+ARG VERSION=v0.1.0
+ARG TARGET=apitest-toolchain
+
+RUN ASSET_ID=$(if [ $VERSION != &quot;latest&quot; ]; then \
+        echo $(curl -H &quot;Authorization: token $GITHUB_TOKEN&quot; -H &quot;Accept: application/vnd.github.v3.raw&quot; -s https://api.github.com/repos/$REPO/releases | jq &quot;. | map(select(.VERSION == \&quot;$VERSION\&quot;))[0].assets | map(select(.name == \&quot;$FILE\&quot;))[0].id&quot;); \
+    else\
+        echo $(curl -H &quot;Authorization: token $GITHUB_TOKEN&quot; -H &quot;Accept: application/vnd.github.v3.raw&quot; -s https://api.github.com/repos/$REPO/releases | jq &quot;.[0].assets | map(select(.name == \&quot;$FILE\&quot;))[0].id&quot;); \
+    fi) \
+    &amp;&amp; curl -vLJo /tmp/$TARGET -H 'Accept: application/octet-stream' &quot;https://$GITHUB_TOKEN:@api.github.com/repos/$REPO/releases/assets/$ASSET_ID&quot; \
+    &amp;&amp; chmod +x /tmp/$TARGET &amp;&amp; mv /tmp/$TARGET /bin
+</code></pre><p>上述 <code>dockerfile</code> 可以分成二個部份</p><ol><li>透過 Github API 獲取對應 Asset ID</li><li>透過 curl 下載對應 Asset ID 的實體檔案</li></ol><p>也因為自己有這一個需求，所以 <a href=https://github.com/cage1016/github-assets-cnb>cage1016/github-assets-cnb</a> 這一個 Buildapck 的專案就出現了</p><h3 id=cage1016github-assets-cnb>cage1016/github-assets-cnb</h3><blockquote><p>A Cloud Native Buildpack that Download Github Assets</p></blockquote><p>基本上這一個 buildpack 就是透過 <a href=https://github.com/paketo-buildpacks/packit>paketo-buildpacks/packit</a> 這一個 Buildpacks Utils Library 來實作，一定程度減輕了對 <a href=https://github.com/buildpacks/spec>buildpacks/spec</a> 有點麻煩的規範</p><p>例如</p><ul><li><code>github.com/paketo-buildpacks/packit/cargo</code>: 有提供對 metadata.dependencies 操作的函式</li><li><code>github.com/paketo-buildpacks/packit/postal</code>: 有提供 <code>Drop</code> 可以直接透過 http 來下載檔案</li></ul><h4 id=usage>Usage</h4><ol><li><p>Create a folder</p><pre><code class=language-bash>mkdir -p sample-app
+</code></pre></li><li><p>create <code>project.toml</code>, 這邊以下載 <code>skaffold</code> 為例，如果 Github Asset 是屬於 private repo，配置加上 <code>TOKEN</code> 即可</p><pre><code class=language-bash>cat &lt;&lt;EOF &gt;&gt; sample-app/project.toml
+# [[build.env]]
+# optional, github token for private assets 
+# name = &quot;TOKEN&quot;
+# value = &quot;&lt;github-token&gt;&quot;
+
+# skaffold
+[[build.env]]
+# required
+name = &quot;REPO&quot;
+value = &quot;GoogleContainerTools/skaffold&quot;
+
+[[build.env]]
+# required
+name = &quot;FILE&quot;
+value = &quot;skaffold-linux-amd64&quot;
+
+[[build.env]]
+# optional, default set to FILE value
+name = &quot;TARGET&quot;
+value = &quot;skaffold&quot;
+
+[[build.env]]
+# optional, default set to 'latest'
+name = &quot;VERSION&quot;
+value = &quot;v1.22.0&quot;
+EOF
+</code></pre></li><li><p>build container image with buildpack</p><pre><code class=language-bash>pack build test_assets_run --path ./sample-app \
+    -b cage1016/github-assets-cnb@1.0.0 \
+    --builder gcr.io/buildpacks/builder:v1 \
+    &amp;&amp; docker run --rm test_assets_run &quot;skaffold version&quot;
+</code></pre></li><li><p>demo</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/github-assets-cnb/img/demo.gif data-caption><img src=https://kaichu.io/posts/github-assets-cnb/img/demo.gif></a></div></li><li><p>詳細實作的細節請至 <a href=https://github.com/cage1016/github-assets-cnb>cage1016/github-assets-cnb</a> 查閱</p></li></ol></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/build-your-buildpack/>Build Your Buildpack</a></li><li><a href=/posts/buildpack-tips-and-tricks/>Buildpack Tips and Tricks</a></li><li><a href=/posts/ghcr-io-pack-build/>ghcr.io Pack Build</a></li><li><a href=/posts/my-first-post/>在 Github Pages 建立 Hugo 靜態網站</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
+<a href=https://kaichu.io/tags/buildpack/>buildpack</a>
+<a href=https://kaichu.io/tags/gcp/>gcp</a>
+<a href=https://kaichu.io/tags/pack/>pack</a>
+<a href=https://kaichu.io/tags/github/>github</a>
+<a href=https://kaichu.io/tags/paketo/>paketo</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//kaichuio.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
+<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['[[',']]']],processEscapes:!0,processEnvironments:!0,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}}),MathJax.Hub.Queue(function(){var b=MathJax.Hub.getAllJax(),a;for(a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-65308340-1','auto'),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="media!='all'&&(media='all')"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/'"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(a){a.classList.add('line-numbers')})"></script></body></html>
