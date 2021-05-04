@@ -3,7 +3,13 @@
 <a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a>
 <a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a>
 <a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a>
-<a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class="post animated fadeInDown"><div class=post_title><h2><a href=/posts/github-assets-cnb/>Github Assets Cnb</a></h2></div><div class=list><div class="post_content markdown"><p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/github-assets-cnb/img/1.png data-caption><img src=https://kaichu.io/posts/github-assets-cnb/img/1.png></a></div><p>在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 <code>dockerfile</code> 透過 <code>curl</code> 指令來獲取檔案，如果是 private repo 時另外配置 <code>TOKEN</code> 即可</p><a href=/posts/github-assets-cnb/>...more</a></p></div></div><div class=post_footer><div class=meta><div class=info><span class=field><i class=ri-map-pin-time-line></i>
+<a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class="post animated fadeInDown"><div class=post_title><h2><a href=/posts/telepresence-2-have-a-tried/>Telepresence 2 Have a Tried</a></h2></div><div class=list><div class="post_content markdown"><p><p>在開發 Kuberentes 應用程式時使用 <a href=https://github.com/GoogleContainerTools/skaffold>Skaffold</a> 應該是基本操作了，Skaffold 可以幫忙加速開發的速度 (修改程式碼 → 構建 container image → push container image to registry (optional) → 部署至 Kubernets Cluster)，至於是否荅配 <code>Helm</code> 還是直接操作 <code>yaml</code> 就看個人喜好來決定</p><p>在 Debug 部份，Skaffold 也支援 Remote contaienr debug 的功能 (之前的文章請參照 <a href=https://kaichu.io/posts/skaffold-debug-goland/>Skaffold debug goland</a>)。雖然 Skaffold debug 很方便，不過當 Kubernetes 的應用一多時就沒有辦法的在本機端完整的重現有所的服務，所以這時候 Telepresence 就是開源的工具一個很方便的幫手</p><h3 id=telepresence>Telepresence</h3><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg></a></div><a href=/posts/telepresence-2-have-a-tried/>...more</a></p></div></div><div class=post_footer><div class=meta><div class=info><span class=field><i class=ri-map-pin-time-line></i>
+<span class=date>2021.05.04</span></span>
+<span class="field tags"><i class=ri-stack-line></i>
+<a href=https://kaichu.io/tags/telepresence/>telepresence</a>
+<a href=https://kaichu.io/tags/debug/>debug</a>
+<a href=https://kaichu.io/tags/microservices/>microservices</a>
+<a href=https://kaichu.io/tags/kubernetes/>kubernetes</a></span></div></div></div></div><div class="post animated fadeInDown"><div class=post_title><h2><a href=/posts/github-assets-cnb/>Github Assets Cnb</a></h2></div><div class=list><div class="post_content markdown"><p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/github-assets-cnb/img/1.png data-caption><img src=https://kaichu.io/posts/github-assets-cnb/img/1.png></a></div><p>在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 <code>dockerfile</code> 透過 <code>curl</code> 指令來獲取檔案，如果是 private repo 時另外配置 <code>TOKEN</code> 即可</p><a href=/posts/github-assets-cnb/>...more</a></p></div></div><div class=post_footer><div class=meta><div class=info><span class=field><i class=ri-map-pin-time-line></i>
 <span class=date>2021.04.20</span></span>
 <span class="field tags"><i class=ri-stack-line></i>
 <a href=https://kaichu.io/tags/buildpack/>buildpack</a>
@@ -17,13 +23,6 @@
 <a href=https://kaichu.io/tags/registry/>registry</a>
 <a href=https://kaichu.io/tags/pack/>pack</a></span></div></div></div></div><div class="post animated fadeInDown"><div class=post_title><h2><a href=/posts/build-your-buildpack/>Build Your Buildpack</a></h2></div><div class=list><div class="post_content markdown"><p>在 Buildpack Tips and Tricks ｜ KaiChu 上一篤文章中我們提到了 Cloud Native Buildpacks 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹如何編寫自己的 buildpack 及如何發佈至 <a href=/posts/build-your-buildpack/>...more</a></p></div></div><div class=post_footer><div class=meta><div class=info><span class=field><i class=ri-map-pin-time-line></i>
 <span class=date>2021.04.08</span></span>
-<span class="field tags"><i class=ri-stack-line></i>
-<a href=https://kaichu.io/tags/buildpack/>buildpack</a>
-<a href=https://kaichu.io/tags/gcp/>gcp</a>
-<a href=https://kaichu.io/tags/pack/>pack</a>
-<a href=https://kaichu.io/tags/heroku/>heroku</a>
-<a href=https://kaichu.io/tags/paketo/>paketo</a></span></div></div></div></div><div class="post animated fadeInDown"><div class=post_title><h2><a href=/posts/buildpack-tips-and-tricks/>Buildpack Tips and Tricks</a></h2></div><div class=list><div class="post_content markdown"><p>2018 年去上海參加 Kubecon 就有聽到過 CNCF 下的 Cloud Native Buildpacks 的專案。回來也有試玩了一下，概念很不錯，那時候可能整個生態系統比較不建全，試玩了一下就放到旁邊去了 不過自從 Google Cloud Next 20' - Hands-on Keynote: Building Trust for Speedy Innovation 中也有場次提到 Google 內部已經使用 Buildpack 的 <a href=/posts/buildpack-tips-and-tricks/>...more</a></p></div></div><div class=post_footer><div class=meta><div class=info><span class=field><i class=ri-map-pin-time-line></i>
-<span class=date>2021.04.02</span></span>
 <span class="field tags"><i class=ri-stack-line></i>
 <a href=https://kaichu.io/tags/buildpack/>buildpack</a>
 <a href=https://kaichu.io/tags/gcp/>gcp</a>
