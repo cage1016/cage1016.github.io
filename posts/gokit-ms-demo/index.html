@@ -21,19 +21,19 @@ export TICTAC_GRPC_LB_URL=$TICTAC_LB_HOST:$TICTAC_GRPC_LB_PORT
 echo $TICTAC_HTTP_LB_URL
 echo $TICTAC_GRPC_LB_URL
 </code></pre></li><li>Access by command<ul><li>sum method</li></ul><pre><code class=language-shell>curl -X POST $ADD_HTTP_LB_URL/sum -d '{&quot;a&quot;: 1, &quot;b&quot;:1}'
-   
+
 or
-   
+
 grpcurl -d '{&quot;a&quot;: 1, &quot;b&quot;:1}' -plaintext -proto ./pb/add/add.proto $ADD_GRPC_LB_URL pb.Add.Sum
 </code></pre><ul><li>tic method</li></ul><pre><code class=language-shell>curl -X POST $TICTAC_HTTP_LB_URL/tic
-   
+
 or
-   
+
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto $TICTAC_GRPC_LB_URL pb.Tictac.Tic
 </code></pre><ul><li>tac method</li></ul><pre><code class=language-shell>curl $TICTAC_HTTP_LB_URL/tac
-   
+
 or
-   
+
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto $TICTAC_GRPC_LB_URL pb.Tictac.Tac
 </code></pre></li><li>Apply istio manifests <code>kubectl apply -f deployments/istio-manifests</code></li><li>Set the <code>GATEWAY_HTTP_URL/GATEWAY_GRPC_URL</code> environment variable in your shell to the public IP/port of the Istio Ingress gateway.<pre><code class=language-shell>export INGRESS_HTTP_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name==&quot;http2&quot;)].port}')
 export INGRESS_GRPC_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name==&quot;https&quot;)].port}')
@@ -43,19 +43,19 @@ export GATEWAY_GRPC_URL=$INGRESS_HOST:$INGRESS_GRPC_PORT
 echo $GATEWAY_HTTP_URL
 echo $GATEWAY_GRPC_URL
 </code></pre></li><li>Access by command<ul><li>sum method</li></ul><pre><code class=language-shell>curl -X POST $GATEWAY_HTTP_URL/api/v1/add/sum -d '{&quot;a&quot;: 1, &quot;b&quot;:1}'
-   
+
 or
-   
+
 grpcurl -d '{&quot;a&quot;: 1, &quot;b&quot;:1}' -plaintext -proto ./pb/add/add.proto $GATEWAY_GRPC_URL pb.Add.Sum
 </code></pre><ul><li>tic method</li></ul><pre><code class=language-shell>curl -X POST $GATEWAY_HTTP_URL/api/v1/tictac/tic
-   
+
 or
-   
+
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto $GATEWAY_GRPC_URL pb.Tictac.Tic
 </code></pre><ul><li>tac method</li></ul><pre><code class=language-shell>curl $GATEWAY_HTTP_URL/api/v1/tictac/tac
-   
+
 or
-   
+
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto $GATEWAY_GRPC_URL pb.Tictac.Tac
 </code></pre></li></ol><h3 id=cleanup>CleanUP</h3><p><code>skaffold delete</code></p><p>or</p><p><code>kubectl delete -f deployments/istio-manifests</code></p></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/skaffold-debug-goland/>Skaffold debug goland</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
 <a href=https://kaichu.io/tags/gokit/>gokit</a>
