@@ -1,4 +1,15 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>KaiChu</title><link>https://kaichu.io/</link><description>Recent content on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 04 May 2021 02:11:40 +0000</lastBuildDate><atom:link href="https://kaichu.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Telepresence 2 Have a Tried</title><link>https://kaichu.io/posts/telepresence-2-have-a-tried/</link><pubDate>Tue, 04 May 2021 02:11:40 +0000</pubDate><guid>https://kaichu.io/posts/telepresence-2-have-a-tried/</guid><description>&lt;p>在開發 Kuberentes 應用程式時使用 &lt;a href="https://github.com/GoogleContainerTools/skaffold">Skaffold&lt;/a> 應該是基本操作了，Skaffold 可以幫忙加速開發的速度 (修改程式碼 → 構建 container image → push container image to registry (optional) → 部署至 Kubernets Cluster)，至於是否搭配 &lt;code>Helm&lt;/code> 還是直接操作 &lt;code>yaml&lt;/code> 就看個人喜好來決定&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>KaiChu</title><link>https://kaichu.io/</link><description>Recent content on KaiChu</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 07 May 2021 08:39:11 +0000</lastBuildDate><atom:link href="https://kaichu.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Github Script Repos Sync</title><link>https://kaichu.io/posts/github-script-repos-sync/</link><pubDate>Fri, 07 May 2021 08:39:11 +0000</pubDate><guid>https://kaichu.io/posts/github-script-repos-sync/</guid><description>&lt;p>Google Spreadsheet
+&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/github-script-repos-sync/img/0.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/github-script-repos-sync/img/0.png" />
+&lt;/a>
+&lt;/div>&lt;/p>
+&lt;p>Github Markdown
+&lt;div class="fancybox">
+&lt;a data-fancybox="gallery" href="https://kaichu.io/posts/github-script-repos-sync/img/1.png" data-caption="">
+&lt;img src="https://kaichu.io/posts/github-script-repos-sync/img/1.png" />
+&lt;/a>
+&lt;/div>&lt;/p></description></item><item><title>Telepresence 2 Have a Tried</title><link>https://kaichu.io/posts/telepresence-2-have-a-tried/</link><pubDate>Tue, 04 May 2021 02:11:40 +0000</pubDate><guid>https://kaichu.io/posts/telepresence-2-have-a-tried/</guid><description>&lt;p>在開發 Kuberentes 應用程式時使用 &lt;a href="https://github.com/GoogleContainerTools/skaffold">Skaffold&lt;/a> 應該是基本操作了，Skaffold 可以幫忙加速開發的速度 (修改程式碼 → 構建 container image → push container image to registry (optional) → 部署至 Kubernets Cluster)，至於是否搭配 &lt;code>Helm&lt;/code> 還是直接操作 &lt;code>yaml&lt;/code> 就看個人喜好來決定&lt;/p>
 &lt;p>在 Debug 部份，Skaffold 也支援 Remote container debug 的功能 (之前的文章請參照 &lt;a href="https://kaichu.io/posts/skaffold-debug-goland/">Skaffold debug goland&lt;/a>)。雖然 Skaffold debug 很方便，不過當 Kubernetes 的應用一多時就沒有辦法在本機端完整的重現有所的服務，這時候開源的 Telepresence 就是一個很好的幫手&lt;/p>
 &lt;h3 id="telepresence">Telepresence&lt;/h3>
 &lt;div class="fancybox">
