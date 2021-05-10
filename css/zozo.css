@@ -726,3 +726,8 @@ a.back_to_top:hover span {
 }
 
 /*animation ends*/
+
+/* custom */
+.gist table th, .gist table td {
+  border: 0;
+}
