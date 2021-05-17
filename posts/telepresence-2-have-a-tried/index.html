@@ -1,21 +1,49 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>Telepresence 2 Have a Tried ｜ KaiChu</title><meta name=description content="在開發 Kuberentes 應用程式時使用 Skaffold 應該是基本操作了，Skaffold 可以幫忙加速開發的速度 (修改程式碼 → 構建 container image → push container image to registry (optional) → 部署至 Kubernets Cluster)，至於是否搭配 Helm 還是直接操作 yaml 就看個人喜好來決定
-在 Debug 部份，Skaffold 也支援 Remote container debug 的功能 (之前的文章請參照 Skaffold debug goland)。雖然 Skaffold debug 很方便，不過當 Kubernetes 的應用一多時就沒有辦法在本機端完整的重現有所的服務，這時候開源的 Telepresence 就是一個很好的幫手
-Telepresence  "><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a>
-<a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a>
-<a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a>
-<a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a>
-<a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a>
-<a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/telepresence-2-have-a-tried/>Telepresence 2 Have a Tried</a></h2><span class=date>2021.05.04</span></div><div class="post_content markdown"><p>在開發 Kuberentes 應用程式時使用 <a href=https://github.com/GoogleContainerTools/skaffold>Skaffold</a> 應該是基本操作了，Skaffold 可以幫忙加速開發的速度 (修改程式碼 → 構建 container image → push container image to registry (optional) → 部署至 Kubernets Cluster)，至於是否搭配 <code>Helm</code> 還是直接操作 <code>yaml</code> 就看個人喜好來決定</p><p>在 Debug 部份，Skaffold 也支援 Remote container debug 的功能 (之前的文章請參照 <a href=https://kaichu.io/posts/skaffold-debug-goland/>Skaffold debug goland</a>)。雖然 Skaffold debug 很方便，不過當 Kubernetes 的應用一多時就沒有辦法在本機端完整的重現有所的服務，這時候開源的 Telepresence 就是一個很好的幫手</p><h3 id=telepresence>Telepresence</h3><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg></a></div><blockquote><p>Local development against a remote Kubernetes or OpenShift cluster</p></blockquote><blockquote><p>** Note: Telepresence 1 is being replaced by our even better <a href=https://github.com/telepresenceio/telepresence/tree/release/v2>Telepresence 2</a>. Please try Telepresence 2 first and report any issues as we expect this will be the default by Q2 2021. **</p></blockquote><p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg></a></div>(ref: <a href=https://www.getambassador.io/docs/telepresence/latest/reference/architecture/>https://www.getambassador.io/docs/telepresence/latest/reference/architecture/</a>)</p><p>(這邊以 Telepresence 2 為主) 基本上來說 Telepresence 透過 Traffic agent 將所有目標服務的流量/特定 header(&ldquo;x-telepresence-intercept-id&rdquo;) 請求重導至本機中，這樣我們就針對單一服務進行快速的進行開發，同時地機端如果也連接至 Kubernets Cluster 其他的資源也是相通的</p><pre><code class=language-bash>telepresence version
-Client v2.2.1 (api v3)
-Daemon v2.2.0 (api v3)
-</code></pre><pre><code class=language-bash>Usage:
-  telepresence [command]
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Telepresence 2 Have a Tried - KaiChu</title><meta name=Description content="telepresence 是一個有效提升多微服務中連結本地開發的一個好用工具，它解決了 Skaffold 開發中本地 deubg 的不足，期待 GA 的到來"><meta property="og:title" content="Telepresence 2 Have a Tried"><meta property="og:description" content="telepresence 是一個有效提升多微服務中連結本地開發的一個好用工具，它解決了 Skaffold 開發中本地 deubg 的不足，期待 GA 的到來"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/telepresence-2-have-a-tried/"><meta property="og:image" content="https://kaichu.io/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-05-04T02:11:40+00:00"><meta property="article:modified_time" content="2021-05-17T15:21:01+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg"><meta name=twitter:title content="Telepresence 2 Have a Tried"><meta name=twitter:description content="telepresence 是一個有效提升多微服務中連結本地開發的一個好用工具，它解決了 Skaffold 開發中本地 deubg 的不足，期待 GA 的到來"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/telepresence-2-have-a-tried/><link rel=prev href=https://kaichu.io/posts/github-assets-cnb/><link rel=next href=https://kaichu.io/posts/github-script-repos-and-collaborators-list-sync/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Telepresence 2 Have a Tried","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/telepresence-2-have-a-tried\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/telepresence-2-have-a-tried\/img\/demo-architecture.jpg","width":2732,"height":1596}],"genre":"posts","keywords":"telepresence, debug, microservices, kubernetes","wordcount":1527,"url":"https:\/\/kaichu.io\/posts\/telepresence-2-have-a-tried\/","datePublished":"2021-05-04T02:11:40+00:00","dateModified":"2021-05-17T15:21:01+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"telepresence 是一個有效提升多微服務中連結本地開發的一個好用工具，它解決了 Skaffold 開發中本地 deubg 的不足，期待 GA 的到來"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Telepresence 2 Have a Tried</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-05-04>2021-05-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1527 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#telepresence>Telepresence</a></li><li><a href=#cage1016ms-demo>cage1016/ms-demo</a><ul><li><a href=#all-tcp-connections>all TCP connections</a></li><li><a href=#headerx-telepresence-intercept-id>header(&ldquo;x-telepresence-intercept-id&rdquo;)</a></li></ul></li><li><a href=#結論>結論</a></li></ul></li></ul></nav></div></div><div class=content id=content><p>在開發 Kuberentes 應用程式時使用 <a href=https://github.com/GoogleContainerTools/skaffold target=_blank rel="noopener noreffer">Skaffold</a> 應該是基本操作了，Skaffold 可以幫忙加速開發的速度 (修改程式碼 → 構建 container image → push container image to registry (optional) → 部署至 Kubernets Cluster)，至於是否搭配 <code>Helm</code> 還是直接操作 <code>yaml</code> 就看個人喜好來決定</p><p>在 Debug 部份，Skaffold 也支援 Remote container debug 的功能 (之前的文章請參照 <a href=https://kaichu.io/posts/skaffold-debug-goland/ target=_blank rel="noopener noreffer">Skaffold debug goland</a>)。雖然 Skaffold debug 很方便，不過當 Kubernetes 的應用一多時就沒有辦法在本機端完整的重現有所的服務，這時候開源的 Telepresence 就是一個很好的幫手</p><h3 id=telepresence>Telepresence</h3><a class=lightgallery href=/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg title=/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg data-thumbnail=/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg><img class=lazyload src=/svg/loading.min.svg data-src=/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg data-srcset="/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg, /posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg 1.5x, /posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg 2x" data-sizes=auto alt=/posts/telepresence-2-have-a-tried/img/bird-on-bricks.svg></a><blockquote><p>Local development against a remote Kubernetes or OpenShift cluster</p></blockquote><blockquote><p>** Note: Telepresence 1 is being replaced by our even better <a href=https://github.com/telepresenceio/telepresence/tree/release/v2 target=_blank rel="noopener noreffer">Telepresence 2</a>. Please try Telepresence 2 first and report any issues as we expect this will be the default by Q2 2021. **</p></blockquote><p><figure><a class=lightgallery href=/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg title=/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg data-thumbnail=/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg data-sub-html="<h2>telepresence architecture</h2>"><img class=lazyload src=/svg/loading.min.svg data-src=/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg data-srcset="/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg, /posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg 1.5x, /posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg 2x" data-sizes=auto alt=/posts/telepresence-2-have-a-tried/img/telepresence-architecture.inline.svg></a><figcaption class=image-caption>telepresence architecture</figcaption></figure>(ref: <a href=https://www.getambassador.io/docs/telepresence/latest/reference/architecture/>https://www.getambassador.io/docs/telepresence/latest/reference/architecture/</a>)</p><p>(這邊以 Telepresence 2 為主) 基本上來說 Telepresence 透過 Traffic agent 將所有目標服務的流量/特定 header(&ldquo;x-telepresence-intercept-id&rdquo;) 請求重導至本機中，這樣我們就針對單一服務進行快速的進行開發，同時地機端如果也連接至 Kubernets Cluster 其他的資源也是相通的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>telepresence version
+Client v2.2.1 <span class=o>(</span>api v3<span class=o>)</span>
+Daemon v2.2.0 <span class=o>(</span>api v3<span class=o>)</span>
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>Usage:
+  telepresence <span class=o>[</span>command<span class=o>]</span>
 
 Available Commands:
   Session Commands:
     connect              Connect to a cluster
     login                Authenticate to Ambassador Cloud
-    logout               Logout from Ambassador Cloud
+    <span class=nb>logout</span>               Logout from Ambassador Cloud
     license              Get License from Ambassador Cloud
     status               Show connectivity status
     quit                 Tell telepresence daemon to quit
@@ -23,30 +51,56 @@ Available Commands:
     list                 List current intercepts
     intercept            Intercept a service
     leave                Remove existing intercept
-    preview              Create or remove preview domains for existing intercepts
+    preview              Create or remove preview domains <span class=k>for</span> existing intercepts
   Other Commands:
     version              Show version
     uninstall            Uninstall telepresence agents and manager
     dashboard            Open the dashboard in a web page
-    current-cluster-id   Get cluster ID for your kubernetes cluster
+    current-cluster-id   Get cluster ID <span class=k>for</span> your kubernetes cluster
 
-</code></pre><p>Telepresence 1.0 跟 2.0 差異很大，2.0 是以 Golang 重新改寫，官方也建議從 2.0 開始，不過 2.0 目前還沒有完全開發完成</p><pre><code class=language-bash>NAMESPACE       NAME                                        READY   STATUS    RESTARTS   AGE
-ambassador      traffic-manager-78f4f95c7d-z62lm            1/1     Running   1          33h
-</code></pre><p>第一次操作 Telepresence，會在 Kubernets 中建立 traffic-manager, Traffic-manager 是 Telepresence 2.0 的核心組件也是負責本地 Telepresence Demaons 及目標 Pod 中 Traffice Agent 的溝通</p><pre><code class=language-bash>kubectl delete svc,deploy -n ambassador traffic-manager
-</code></pre><p>必要的時候可以進行刪除，下一次 Telepresence 重新連線的時候會重建</p><h3 id=cage1016ms-demo>cage1016/ms-demo</h3><blockquote><p>gokit microservice demo</p></blockquote><p>接下來 Demo 就以 <a href=https://github.com/cage1016/ms-demo>cage1016/ms-demo</a> 中的 gokit microservice demo 來進行操作</p><table><thead><tr><th>Service</th><th>Method</th><th>Description</th></tr></thead><tbody><tr><td>add</td><td>Sum</td><td>Expose Sum(a,b) method</td></tr><tr><td>tictac</td><td>Tic</td><td>Expose Tic method (incrase value by Add Sum GRPC )</td></tr><tr><td>tictac</td><td>Tac</td><td>Expose Tac method (recive value)</td></tr></tbody></table><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg></a></div><h4 id=all-tcp-connections>all TCP connections</h4><ol><li><p>準個一個可用的 K8s cluster，我們這邊使用 Mac docker-desktop 的 k8s cluster</p></li><li><p>部署 <a href=https://github.com/cage1016/ms-demo>cage1016/ms-demo: gokit microservice demo</a> <code>Add</code>, <code>Tictac</code> 微服務</p><pre><code class=language-bash>kubectl apply -f https://raw.githubusercontent.com/cage1016/ms-demo/master/deployments/kubernetes-manifests-all.yaml
-</code></pre><pre><code class=language-bash>kubectl get po
+</code></pre></td></tr></table></div></div><p>Telepresence 1.0 跟 2.0 差異很大，2.0 是以 Golang 重新改寫，官方也建議從 2.0 開始，不過 2.0 目前還沒有完全開發完成</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>NAMESPACE       NAME                                        READY   STATUS    RESTARTS   AGE
+ambassador      traffic-manager-78f4f95c7d-z62lm            1/1     Running   <span class=m>1</span>          33h
+</code></pre></td></tr></table></div></div><p>第一次操作 Telepresence，會在 Kubernets 中建立 traffic-manager, Traffic-manager 是 Telepresence 2.0 的核心組件也是負責本地 Telepresence Demaons 及目標 Pod 中 Traffice Agent 的溝通</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl delete svc,deploy -n ambassador traffic-manager
+</code></pre></td></tr></table></div></div><p>必要的時候可以進行刪除，下一次 Telepresence 重新連線的時候會重建</p><h3 id=cage1016ms-demo>cage1016/ms-demo</h3><blockquote><p>gokit microservice demo</p></blockquote><p>接下來 Demo 就以 <a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo</a> 中的 gokit microservice demo 來進行操作</p><table><thead><tr><th>Service</th><th>Method</th><th>Description</th></tr></thead><tbody><tr><td>add</td><td>Sum</td><td>Expose Sum(a,b) method</td></tr><tr><td>tictac</td><td>Tic</td><td>Expose Tic method (incrase value by Add Sum GRPC )</td></tr><tr><td>tictac</td><td>Tac</td><td>Expose Tac method (recive value)</td></tr></tbody></table><figure><a class=lightgallery href=/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg title=/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg data-thumbnail=/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg data-sub-html="<h2>gokit microservice demo architecture</h2>"><img class=lazyload src=/svg/loading.min.svg data-src=/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg data-srcset="/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg, /posts/telepresence-2-have-a-tried/img/demo-architecture.jpg 1.5x, /posts/telepresence-2-have-a-tried/img/demo-architecture.jpg 2x" data-sizes=auto alt=/posts/telepresence-2-have-a-tried/img/demo-architecture.jpg></a><figcaption class=image-caption>gokit microservice demo architecture</figcaption></figure><h4 id=all-tcp-connections>all TCP connections</h4><ol><li><p>準個一個可用的 K8s cluster，我們這邊使用 Mac docker-desktop 的 k8s cluster</p></li><li><p>部署 <a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo: gokit microservice demo</a> <code>Add</code>, <code>Tictac</code> 微服務</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/cage1016/ms-demo/master/deployments/kubernetes-manifests-all.yaml
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl get po
 NAME                      READY   STATUS    RESTARTS   AGE
-add-68b7f4b486-cqf4m      1/1     Running   0          17m
-tictac-85f698c88f-cw6mg   2/2     Running   1          17m
-</code></pre></li><li><p>Expose service，這邊使用的方式為 LoadBalancer</p><pre><code class=language-bash>kubectl apply -f https://raw.githubusercontent.com/cage1016/ms-demo/master/deployments/lb-all.yaml
-</code></pre><pre><code class=language-bash>kubectl get svc
-NAME              TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
+add-68b7f4b486-cqf4m      1/1     Running   <span class=m>0</span>          17m
+tictac-85f698c88f-cw6mg   2/2     Running   <span class=m>1</span>          17m
+</code></pre></td></tr></table></div></div></li><li><p>Expose service，這邊使用的方式為 LoadBalancer</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/cage1016/ms-demo/master/deployments/lb-all.yaml
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl get svc
+NAME              TYPE           CLUSTER-IP      EXTERNAL-IP   PORT<span class=o>(</span>S<span class=o>)</span>                         AGE
 add               ClusterIP      10.97.120.99    &lt;none&gt;        80/TCP,8000/TCP                 18m
 add-external      LoadBalancer   10.101.69.142   localhost     8180:31605/TCP,8181:32609/TCP   5m57s
 kubernetes        ClusterIP      10.96.0.1       &lt;none&gt;        443/TCP                         5d5h
 tictac            ClusterIP      10.96.191.66    &lt;none&gt;        80/TCP,8000/TCP                 18m
 tictac-external   LoadBalancer   10.100.63.131   localhost     9190:30349/TCP,9191:30063/TCP   5m57s
-</code></pre></li><li><p>設定攔截器，intercept <code>Add</code> service name <code>grpc</code> 至本機中 <code>10121</code> (GRPC) service，等待指令完成後中顯示會攔截 add service 所有流量至 127.0.0.1:10121</p><pre><code class=language-bash>telepresence intercept add --service add --port 10121:grpc
+</code></pre></td></tr></table></div></div></li><li><p>設定攔截器，intercept <code>Add</code> service name <code>grpc</code> 至本機中 <code>10121</code> (GRPC) service，等待指令完成後中顯示會攔截 add service 所有流量至 127.0.0.1:10121</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>telepresence intercept add --service add --port 10121:grpc
 Using Deployment add
 intercepted
     Intercept name         : add
@@ -54,38 +108,78 @@ intercepted
     Workload kind          : Deployment
     Destination            : 127.0.0.1:10121
     Service Port Identifier: grpc
-    Volume Mount Error     : macFUSE 4.0.5 or higher is required on your local machine
+    Volume Mount Error     : macFUSE 4.0.5 or higher is required on your <span class=nb>local</span> machine
     Intercepting           : all TCP connections
-</code></pre></li><li><p>這時候我們可以看到 add Pod 中已經被置入 <code>traffic-agent</code></p><pre><code class=language-bash>kubectl iexec add
+</code></pre></td></tr></table></div></div></li><li><p>這時候我們可以看到 add Pod 中已經被置入 <code>traffic-agent</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl iexec add
 Use the arrow keys to navigate: ↓ ↑ → ←
 ? Select Container:
   Container: ▸ add
   Container: traffic-agent
-</code></pre></li><li><p>在 <a href=https://github.com/cage1016/ms-demo>cage1016/ms-demo</a> 中進行 Debug，VSCode 中 <code>lanuch.json</code> 加入 Debug 設定後執行</p><pre><code class=language-json>{
-    &quot;configurations&quot;: [
-        {
-            &quot;name&quot;: &quot;add&quot;,
-            &quot;type&quot;: &quot;go&quot;,
-            &quot;request&quot;: &quot;launch&quot;,
-            &quot;mode&quot;: &quot;auto&quot;,
-            &quot;program&quot;: &quot;${workspaceFolder}/cmd/add&quot;,
-            &quot;env&quot;: {
-                &quot;QS_LOG_LEVEL&quot;: &quot;info&quot;,
-                &quot;QS_HTTP_PORT&quot;: &quot;10120&quot;,
-                &quot;QS_GRPC_PORT&quot;: &quot;10121&quot;,
-            }
-        },
-    ]
-}
-</code></pre><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug.png data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug.png></a></div></li><li><p>設定 <code>Add</code> 服務中斷點</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug-2.png data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug-2.png></a></div></li><li><p>獲取 <code>Tictac</code> 服務的 URL</p><pre><code class=language-bash>TICTAC_HTTP_EXTERNAL_PORT=$(kubectl get service tictac-external -o jsonpath='{.spec.ports[?(@.name==&quot;http&quot;)].port}')
-TICTAC_EXTERNAL_HOST=$(kubectl get service tictac-external -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-# TICTAC_EXTERNAL_HOST=$(kubectl get service tictac-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}') # unmark if necessary
-TICTAC_HTTP_EXTERNAL_URL=$TICTAC_EXTERNAL_HOST:$TICTAC_HTTP_EXTERNAL_PORT
-echo $TICTAC_HTTP_EXTERNAL_URL
-</code></pre></li><li><p>使用 curl 進行請求</p><pre><code class=language-bash>curl -X POST $TICTAC_HTTP_EXTERNAL_URL/tic
-</code></pre></li><li><p>VSCode 中執行中的 Add service 會成功攔截至流量並停在我們設置的中斷點中</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug-3.png data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug-3.png></a></div></li></ol><h4 id=headerx-telepresence-intercept-id>header(&ldquo;x-telepresence-intercept-id&rdquo;)</h4><p>Telepresence 除了全流量的攔截之外也支援特定的請求，基本上的操作步驟是一樣的，差異的部份需要先進行 Telepresence login</p><ol><li><p>進行 Telepresence login</p><pre><code class=language-bash>Telepresence login
-</code></pre></li><li><p>(Optional)，如果已經跑過一次 intercept，記得先退出當前的 intercept</p><pre><code class=language-bash>Telepresence leave add
-</code></pre></li><li><p>一樣進行設定攔截器的配置並加上 <code>--preview-url=false</code>，我們並不需在 Ambassador 上產生 preview url</p><blockquote><p>需要 Telepresence login 操作 intercept 才會有特定請求，不然怎麼操作都會是 all TCP connections</p></blockquote><pre><code>telepresence intercept add --service add --port 10121:grpc --preview-url=false
+</code></pre></td></tr></table></div></div></li><li><p>在 <a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo</a> 中進行 Debug，VSCode 中 <code>lanuch.json</code> 加入 Debug 設定後執行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-json data-lang=json><span class=p>{</span>
+    <span class=nt>&#34;configurations&#34;</span><span class=p>:</span> <span class=p>[</span>
+        <span class=p>{</span>
+            <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;add&#34;</span><span class=p>,</span>
+            <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;go&#34;</span><span class=p>,</span>
+            <span class=nt>&#34;request&#34;</span><span class=p>:</span> <span class=s2>&#34;launch&#34;</span><span class=p>,</span>
+            <span class=nt>&#34;mode&#34;</span><span class=p>:</span> <span class=s2>&#34;auto&#34;</span><span class=p>,</span>
+            <span class=nt>&#34;program&#34;</span><span class=p>:</span> <span class=s2>&#34;${workspaceFolder}/cmd/add&#34;</span><span class=p>,</span>
+            <span class=nt>&#34;env&#34;</span><span class=p>:</span> <span class=p>{</span>
+                <span class=nt>&#34;QS_LOG_LEVEL&#34;</span><span class=p>:</span> <span class=s2>&#34;info&#34;</span><span class=p>,</span>
+                <span class=nt>&#34;QS_HTTP_PORT&#34;</span><span class=p>:</span> <span class=s2>&#34;10120&#34;</span><span class=p>,</span>
+                <span class=nt>&#34;QS_GRPC_PORT&#34;</span><span class=p>:</span> <span class=s2>&#34;10121&#34;</span><span class=p>,</span>
+            <span class=p>}</span>
+        <span class=p>},</span>
+    <span class=p>]</span>
+<span class=p>}</span>
+</code></pre></td></tr></table></div></div><figure><a class=lightgallery href=/posts/telepresence-2-have-a-tried/img/debug.png title=/posts/telepresence-2-have-a-tried/img/debug.png data-thumbnail=/posts/telepresence-2-have-a-tried/img/debug.png data-sub-html="<h2>debug</h2>"><img class=lazyload src=/svg/loading.min.svg data-src=/posts/telepresence-2-have-a-tried/img/debug.png data-srcset="/posts/telepresence-2-have-a-tried/img/debug.png, /posts/telepresence-2-have-a-tried/img/debug.png 1.5x, /posts/telepresence-2-have-a-tried/img/debug.png 2x" data-sizes=auto alt=/posts/telepresence-2-have-a-tried/img/debug.png></a><figcaption class=image-caption>debug</figcaption></figure></li><li><p>設定 <code>Add</code> 服務中斷點</p><figure><a class=lightgallery href=/posts/telepresence-2-have-a-tried/img/debug-2.png title=/posts/telepresence-2-have-a-tried/img/debug-2.png data-thumbnail=/posts/telepresence-2-have-a-tried/img/debug-2.png data-sub-html="<h2>debug</h2>"><img class=lazyload src=/svg/loading.min.svg data-src=/posts/telepresence-2-have-a-tried/img/debug-2.png data-srcset="/posts/telepresence-2-have-a-tried/img/debug-2.png, /posts/telepresence-2-have-a-tried/img/debug-2.png 1.5x, /posts/telepresence-2-have-a-tried/img/debug-2.png 2x" data-sizes=auto alt=/posts/telepresence-2-have-a-tried/img/debug-2.png></a><figcaption class=image-caption>debug</figcaption></figure></li><li><p>獲取 <code>Tictac</code> 服務的 URL</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=nv>TICTAC_HTTP_EXTERNAL_PORT</span><span class=o>=</span><span class=k>$(</span>kubectl get service tictac-external -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.spec.ports[?(@.name==&#34;http&#34;)].port}&#39;</span><span class=k>)</span>
+<span class=nv>TICTAC_EXTERNAL_HOST</span><span class=o>=</span><span class=k>$(</span>kubectl get service tictac-external -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.status.loadBalancer.ingress[0].hostname}&#39;</span><span class=k>)</span>
+<span class=c1># TICTAC_EXTERNAL_HOST=$(kubectl get service tictac-external -o jsonpath=&#39;{.status.loadBalancer.ingress[0].ip}&#39;) # unmark if necessary</span>
+<span class=nv>TICTAC_HTTP_EXTERNAL_URL</span><span class=o>=</span><span class=nv>$TICTAC_EXTERNAL_HOST</span>:<span class=nv>$TICTAC_HTTP_EXTERNAL_PORT</span>
+<span class=nb>echo</span> <span class=nv>$TICTAC_HTTP_EXTERNAL_URL</span>
+</code></pre></td></tr></table></div></div></li><li><p>使用 curl 進行請求</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>curl -X POST <span class=nv>$TICTAC_HTTP_EXTERNAL_URL</span>/tic
+</code></pre></td></tr></table></div></div></li><li><p>VSCode 中執行中的 Add service 會成功攔截至流量並停在我們設置的中斷點中</p><figure><a class=lightgallery href=/posts/telepresence-2-have-a-tried/img/debug-3.png title=/posts/telepresence-2-have-a-tried/img/debug-3.png data-thumbnail=/posts/telepresence-2-have-a-tried/img/debug-3.png data-sub-html="<h2>debug</h2>"><img class=lazyload src=/svg/loading.min.svg data-src=/posts/telepresence-2-have-a-tried/img/debug-3.png data-srcset="/posts/telepresence-2-have-a-tried/img/debug-3.png, /posts/telepresence-2-have-a-tried/img/debug-3.png 1.5x, /posts/telepresence-2-have-a-tried/img/debug-3.png 2x" data-sizes=auto alt=/posts/telepresence-2-have-a-tried/img/debug-3.png></a><figcaption class=image-caption>debug</figcaption></figure></li></ol><h4 id=headerx-telepresence-intercept-id>header(&ldquo;x-telepresence-intercept-id&rdquo;)</h4><p>Telepresence 除了全流量的攔截之外也支援特定的請求，基本上的操作步驟是一樣的，差異的部份需要先進行 Telepresence login</p><ol><li><p>進行 Telepresence login</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>Telepresence login
+</code></pre></td></tr></table></div></div></li><li><p>(Optional)，如果已經跑過一次 intercept，記得先退出當前的 intercept</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>Telepresence leave add
+</code></pre></td></tr></table></div></div></li><li><p>一樣進行設定攔截器的配置並加上 <code>--preview-url=false</code>，我們並不需在 Ambassador 上產生 preview url</p><blockquote><p>需要 Telepresence login 操作 intercept 才會有特定請求，不然怎麼操作都會是 all TCP connections</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>telepresence intercept add --service add --port 10121:grpc --preview-url=false
 Using Deployment add
 intercepted
     Intercept name         : add
@@ -95,11 +189,10 @@ intercepted
     Service Port Identifier: grpc
     Volume Mount Error     : macFUSE 4.0.5 or higher is required on your local machine
     Intercepting           : HTTP requests that match all of:
-      header(&quot;x-telepresence-intercept-id&quot;) ~= regexp(&quot;5b771ea3-8f6a-4be1-82f3-675aa1e28840:add&quot;)
-</code></pre></li><li><p>這時候再使用 curl 進行請求並加上特定的 (x-telepresence-intercept-id) 才會進行攔截，沒有加上 Header 的請求反之不理</p><pre><code class=language-bash>curl -H 'x-telepresence-intercept-id: 5b771ea3-8f6a-4be1-82f3-675aa1e28840:add' -X POST $TICTAC_HTTP_EXTERNAL_URL/tic
-</code></pre></li><li><p>VSCode 攔截特定請求</p><blockquote><p>這邊一個成功的因素是 tictac tic 呼叫 add sum GRPC 時一同把 header 的 x-telepresence-intercept-id 加到 context 才可以</p></blockquote><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug-4.png data-caption><img src=https://kaichu.io/posts/telepresence-2-have-a-tried/img/debug-4.png></a></div></li></ol><h3 id=結論>結論</h3><p>Teleresence 2 可以有效的降低多個微服務的 debug 體驗，只攔截特定請求更是方便，不需要擔心把微服務咬死，不過目前開發還在進行中，Github community 回報的 issue 還是不少，還是值得一玩。大家可以至 <a href=https://github.com/cage1016/ms-demo>cage1016/ms-demo: gokit microservice demo</a> 中 clone 有所的程式照著操作看看體驗看看</p></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/gokit-engineering-operation/>GoPherCon 2020 TW: 如何透過 Go-kit 快速搭建微服務架構應用程式實戰</a></li><li><a href=/posts/gokit-ms-demo/>Gokit microservice demo</a></li><li><a href=/posts/skaffold-debug-goland/>Skaffold debug goland</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
-<a href=https://kaichu.io/tags/telepresence/>telepresence</a>
-<a href=https://kaichu.io/tags/debug/>debug</a>
-<a href=https://kaichu.io/tags/microservices/>microservices</a>
-<a href=https://kaichu.io/tags/kubernetes/>kubernetes</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//kaichuio.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
-<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['[[',']]']],processEscapes:!0,processEnvironments:!0,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}}),MathJax.Hub.Queue(function(){var b=MathJax.Hub.getAllJax(),a;for(a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-65308340-1','auto'),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="media!='all'&&(media='all')"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/'"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(a){a.classList.add('line-numbers')})"></script></body></html>
+      header(&#34;x-telepresence-intercept-id&#34;) ~= regexp(&#34;5b771ea3-8f6a-4be1-82f3-675aa1e28840:add&#34;)
+</code></pre></td></tr></table></div></div></li><li><p>這時候再使用 curl 進行請求並加上特定的 (x-telepresence-intercept-id) 才會進行攔截，沒有加上 Header 的請求反之不理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>curl -H <span class=s1>&#39;x-telepresence-intercept-id: 5b771ea3-8f6a-4be1-82f3-675aa1e28840:add&#39;</span> -X POST <span class=nv>$TICTAC_HTTP_EXTERNAL_URL</span>/tic
+</code></pre></td></tr></table></div></div></li><li><p>VSCode 攔截特定請求</p><blockquote><p>這邊一個成功的因素是 tictac tic 呼叫 add sum GRPC 時一同把 header 的 x-telepresence-intercept-id 加到 context 才可以</p></blockquote><figure><a class=lightgallery href=/posts/telepresence-2-have-a-tried/img/debug-4.png title=/posts/telepresence-2-have-a-tried/img/debug-4.png data-thumbnail=/posts/telepresence-2-have-a-tried/img/debug-4.png data-sub-html="<h2>debug</h2>"><img class=lazyload src=/svg/loading.min.svg data-src=/posts/telepresence-2-have-a-tried/img/debug-4.png data-srcset="/posts/telepresence-2-have-a-tried/img/debug-4.png, /posts/telepresence-2-have-a-tried/img/debug-4.png 1.5x, /posts/telepresence-2-have-a-tried/img/debug-4.png 2x" data-sizes=auto alt=/posts/telepresence-2-have-a-tried/img/debug-4.png></a><figcaption class=image-caption>debug</figcaption></figure></li></ol><h3 id=結論>結論</h3><p>Teleresence 2 可以有效的降低多個微服務的 debug 體驗，只攔截特定請求更是方便，不需要擔心把微服務咬死，不過目前開發還在進行中，Github community 回報的 issue 還是不少，還是值得一玩。大家可以至 <a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo: gokit microservice demo</a> 中 clone 有所的程式照著操作看看體驗看看</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2021-05-17&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9ba3d46a17f8164088bbda18a68fe835039b6b0d target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9ba3d46a17f8164088bbda18a68fe835039b6b0d: fix(algolia): change wangchucheng/test-action@master to update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>9ba3d46</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/telepresence-2-have-a-tried/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/telepresence-2-have-a-tried/ data-title="Telepresence 2 Have a Tried" data-via=CageChung data-hashtags=telepresence,debug,microservices,kubernetes><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/telepresence-2-have-a-tried/ data-hashtag=telepresence><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/telepresence-2-have-a-tried/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/telepresence/>telepresence</a>,&nbsp;<a href=/tags/debug/>debug</a>,&nbsp;<a href=/tags/microservices/>microservices</a>,&nbsp;<a href=/tags/kubernetes/>kubernetes</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/github-assets-cnb/ class=prev rel=prev title="Github Assets Cnb"><i class="fas fa-angle-left fa-fw"></i>Github Assets Cnb</a>
+<a href=/posts/github-script-repos-and-collaborators-list-sync/ class=next rel=next title="Github Script Repos and Collaborators List Sync">Github Script Repos and Collaborators List Sync<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=disqus_thread class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://disqus.com/?ref_noscript>Disqus</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://kaichuio.disqus.com/embed.js defer></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

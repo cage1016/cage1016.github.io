@@ -1,25 +1,68 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>Build Your Buildpack ｜ KaiChu</title><meta name=description content="在 Buildpack Tips and Tricks ｜ KaiChu 上一篤文章中我們提到了 Cloud Native Buildpacks 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹如何編寫自己的 buildpack 及如何發佈至"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a>
-<a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a>
-<a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a>
-<a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a>
-<a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a>
-<a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/build-your-buildpack/>Build Your Buildpack</a></h2><span class=date>2021.04.08</span></div><div class="post_content markdown"><p>在 <a href=https://kaichu.io/posts/buildpack-tips-and-tricks/>Buildpack Tips and Tricks ｜ KaiChu</a> 上一篤文章中我們提到了 <a href=https://buildpacks.io/>Cloud Native Buildpacks</a> 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹如何編寫自己的 buildpack 及如何發佈至 buildpack registry</p><h3 id=這一篇文章會告訢你什麼>這一篇文章會告訢你什麼</h3><ul><li>buildpack 基本組成元件介紹</li><li>手工打造自己定義 builpack (pure shell)</li><li>使用 packit 建立自己定義 buildpack (Buildpacks Utils Library)</li><li>怎麼透過 github action 直接發佈至 buildpack registry</li></ul><h3 id=這一篇文章不會告訢你什麼>這一篇文章不會告訢你什麼</h3><ul><li>怎麼編寫一個 builder, 如何自定義 builder 請先看官方的範例 <a href=https://buildpacks.io/docs/operator-guide/create-a-builder/>Create a builder · Cloud Native Buildpacks</a></li></ul><p>Buildpack Examples:</p><pre><code class=language-bash>pack build test_img --path apps/test-app --builder cnbs/sample-builder:bionic
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Build Your Buildpack - KaiChu</title><meta name=Description content="在 Buildpack Tips and Tricks 上一篤文章中我們提到了 Cloud Native Buildpacks 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹 buildpack 基本組成元件、如何編寫自己的 buildpack 及發佈至 buildpack registry"><meta property="og:title" content="Build Your Buildpack"><meta property="og:description" content="在 Buildpack Tips and Tricks 上一篤文章中我們提到了 Cloud Native Buildpacks 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹 buildpack 基本組成元件、如何編寫自己的 buildpack 及發佈至 buildpack registry"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/build-your-buildpack/"><meta property="og:image" content="https://kaichu.io/posts/build-your-buildpack/img/jq-cnb.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-04-08T13:58:19+08:00"><meta property="article:modified_time" content="2021-05-17T15:21:01+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/posts/build-your-buildpack/img/jq-cnb.png"><meta name=twitter:title content="Build Your Buildpack"><meta name=twitter:description content="在 Buildpack Tips and Tricks 上一篤文章中我們提到了 Cloud Native Buildpacks 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹 buildpack 基本組成元件、如何編寫自己的 buildpack 及發佈至 buildpack registry"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/build-your-buildpack/><link rel=prev href=https://kaichu.io/posts/buildpack-tips-and-tricks/><link rel=next href=https://kaichu.io/posts/ghcr-io-pack-build/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Build Your Buildpack","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/build-your-buildpack\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/build-your-buildpack\/img\/jq-cnb.png","width":1440,"height":789}],"genre":"posts","keywords":"buildpack, gcp, pack, heroku, paketo","wordcount":2826,"url":"https:\/\/kaichu.io\/posts\/build-your-buildpack\/","datePublished":"2021-04-08T13:58:19+08:00","dateModified":"2021-05-17T15:21:01+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在 Buildpack Tips and Tricks 上一篤文章中我們提到了 Cloud Native Buildpacks 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹 buildpack 基本組成元件、如何編寫自己的 buildpack 及發佈至 buildpack registry"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Build Your Buildpack</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-04-08>2021-04-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2826 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;6 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#這一篇文章會告訢你什麼>這一篇文章會告訢你什麼</a></li><li><a href=#這一篇文章不會告訢你什麼>這一篇文章不會告訢你什麼</a></li><li><a href=#pack-inspect>Pack inspect</a></li><li><a href=#stack>Stack</a></li><li><a href=#buildpacks-packaged-in-a-builder>Buildpacks (packaged in a builder)</a></li><li><a href=#builder>Builder</a></li></ul></li><li><a href=#build-your-first-buildpack>Build your first buildpack</a><ul><li><a href=#buildpacks-utils-library>Buildpacks Utils Library</a></li><li><a href=#deploy-pack-to-buildpack-registry>deploy pack to buildpack registry</a></li></ul></li><li><a href=#reference>Reference</a></li></ul></nav></div></div><div class=content id=content><p>在 <a href=https://kaichu.io/posts/buildpack-tips-and-tricks/ target=_blank rel="noopener noreffer">Buildpack Tips and Tricks ｜ KaiChu</a> 上一篤文章中我們提到了 <a href=https://buildpacks.io/ target=_blank rel="noopener noreffer">Cloud Native Buildpacks</a> 專案發起的目的還有一些使用上的心得，一般的使用情境就是選擇適合的 builder (Google, Heroku, Paketo)，必要時可以指定額外的 buildpack 。本篇文章稍後也會介紹如何編寫自己的 buildpack 及如何發佈至 buildpack registry</p><h3 id=這一篇文章會告訢你什麼>這一篇文章會告訢你什麼</h3><ul><li>buildpack 基本組成元件介紹</li><li>手工打造自己定義 builpack (pure shell)</li><li>使用 packit 建立自己定義 buildpack (Buildpacks Utils Library)</li><li>怎麼透過 github action 直接發佈至 buildpack registry</li></ul><h3 id=這一篇文章不會告訢你什麼>這一篇文章不會告訢你什麼</h3><ul><li>怎麼編寫一個 builder, 如何自定義 builder 請先看官方的範例 <a href=https://buildpacks.io/docs/operator-guide/create-a-builder/ target=_blank rel="noopener noreffer">Create a builder · Cloud Native Buildpacks</a></li></ul><p>Buildpack Examples:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>pack build test_img --path apps/test-app --builder cnbs/sample-builder:bionic
 
 Flags:
   -B, --builder string              Builder image
   -b, --buildpack strings           Buildpack to use. One of:
-                                      a buildpack by id and version in the form of '&lt;buildpack&gt;@&lt;version&gt;',
-                                      path to a buildpack directory (not supported on Windows),
+                                      a buildpack by id and version in the form of <span class=s1>&#39;&lt;buildpack&gt;@&lt;version&gt;&#39;</span>,
+                                      path to a buildpack directory <span class=o>(</span>not supported on Windows<span class=o>)</span>,
                                       path/URL to a buildpack .tar or .tgz file, or
-                                      a packaged buildpack image name in the form of '&lt;hostname&gt;/&lt;repo&gt;[:&lt;tag&gt;]'
-                                    Repeat for each buildpack in order, or supply once by comma-separated list
+                                      a packaged buildpack image name in the form of <span class=s1>&#39;&lt;hostname&gt;/&lt;repo&gt;[:&lt;tag&gt;]&#39;</span>
+                                    Repeat <span class=k>for</span> each buildpack in order, or supply once by comma-separated list
   ...
-</code></pre><p>在 buildpack help 中可以看到 <code>-b string</code> or <code>--buildpack strings</code> 的參數可以額外的 buildpack，builder image 會依據 <code>&lt;buildpack>@&lt;version></code> or <code>&lt;hostname>/&lt;repo>[:&lt;tag>]</code> 去 buildpack registry 抓取對應的 buildpack 回來一起編譯 (local 相對目錄也是可以的)</p><p>在開始編寫自己的 builpack 時，應該就要先了解整個 buildpack 的架構、元件還有運作的模式。先看看使用 buildpack 構建的 container image 包含了那些東西，我們以使用 <code>gcr.io/buildpacks/builder:v1</code> builder 構建的 container image 來分析</p><h3 id=pack-inspect>Pack inspect</h3><p>Pack 提供了 <code>inspect</code> 的指令可以幫助我們檢查 container image</p><pre><code class=language-bash>pack inspect &lt;image-name&gt; [flags]
-</code></pre><pre><code class=language-bash>$ pack inspect ms-sample-add
+</code></pre></td></tr></table></div></div><p>在 buildpack help 中可以看到 <code>-b string</code> or <code>--buildpack strings</code> 的參數可以額外的 buildpack，builder image 會依據 <code>&lt;buildpack>@&lt;version></code> or <code>&lt;hostname>/&lt;repo>[:&lt;tag>]</code> 去 buildpack registry 抓取對應的 buildpack 回來一起編譯 (local 相對目錄也是可以的)</p><p>在開始編寫自己的 builpack 時，應該就要先了解整個 buildpack 的架構、元件還有運作的模式。先看看使用 buildpack 構建的 container image 包含了那些東西，我們以使用 <code>gcr.io/buildpacks/builder:v1</code> builder 構建的 container image 來分析</p><h3 id=pack-inspect>Pack inspect</h3><p>Pack 提供了 <code>inspect</code> 的指令可以幫助我們檢查 container image</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>pack inspect &lt;image-name&gt; <span class=o>[</span>flags<span class=o>]</span>
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ pack inspect ms-sample-add
 Inspecting image: ms-sample-add
 
 REMOTE:
-(not present)
+<span class=o>(</span>not present<span class=o>)</span>
 
 LOCAL:
 
@@ -40,83 +83,172 @@ Buildpacks:
 
 Processes:
   TYPE                 SHELL        COMMAND        ARGS
-  web (default)                     /layers/google.go.build/bin/main
-</code></pre><p>由 Pack inspect 指令出輸結果，有幾個部份跟我們如要自定義 buildpack 時的概念有關係, <code>Stack</code>, <code>Buildpacks</code>, <code>Processes</code> 還有稍早到的 <code>builder</code></p><h3 id=stack>Stack</h3><p>由上一節 pack inspect 可以看出，Stack 是由 Base Image + Run Images 二個部份組合而成 (pack stack suggest)</p><ul><li>Base Image 的工作基本上就是生命周期中用來處理 build 工作的基底 container image，必要的時候是可以進行擴充的</li><li>Run Images 則為最後應用程式執行環境的基底 container image，必要的時候也是可以進行擴充 (上一篇文章中就遇到 <code>gcr.io/buildpacks/gcp/run:v1</code> 中不包含 <code>/usr/share/zoneinfo</code> 會導易 golang 程式在執行時區相關操作時報錯，而採用擴充 run image 來解決，Google 也更新了 run image 來解進這個問題)</li></ul><h3 id=buildpacks-packaged-in-a-builder>Buildpacks (packaged in a builder)</h3><blockquote><p>A buildpack is a unit of work that inspects your app source code and formulates a plan to build and run your application.</p></blockquote><p>Buildpack 就是每一個工作內容的最小單元，Buildpack 中定義在構建 container image 的生命周期中的事件 <code>Detect</code>, <code>Analyze</code>, <code>Restore</code>, <code>Build</code>, <code>Export</code>, <code>Create</code>, <code>Launch</code>, <code>Rebase</code> 需要作什麼動作</p><p>Output log Example:</p><pre><code class=language-bash>...
+  web <span class=o>(</span>default<span class=o>)</span>                     /layers/google.go.build/bin/main
+</code></pre></td></tr></table></div></div><p>由 Pack inspect 指令出輸結果，有幾個部份跟我們如要自定義 buildpack 時的概念有關係, <code>Stack</code>, <code>Buildpacks</code>, <code>Processes</code> 還有稍早到的 <code>builder</code></p><h3 id=stack>Stack</h3><p>由上一節 pack inspect 可以看出，Stack 是由 Base Image + Run Images 二個部份組合而成 (pack stack suggest)</p><ul><li>Base Image 的工作基本上就是生命周期中用來處理 build 工作的基底 container image，必要的時候是可以進行擴充的</li><li>Run Images 則為最後應用程式執行環境的基底 container image，必要的時候也是可以進行擴充 (上一篇文章中就遇到 <code>gcr.io/buildpacks/gcp/run:v1</code> 中不包含 <code>/usr/share/zoneinfo</code> 會導易 golang 程式在執行時區相關操作時報錯，而採用擴充 run image 來解決，Google 也更新了 run image 來解進這個問題)</li></ul><h3 id=buildpacks-packaged-in-a-builder>Buildpacks (packaged in a builder)</h3><blockquote><p>A buildpack is a unit of work that inspects your app source code and formulates a plan to build and run your application.</p></blockquote><p>Buildpack 就是每一個工作內容的最小單元，Buildpack 中定義在構建 container image 的生命周期中的事件 <code>Detect</code>, <code>Analyze</code>, <code>Restore</code>, <code>Build</code>, <code>Export</code>, <code>Create</code>, <code>Launch</code>, <code>Rebase</code> 需要作什麼動作</p><p>Output log Example:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>...
   Network Mode: 
-===&gt; DETECTING
-======== Results ========
+<span class=o>===</span>&gt; <span class=nv>DETECTING</span>
+<span class=o>========</span> <span class=nv>Results</span> <span class=o>========</span>
 pass: cage1016/jq-cnb@1.0.0
-Resolving plan... (try #1)
+Resolving plan... <span class=o>(</span>try <span class=c1>#1)</span>
 cage1016/jq-cnb 1.0.0
-===&gt; ANALYZING
-Previous image with name &quot;test_img&quot; not found
-===&gt; RESTORING
-===&gt; BUILDING
+<span class=o>===</span>&gt; ANALYZING
+Previous image with name <span class=s2>&#34;test_img&#34;</span> not <span class=nv>found</span>
+<span class=o>===</span>&gt; <span class=nv>RESTORING</span>
+<span class=o>===</span>&gt; BUILDING
 URI -&gt; https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 Downloading dependency...
 Moving dependency...
-===&gt; EXPORTING
+<span class=o>===</span>&gt; EXPORTING
 ...
-</code></pre><p>當我們有需求要編寫自定義的 buildpack 時則最少需要包含三個檔案</p><ul><li><code>buildpack.toml</code>: 提供 builpack 相關的資訊，如 id, version, License 等等</li><li><code>bin/detect</code>:)提供要套用當前 buildpack 的邏輯，如 pip 的 buildpack 檢查是否有 <code>requestments.txt</code>，沒有包含就跳出</li><li><code>bin/build</code>: 承上面的範例，實作操作 pip 安裝對應的套件</li></ul><p><code>bin/detect</code> & <code>bin/build</code> 是為需要<strong>可執行的檔案</strong>，簡單就是 shell script, 不過也有一些工具 <a href=https://github.com/paketo-buildpacks/packit>paketo-buildpacks/packit</a> Buildpacks Utils Library 及 <a href=https://github.com/paketo-community/bootstrapper>paketo-community/bootstrapper</a> (bootstrap 工具包快速構建 cnb 專案框架)，使用 Golang 語言來產出 <code>bin/detect</code>, <code>bin/build</code> 的 binary 檔案供 <code>Pack</code> 指令直接使用</p><h3 id=builder>Builder</h3><p><img src=https://buildpacks.io/docs/concepts/components/create-builder.svg alt>
-<a href=https://buildpacks.io/docs/concepts/components/builder/>https://buildpacks.io/docs/concepts/components/builder/</a></p><blockquote><p>A builder is an image that contains all the components necessary to execute a build. A builder image is created by taking a build image and adding a lifecycle, buildpacks, and files that configure aspects of the build including the buildpack detection order and the location(s) of the run image</p></blockquote><p>簡單來說 builder 就是幫你準備的元件(稍早提到的 Stack，Buildpack 等等)，依照定義堆疊的順序(<code>builder.toml</code>)來幫你打包構建 container image</p><p><a href=https://github.com/GoogleCloudPlatform/buildpacks/blob/main/builders/gcp/base/builder.toml#L31-L45>https://github.com/GoogleCloudPlatform/buildpacks/blob/main/builders/gcp/base/builder.toml#L31-L45</a></p><pre><code class=language-toml>[[buildpacks]]
-  id = &quot;google.go.runtime&quot;
-  uri = &quot;go/runtime.tgz&quot;
+</code></pre></td></tr></table></div></div><p>當我們有需求要編寫自定義的 buildpack 時則最少需要包含三個檔案</p><ul><li><code>buildpack.toml</code>: 提供 builpack 相關的資訊，如 id, version, License 等等</li><li><code>bin/detect</code>:)提供要套用當前 buildpack 的邏輯，如 pip 的 buildpack 檢查是否有 <code>requestments.txt</code>，沒有包含就跳出</li><li><code>bin/build</code>: 承上面的範例，實作操作 pip 安裝對應的套件</li></ul><p><code>bin/detect</code> & <code>bin/build</code> 是為需要<strong>可執行的檔案</strong>，簡單就是 shell script, 不過也有一些工具 <a href=https://github.com/paketo-buildpacks/packit target=_blank rel="noopener noreffer">paketo-buildpacks/packit</a> Buildpacks Utils Library 及 <a href=https://github.com/paketo-community/bootstrapper target=_blank rel="noopener noreffer">paketo-community/bootstrapper</a> (bootstrap 工具包快速構建 cnb 專案框架)，使用 Golang 語言來產出 <code>bin/detect</code>, <code>bin/build</code> 的 binary 檔案供 <code>Pack</code> 指令直接使用</p><h3 id=builder>Builder</h3><p><figure><a class=lightgallery href=/posts/build-your-buildpack/img/create-builder.svg title=/posts/build-your-buildpack/img/create-builder.svg data-thumbnail=/posts/build-your-buildpack/img/create-builder.svg data-sub-html="<h2>builder</h2>"><img class=lazyload src=/svg/loading.min.svg data-src=img/create-builder.svg data-srcset="/posts/build-your-buildpack/img/create-builder.svg, img/create-builder.svg 1.5x, /posts/build-your-buildpack/img/create-builder.svg 2x" data-sizes=auto alt=/posts/build-your-buildpack/img/create-builder.svg></a><figcaption class=image-caption>builder</figcaption></figure>(ref: <a href=https://buildpacks.io/docs/concepts/components/create-builder.svg>https://buildpacks.io/docs/concepts/components/create-builder.svg</a>)</p><blockquote><p>A builder is an image that contains all the components necessary to execute a build. A builder image is created by taking a build image and adding a lifecycle, buildpacks, and files that configure aspects of the build including the buildpack detection order and the location(s) of the run image</p></blockquote><p>簡單來說 builder 就是幫你準備的元件(稍早提到的 Stack，Buildpack 等等)，依照定義堆疊的順序(<code>builder.toml</code>)來幫你打包構建 container image</p><p><a href=https://github.com/GoogleCloudPlatform/buildpacks/blob/main/builders/gcp/base/builder.toml#L31-L45>https://github.com/GoogleCloudPlatform/buildpacks/blob/main/builders/gcp/base/builder.toml#L31-L45</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-toml data-lang=toml><span class=p>[[</span><span class=nx>buildpacks</span><span class=p>]]</span>
+  <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.runtime&#34;</span>
+  <span class=nx>uri</span> <span class=p>=</span> <span class=s2>&#34;go/runtime.tgz&#34;</span>
 
-[[buildpacks]]
-  id = &quot;google.go.build&quot;
-  uri = &quot;go/build.tgz&quot;
+<span class=p>[[</span><span class=nx>buildpacks</span><span class=p>]]</span>
+  <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.build&#34;</span>
+  <span class=nx>uri</span> <span class=p>=</span> <span class=s2>&#34;go/build.tgz&#34;</span>
 
-[[buildpacks]]
-  id = &quot;google.go.gopath&quot;
-  uri = &quot;go/gopath.tgz&quot;
+<span class=p>[[</span><span class=nx>buildpacks</span><span class=p>]]</span>
+  <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.gopath&#34;</span>
+  <span class=nx>uri</span> <span class=p>=</span> <span class=s2>&#34;go/gopath.tgz&#34;</span>
 
-[[buildpacks]]
-  id = &quot;google.go.functions-framework&quot;
-  uri = &quot;go/functions_framework.tgz&quot;
+<span class=p>[[</span><span class=nx>buildpacks</span><span class=p>]]</span>
+  <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.functions-framework&#34;</span>
+  <span class=nx>uri</span> <span class=p>=</span> <span class=s2>&#34;go/functions_framework.tgz&#34;</span>
 
-######
-# Go #
-######
+<span class=c>######</span>
+<span class=c># Go #</span>
+<span class=c>######</span>
 
-[[order]]
-  [[order.group]]
-    id = &quot;google.go.runtime&quot;
+<span class=p>[[</span><span class=nx>order</span><span class=p>]]</span>
+  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.runtime&#34;</span>
 
-  [[order.group]]
-    id = &quot;google.go.functions-framework&quot;
+  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.functions-framework&#34;</span>
 
-  [[order.group]]
-    id = &quot;google.go.build&quot;
+  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.build&#34;</span>
 
-  [[order.group]]
-    id = &quot;google.config.entrypoint&quot;
-    optional = true
+  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.config.entrypoint&#34;</span>
+    <span class=nx>optional</span> <span class=p>=</span> <span class=kc>true</span>
 
-  [[order.group]]
-    id = &quot;google.go.clear_source&quot;
-    optional = true
+  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.clear_source&#34;</span>
+    <span class=nx>optional</span> <span class=p>=</span> <span class=kc>true</span>
 
-  [[order.group]]
-    id = &quot;google.utils.label&quot;
-</code></pre><p>以 <code>gcr.io/buildpacks/builder:v1</code> 來說，支援了 <code>Go 1.10 +</code>, <code>Node.js 10 +</code>, <code>Python 3.7 +</code>, <code>Java 8, 11</code>, <code>.NET Core 3.1</code>，所以我們會發現為了兼容這些程式語言，builder 中包含了非常多的 buildpack，並且描述了這些 buildpack 在對應語言中的順序</p><p>如稍早透過 <code>pack inspect</code> 指令看到 Buildpacks: <a href=https://github.com/cage1016/ms-demo>cage1016/ms-demo-add</a></p><pre><code class=language-bash>  ID                        VERSION        HOMEPAGE
+  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.utils.label&#34;</span>
+</code></pre></td></tr></table></div></div><p>以 <code>gcr.io/buildpacks/builder:v1</code> 來說，支援了 <code>Go 1.10 +</code>, <code>Node.js 10 +</code>, <code>Python 3.7 +</code>, <code>Java 8, 11</code>, <code>.NET Core 3.1</code>，所以我們會發現為了兼容這些程式語言，builder 中包含了非常多的 buildpack，並且描述了這些 buildpack 在對應語言中的順序</p><p>如稍早透過 <code>pack inspect</code> 指令看到 Buildpacks: <a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo-add</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>  ID                        VERSION        HOMEPAGE
   google.go.runtime         0.9.1          -
   google.go.build           0.9.0          -
   google.utils.label        0.0.1          -
-</code></pre><p><a href=https://github.com/cage1016/ms-demo>cage1016/ms-sample-add</a> 是一個 Golang 編寫的應用服務，在使用 <code>gcr.io/buildpacks/builder:v1</code> 構建 container image 中我們可以看到 buildpack 就是 <a href=https://github.com/GoogleCloudPlatform/buildpacks>GoogleCloudPlatform/buildpacks</a> 中對於 Golang 語言中所指定的三個 <code>google.go.runtime</code>，<code>google.go.build</code>，<code>google.utils.label</code>, 至於沒有 <code>google.go.functions-framework</code> 是因為我們特別指定 Google Cloud Function 所需特別的參數，Pack 也就沒有將 <code>google.go.functions-framework</code> 一同構建至 container image 的 buildpack 中</p><h2 id=build-your-first-buildpack>Build your first buildpack</h2><p>在大至上了解 buildpack 的基本概念(Stack, buildpack, builder) 之後，就可以開始編寫我們自定義的 buildpack。這一次我們需要在 container image 中加入 <code>jq</code> 的 command 供後序使用</p><p>alpine <code>Dockerfile</code></p><blockquote><p>RUN apk add &ndash;update jq && rm -rf /var/cache/apk/*</p></blockquote><p>以 <code>Dockerfile</code> 的角度來說要在 container image 中加入 <code>jq</code> 只需要指定 <code>jq</code> 的名子就好。而在 buildpack 的框架下，就有幾種選擇</p><ol><li>如果是在 container image 構建過程中，可以擴充 builder image，基於 builder 的 image 再往上疊，<a href=https://github.com/GoogleCloudPlatform/buildpacks#extending-the-builder-image>GoogleCloudPlatform/buildpacks: Extending the builder image</a></li><li>如果是在執行環境需要，可以擴充 run image，基於 builder stack 的 run image 再往上疊，<a href=https://github.com/GoogleCloudPlatform/buildpacks#extending-the-run-image>GoogleCloudPlatform/buildpacks: Extending the run image</a></li><li>另一種方式就是編寫一個 inject <code>jq</code> 的 buildpack，再需要 <code>jq</code> 的時候透過 <code>pack --buildpack &lt;&lt;buildpack>@&lt;version>></code> 來加入，我們這一次就選擇自建 jq buildpack，部署之後也方便使用</li></ol><p>稍早有提過，編寫一個 builpack 最少需要有 3 個檔案，<code>buildpack.toml</code>, <code>bin/detect</code>, <code>bin/build</code></p><script type=application/javascript src="https://gist.github.com/cage1016/74c6ac365b73e73a1a68e0ff9a2a8df1.js?file=buildpack.toml"></script><script type=application/javascript src="https://gist.github.com/cage1016/74c6ac365b73e73a1a68e0ff9a2a8df1.js?file=detect"></script><script type=application/javascript src="https://gist.github.com/cage1016/74c6ac365b73e73a1a68e0ff9a2a8df1.js?file=build"></script><pre><code class=language-bash>├── jq-cnb
+</code></pre></td></tr></table></div></div><p><a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-sample-add</a> 是一個 Golang 編寫的應用服務，在使用 <code>gcr.io/buildpacks/builder:v1</code> 構建 container image 中我們可以看到 buildpack 就是 <a href=https://github.com/GoogleCloudPlatform/buildpacks target=_blank rel="noopener noreffer">GoogleCloudPlatform/buildpacks</a> 中對於 Golang 語言中所指定的三個 <code>google.go.runtime</code>，<code>google.go.build</code>，<code>google.utils.label</code>, 至於沒有 <code>google.go.functions-framework</code> 是因為我們特別指定 Google Cloud Function 所需特別的參數，Pack 也就沒有將 <code>google.go.functions-framework</code> 一同構建至 container image 的 buildpack 中</p><h2 id=build-your-first-buildpack>Build your first buildpack</h2><p>在大至上了解 buildpack 的基本概念(Stack, buildpack, builder) 之後，就可以開始編寫我們自定義的 buildpack。這一次我們需要在 container image 中加入 <code>jq</code> 的 command 供後序使用</p><p>alpine <code>Dockerfile</code></p><blockquote><p>RUN apk add &ndash;update jq && rm -rf /var/cache/apk/*</p></blockquote><p>以 <code>Dockerfile</code> 的角度來說要在 container image 中加入 <code>jq</code> 只需要指定 <code>jq</code> 的名子就好。而在 buildpack 的框架下，就有幾種選擇</p><ol><li>如果是在 container image 構建過程中，可以擴充 builder image，基於 builder 的 image 再往上疊，<a href=https://github.com/GoogleCloudPlatform/buildpacks#extending-the-builder-image target=_blank rel="noopener noreffer">GoogleCloudPlatform/buildpacks: Extending the builder image</a></li><li>如果是在執行環境需要，可以擴充 run image，基於 builder stack 的 run image 再往上疊，<a href=https://github.com/GoogleCloudPlatform/buildpacks#extending-the-run-image target=_blank rel="noopener noreffer">GoogleCloudPlatform/buildpacks: Extending the run image</a></li><li>另一種方式就是編寫一個 inject <code>jq</code> 的 buildpack，再需要 <code>jq</code> 的時候透過 <code>pack --buildpack &lt;&lt;buildpack>@&lt;version>></code> 來加入，我們這一次就選擇自建 jq buildpack，部署之後也方便使用</li></ol><p>稍早有提過，編寫一個 builpack 最少需要有 3 個檔案，<code>buildpack.toml</code>, <code>bin/detect</code>, <code>bin/build</code></p><script type=application/javascript src="https://gist.github.com/cage1016/74c6ac365b73e73a1a68e0ff9a2a8df1.js?file=buildpack.toml"></script><script type=application/javascript src="https://gist.github.com/cage1016/74c6ac365b73e73a1a68e0ff9a2a8df1.js?file=detect"></script><script type=application/javascript src="https://gist.github.com/cage1016/74c6ac365b73e73a1a68e0ff9a2a8df1.js?file=build"></script><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>├── jq-cnb
 │   ├── bin
 │   │   ├── build
 │   │   └── detect
 │   └── buildpack.toml
-</code></pre><p>準備好 3 個檔案就可以選擇 builder 來構建 buildpack 的 container image (這時候要注意的事情是，話說 builder 會按照 spec 來打包，實事上 builder 實作上還是有些語不同，選擇 builder 上要注意，且 builder 的 stack id 需要列在 <code>buildpack.toml</code> 上的白名單上，不在白名子的 id 會因安全性議題無法編譯)</p><p>使用 <code>pack build</code> 測試我們的 buildpack</p><pre><code class=language-bash>pack build test-jq-run --builder gcr.io/buildpacks/builder:v1 --buildpack ./jq-cnb --path &lt;empty-folder&gt;
-</code></pre><p>構建完 container image 後可以使用 <code>dcoker run</code> 來檢查 <code>jq</code> 是否可以正常工作</p><pre><code class=language-bash>$ docker run --rm test-jq-run &quot;echo '{\&quot;foo\&quot;: 0}' | jq .&quot;
-{
-  &quot;foo&quot;: 0
-}
-</code></pre><p>使用 <code>pack inspect</code> 來看看我們構建出來的 container image <code>test-jq-run</code>，其中 buildpack 區塊正常的顯示我們在 <code>buildapck.toml</code> 中描述中的 id 一樣</p><pre><code class=language-bash>$ pack inspect test-jq-run
+</code></pre></td></tr></table></div></div><p>準備好 3 個檔案就可以選擇 builder 來構建 buildpack 的 container image (這時候要注意的事情是，話說 builder 會按照 spec 來打包，實事上 builder 實作上還是有些語不同，選擇 builder 上要注意，且 builder 的 stack id 需要列在 <code>buildpack.toml</code> 上的白名單上，不在白名子的 id 會因安全性議題無法編譯)</p><p>使用 <code>pack build</code> 測試我們的 buildpack</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>pack build test-jq-run --builder gcr.io/buildpacks/builder:v1 --buildpack ./jq-cnb --path &lt;empty-folder&gt;
+</code></pre></td></tr></table></div></div><p>構建完 container image 後可以使用 <code>dcoker run</code> 來檢查 <code>jq</code> 是否可以正常工作</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ docker run --rm test-jq-run <span class=s2>&#34;echo &#39;{\&#34;foo\&#34;: 0}&#39; | jq .&#34;</span>
+<span class=o>{</span>
+  <span class=s2>&#34;foo&#34;</span>: <span class=m>0</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><p>使用 <code>pack inspect</code> 來看看我們構建出來的 container image <code>test-jq-run</code>，其中 buildpack 區塊正常的顯示我們在 <code>buildapck.toml</code> 中描述中的 id 一樣</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ pack inspect test-jq-run
 Inspecting image: test-jq-run
 
 REMOTE:
-(not present)
+<span class=o>(</span>not present<span class=o>)</span>
 
 LOCAL:
 
@@ -132,59 +264,127 @@ Run Images:
 Buildpacks:
   ID                     VERSION        HOMEPAGE
   cage1016/jq-cnb        1.0.0          -
-</code></pre><h4 id=buildpacks-utils-library>Buildpacks Utils Library</h4><blockquote><p><a href=https://github.com/cage1016/jq-cnb>cage1016/jq-cnb</a>: A Cloud Native Buildpack that include jq</p></blockquote><ul><li><a href=https://github.com/paketo-buildpacks/packit>paketo-buildpacks/packit: Buildpacks Utils Library</a></li><li><a href=https://github.com/paketo-community/bootstrapper>paketo-community/bootstrapper</a></li></ul><p>上一節我們使用 shell 的方式來試範如果自定義一個簡單的 buildpack。簡單，但是複雜一點的官方 <a href=https://buildpacks.io/docs/buildpack-author-guide/create-buildpack/>範例</a> 就會覺得 shell 不是那麼好寫，難是在要符合 buildpack 的 <a href=https://github.com/buildpacks/spec/blob/main/buildpack.md>規範</a> 需要花時間去了解，所以這時候有一些工具來快速發起空專案就是一個好選擇</p><p><a href=https://github.com/cage1016/jq-cnb>cage1016/jq-cnb</a> 就是採用 paketo-buildpacks/packit Buildpacks Utils Library 為基礎來改寫上一節的 shell 程式碼，詳細的程式碼請直接連結至 github 頁面查看，邏輯基本上是一致，不同之處就是由 shell 的部份轉換成對 Buildpacks Utils Library 的操作。沒有誰好誰壞，端看大家喜歡用什麼方式</p><h3 id=deploy-pack-to-buildpack-registry>deploy pack to buildpack registry</h3><p><strong><a href=https://github.com/cage1016/jq-cnb/blob/master/.github/workflows/release.yml>.github/workflows/release.yaml</a></strong></p><pre><code class=language-yaml>name: Release
-on:
-    release:
-        types:
-            - published
-jobs:
-    register:
-        name: Package, Publish, and Register
-        runs-on:
-            - ubuntu-latest
-        steps:
-            - id: checkout
-              name: Checkout code
-              uses: actions/checkout@v2
-            - if: ${{ github.event_name != 'pull_request' || ! github.event.pull_request.head.repo.fork }}
-              name: Login to GitHub Package Registry
-              uses: docker/login-action@v1
-              with:
-                registry: ghcr.io
-                username: ${{ github.repository_owner }}
-                password: ${{ secrets.GHCR_TOKEN }}
-            - id: setup-pack
-              uses: buildpacks/github-actions/setup-pack@v4.1.0
-            - id: package
-              run: |
-                #!/usr/bin/env bash
-                set -euo pipefail
-                BP_ID=&quot;$(cat buildpack.toml | yj -t | jq -r .buildpack.id)&quot;
-                VERSION=&quot;$(cat buildpack.toml | yj -t | jq -r .buildpack.version)&quot;
-                PACKAGE=&quot;${REPO}/$(echo &quot;$BP_ID&quot; | sed 's/\//_/g')&quot;
-                pack package-buildpack --publish ${PACKAGE}:${VERSION}
-                DIGEST=&quot;$(crane digest ${PACKAGE}:${VERSION})&quot;
-                echo &quot;::set-output name=bp_id::$BP_ID&quot;
-                echo &quot;::set-output name=version::$VERSION&quot;
-                echo &quot;::set-output name=address::${PACKAGE}@${DIGEST}&quot;
-              shell: bash
-              env:
-                REPO: ghcr.io/${{ github.repository_owner }}/buildpacks
-            - id: register
-              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.1.0
-              with:
-                token:   ${{ secrets.PUBLIC_REPO_TOKEN }}
-                id:      ${{ steps.package.outputs.bp_id }}
-                version: ${{ steps.package.outputs.version }}
-                address: ${{ steps.package.outputs.address }}
-</code></pre><p>其實 buildpack 已經打造了一些工具來幫助開發者快速部署 <a href=https://buildpacks.io/docs/tools/>Tools · Cloud Native Buildpacks</a>，本次的範例就是使用 Github action + Release 自己發佈，實際的內容也是 Github action 中使用 <code>pack package</code> 方法的一些操作，當成功 release 之後就可以在 buildpack registry 中查詢的到 <a href=https://registry.buildpacks.io/buildpacks/cage1016/jq-cnb>https://registry.buildpacks.io/buildpacks/cage1016/jq-cnb</a></p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/build-your-buildpack/img/jq-cnb.png data-caption><img src=https://kaichu.io/posts/build-your-buildpack/img/jq-cnb.png></a></div><p>最後我就可以直接使用</p><pre><code class=language-bash>mkdir null-folder
-echo -n 1.5 &gt; null-folder/.jq-version # optional, default is set to 1.6
-pack build test-new-jq-run --path ./null-folder -b cage1016/jq-cnb@1.1.0 --builder gcr.io/buildpacks/builder:v1 -v &amp;&amp; docker run --rm test-new-jq-run &quot;echo '{\&quot;foo\&quot;: 0}' | jq .&quot;
-</code></pre><pre><code class=language-bash>$ pack inspect test-new-jq-run
+</code></pre></td></tr></table></div></div><h3 id=buildpacks-utils-library>Buildpacks Utils Library</h3><blockquote><p><a href=https://github.com/cage1016/jq-cnb target=_blank rel="noopener noreffer">cage1016/jq-cnb</a>: A Cloud Native Buildpack that include jq</p></blockquote><ul><li><a href=https://github.com/paketo-buildpacks/packit target=_blank rel="noopener noreffer">paketo-buildpacks/packit: Buildpacks Utils Library</a></li><li><a href=https://github.com/paketo-community/bootstrapper target=_blank rel="noopener noreffer">paketo-community/bootstrapper</a></li></ul><p>上一節我們使用 shell 的方式來試範如果自定義一個簡單的 buildpack。簡單，但是複雜一點的官方 <a href=https://buildpacks.io/docs/buildpack-author-guide/create-buildpack/ target=_blank rel="noopener noreffer">範例</a> 就會覺得 shell 不是那麼好寫，難是在要符合 buildpack 的 <a href=https://github.com/buildpacks/spec/blob/main/buildpack.md target=_blank rel="noopener noreffer">規範</a> 需要花時間去了解，所以這時候有一些工具來快速發起空專案就是一個好選擇</p><p><a href=https://github.com/cage1016/jq-cnb target=_blank rel="noopener noreffer">cage1016/jq-cnb</a> 就是採用 paketo-buildpacks/packit Buildpacks Utils Library 為基礎來改寫上一節的 shell 程式碼，詳細的程式碼請直接連結至 github 頁面查看，邏輯基本上是一致，不同之處就是由 shell 的部份轉換成對 Buildpacks Utils Library 的操作。沒有誰好誰壞，端看大家喜歡用什麼方式</p><h3 id=deploy-pack-to-buildpack-registry>deploy pack to buildpack registry</h3><p><strong><a href=https://github.com/cage1016/jq-cnb/blob/master/.github/workflows/release.yml target=_blank rel="noopener noreffer">.github/workflows/release.yaml</a></strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-yaml data-lang=yaml><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Release</span><span class=w>
+</span><span class=w></span><span class=nt>on</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>release</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>types</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span>- <span class=l>published</span><span class=w>
+</span><span class=w></span><span class=nt>jobs</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>register</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Package, Publish, and Register</span><span class=w>
+</span><span class=w>        </span><span class=nt>runs-on</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span>- <span class=l>ubuntu-latest</span><span class=w>
+</span><span class=w>        </span><span class=nt>steps</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span>- <span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>checkout</span><span class=w>
+</span><span class=w>              </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Checkout code</span><span class=w>
+</span><span class=w>              </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>actions/checkout@v2</span><span class=w>
+</span><span class=w>            </span>- <span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>${{ github.event_name != &#39;pull_request&#39; || ! github.event.pull_request.head.repo.fork }}</span><span class=w>
+</span><span class=w>              </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Login to GitHub Package Registry</span><span class=w>
+</span><span class=w>              </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>docker/login-action@v1</span><span class=w>
+</span><span class=w>              </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>registry</span><span class=p>:</span><span class=w> </span><span class=l>ghcr.io</span><span class=w>
+</span><span class=w>                </span><span class=nt>username</span><span class=p>:</span><span class=w> </span><span class=l>${{ github.repository_owner }}</span><span class=w>
+</span><span class=w>                </span><span class=nt>password</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.GHCR_TOKEN }}</span><span class=w>
+</span><span class=w>            </span>- <span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>setup-pack</span><span class=w>
+</span><span class=w>              </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>buildpacks/github-actions/setup-pack@v4.1.0</span><span class=w>
+</span><span class=w>            </span>- <span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>package</span><span class=w>
+</span><span class=w>              </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span><span class=sd>                #!/usr/bin/env bash
+</span><span class=sd>                set -euo pipefail
+</span><span class=sd>                BP_ID=&#34;$(cat buildpack.toml | yj -t | jq -r .buildpack.id)&#34;
+</span><span class=sd>                VERSION=&#34;$(cat buildpack.toml | yj -t | jq -r .buildpack.version)&#34;
+</span><span class=sd>                PACKAGE=&#34;${REPO}/$(echo &#34;$BP_ID&#34; | sed &#39;s/\//_/g&#39;)&#34;
+</span><span class=sd>                pack package-buildpack --publish ${PACKAGE}:${VERSION}
+</span><span class=sd>                DIGEST=&#34;$(crane digest ${PACKAGE}:${VERSION})&#34;
+</span><span class=sd>                echo &#34;::set-output name=bp_id::$BP_ID&#34;
+</span><span class=sd>                echo &#34;::set-output name=version::$VERSION&#34;
+</span><span class=sd>                echo &#34;::set-output name=address::${PACKAGE}@${DIGEST}&#34;</span><span class=w>                
+</span><span class=w>              </span><span class=nt>shell</span><span class=p>:</span><span class=w> </span><span class=l>bash</span><span class=w>
+</span><span class=w>              </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>REPO</span><span class=p>:</span><span class=w> </span><span class=l>ghcr.io/${{ github.repository_owner }}/buildpacks</span><span class=w>
+</span><span class=w>            </span>- <span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>register</span><span class=w>
+</span><span class=w>              </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.1.0</span><span class=w>
+</span><span class=w>              </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span><span class=nt>token</span><span class=p>:</span><span class=w>   </span><span class=l>${{ secrets.PUBLIC_REPO_TOKEN }}</span><span class=w>
+</span><span class=w>                </span><span class=nt>id</span><span class=p>:</span><span class=w>      </span><span class=l>${{ steps.package.outputs.bp_id }}</span><span class=w>
+</span><span class=w>                </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=l>${{ steps.package.outputs.version }}</span><span class=w>
+</span><span class=w>                </span><span class=nt>address</span><span class=p>:</span><span class=w> </span><span class=l>${{ steps.package.outputs.address }}</span><span class=w>
+</span></code></pre></td></tr></table></div></div><p>其實 buildpack 已經打造了一些工具來幫助開發者快速部署 <a href=https://buildpacks.io/docs/tools/ target=_blank rel="noopener noreffer">Tools · Cloud Native Buildpacks</a>，本次的範例就是使用 Github action + Release 自己發佈，實際的內容也是 Github action 中使用 <code>pack package</code> 方法的一些操作，當成功 release 之後就可以在 buildpack registry 中查詢的到 <a href=https://registry.buildpacks.io/buildpacks/cage1016/jq-cnb>https://registry.buildpacks.io/buildpacks/cage1016/jq-cnb</a></p><a class=lightgallery href=/posts/build-your-buildpack/img/jq-cnb.png title=/posts/build-your-buildpack/img/jq-cnb.png data-thumbnail=/posts/build-your-buildpack/img/jq-cnb.png><img class=lazyload src=/svg/loading.min.svg data-src=/posts/build-your-buildpack/img/jq-cnb.png data-srcset="/posts/build-your-buildpack/img/jq-cnb.png, /posts/build-your-buildpack/img/jq-cnb.png 1.5x, /posts/build-your-buildpack/img/jq-cnb.png 2x" data-sizes=auto alt=/posts/build-your-buildpack/img/jq-cnb.png></a><p>最後我就可以直接使用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>mkdir null-folder
+<span class=nb>echo</span> -n 1.5 &gt; null-folder/.jq-version <span class=c1># optional, default is set to 1.6</span>
+pack build test-new-jq-run --path ./null-folder -b cage1016/jq-cnb@1.1.0 --builder gcr.io/buildpacks/builder:v1 -v <span class=o>&amp;&amp;</span> docker run --rm test-new-jq-run <span class=s2>&#34;echo &#39;{\&#34;foo\&#34;: 0}&#39; | jq .&#34;</span>
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ pack inspect test-new-jq-run
 Inspecting image: test-new-jq-run
 
 REMOTE:
-(not present)
+<span class=o>(</span>not present<span class=o>)</span>
 
 LOCAL:
 
@@ -200,10 +400,7 @@ Run Images:
 Buildpacks:
   ID                     VERSION        HOMEPAGE
   cage1016/jq-cnb        1.1.0          https://github.com/cage1016/jq-cnb
-</code></pre><h2 id=reference>Reference</h2><ul><li><a href=https://github.com/buildpacks/github-actions/blob/main/README.md#request-add-entry-action>github-actions/README.md at main · buildpacks/github-actions</a>: End-user GitHub Actions related to Cloud Native Buildpacks</li><li><a href=https://github.com/GoogleCloudPlatform/buildpacks>GoogleCloudPlatform/buildpacks: Builders and buildpacks designed to run on Google Cloud&rsquo;s container platforms</a>: Builders and buildpacks designed to run on Google Cloud&rsquo;s container platforms</li><li><a href=https://buildpacks.io/>Cloud Native Buildpacks · Cloud Native Buildpacks</a></li><li><a href=https://paketo.io/>Paketo Buildpacks - Paketo Buildpacks</a></li><li><a href=https://github.com/cage1016/jq-cnb>cage1016/jq-cnb: A Cloud Native Buildpack that include jq</a></li><li><a href=https://registry.buildpacks.io/>Buildpack Registry</a></li></ul></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/buildpack-tips-and-tricks/>Buildpack Tips and Tricks</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
-<a href=https://kaichu.io/tags/buildpack/>buildpack</a>
-<a href=https://kaichu.io/tags/gcp/>gcp</a>
-<a href=https://kaichu.io/tags/pack/>pack</a>
-<a href=https://kaichu.io/tags/heroku/>heroku</a>
-<a href=https://kaichu.io/tags/paketo/>paketo</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//kaichuio.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
-<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['[[',']]']],processEscapes:!0,processEnvironments:!0,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}}),MathJax.Hub.Queue(function(){var b=MathJax.Hub.getAllJax(),a;for(a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-65308340-1','auto'),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="media!='all'&&(media='all')"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/'"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(a){a.classList.add('line-numbers')})"></script></body></html>
+</code></pre></td></tr></table></div></div><h2 id=reference>Reference</h2><ul><li><a href=https://github.com/buildpacks/github-actions/blob/main/README.md#request-add-entry-action target=_blank rel="noopener noreffer">github-actions/README.md at main · buildpacks/github-actions</a>: End-user GitHub Actions related to Cloud Native Buildpacks</li><li><a href=https://github.com/GoogleCloudPlatform/buildpacks target=_blank rel="noopener noreffer">GoogleCloudPlatform/buildpacks: Builders and buildpacks designed to run on Google Cloud&rsquo;s container platforms</a>: Builders and buildpacks designed to run on Google Cloud&rsquo;s container platforms</li><li><a href=https://buildpacks.io/ target=_blank rel="noopener noreffer">Cloud Native Buildpacks · Cloud Native Buildpacks</a></li><li><a href=https://paketo.io/ target=_blank rel="noopener noreffer">Paketo Buildpacks - Paketo Buildpacks</a></li><li><a href=https://github.com/cage1016/jq-cnb target=_blank rel="noopener noreffer">cage1016/jq-cnb: A Cloud Native Buildpack that include jq</a></li><li><a href=https://registry.buildpacks.io/ target=_blank rel="noopener noreffer">Buildpack Registry</a></li></ul></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2021-05-17&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9ba3d46a17f8164088bbda18a68fe835039b6b0d target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9ba3d46a17f8164088bbda18a68fe835039b6b0d: fix(algolia): change wangchucheng/test-action@master to update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>9ba3d46</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/build-your-buildpack/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/build-your-buildpack/ data-title="Build Your Buildpack" data-via=CageChung data-hashtags=buildpack,gcp,pack,heroku,paketo><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/build-your-buildpack/ data-hashtag=buildpack><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/build-your-buildpack/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/buildpack/>buildpack</a>,&nbsp;<a href=/tags/gcp/>GCP</a>,&nbsp;<a href=/tags/pack/>pack</a>,&nbsp;<a href=/tags/heroku/>heroku</a>,&nbsp;<a href=/tags/paketo/>paketo</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/buildpack-tips-and-tricks/ class=prev rel=prev title="Buildpack Tips and Tricks"><i class="fas fa-angle-left fa-fw"></i>Buildpack Tips and Tricks</a>
+<a href=/posts/ghcr-io-pack-build/ class=next rel=next title="ghcr.io Pack Build">ghcr.io Pack Build<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=disqus_thread class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://disqus.com/?ref_noscript>Disqus</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://kaichuio.disqus.com/embed.js defer></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

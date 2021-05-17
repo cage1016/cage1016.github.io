@@ -1,9 +1,44 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>weddingcnp via GCP - 1. 專案架構切分 ｜ KaiChu</title><meta name=description content="此篇就對 Cage &amp;amp; Ping wedding 中實作的專案架構進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹 weddingcnp 系例傳送門 weddingcnp via GCP 簡介 weddingcnp via GCP - 1. 專案架構切分 weddingcnp via GCP - 2. 前端頁面設計實作 weddingcnp via GCP - 3. endpointAPI 設計實作 weddingcnp 前端 vue.js 設計實作 weddingcnp"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a>
-<a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a>
-<a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a>
-<a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a>
-<a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a>
-<a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/weddingcnp-via-gcp-1/>weddingcnp via GCP - 1. 專案架構切分</a></h2><span class=date>2017.06.12</span></div><div class="post_content markdown"><p>此篇就對 <a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 中實作的專案架構進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹</p><h4 id=weddingcnp-系例傳送門>weddingcnp 系例傳送門</h4><ol><li><a href=https://kaichu.io/2017/06/08/weddingcnp-via-gcp/>weddingcnp via GCP 簡介</a></li><li><a href=https://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/>weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=https://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/>weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=https://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/>weddingcnp via GCP - 3. endpointAPI 設計實作</a></li><li>weddingcnp 前端 vue.js 設計實作</li><li>weddingcnp edm 寄送 sendgrid</li></ol><h4 id=weddingcnp-專案架構>weddingcnp 專案架構</h4><p><a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 完全架構在 Google App Engine 上，再功能任務上需要達到幾個要求</p><ul><li>服務靜態頁面, 一堆的 html/css/javascript 及些許的動態資料</li><li>作為 API 的伺服器，收集前端表單送過來的資料並儲存至 Datastore 中</li><li>webmasters domain owner</li></ul><p><strong>project structure</strong></p><pre><code class=language-bash>.
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>weddingcnp via GCP - 1. 專案架構切分 - KaiChu</title><meta name=Description content="weddingcnp 使用 dispatch.yaml 來進行專案架構上的切分，利用 makefile 來加速部署的流程、速度"><meta property="og:title" content="weddingcnp via GCP - 1. 專案架構切分"><meta property="og:description" content="weddingcnp 使用 dispatch.yaml 來進行專案架構上的切分，利用 makefile 來加速部署的流程、速度"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/weddingcnp-via-gcp-1/"><meta property="og:image" content="https://kaichu.io/posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_2.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-06-12T22:14:22+00:00"><meta property="article:modified_time" content="2021-05-17T15:21:01+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_2.png"><meta name=twitter:title content="weddingcnp via GCP - 1. 專案架構切分"><meta name=twitter:description content="weddingcnp 使用 dispatch.yaml 來進行專案架構上的切分，利用 makefile 來加速部署的流程、速度"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/weddingcnp-via-gcp-1/><link rel=prev href=https://kaichu.io/posts/weddingcnp-via-gcp/><link rel=next href=https://kaichu.io/posts/weddingcnp-via-gcp-2/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"weddingcnp via GCP - 1. 專案架構切分","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/weddingcnp-via-gcp-1\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/weddingcnp-via-gcp-1\/img\/weddingcnp-via-gcp-1_2.png","width":2746,"height":1606}],"genre":"posts","keywords":"GAE, GCE, Datastore, EndpointAPI, sendgrid, API","wordcount":1067,"url":"https:\/\/kaichu.io\/posts\/weddingcnp-via-gcp-1\/","datePublished":"2017-06-12T22:14:22+00:00","dateModified":"2021-05-17T15:21:01+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"weddingcnp 使用 dispatch.yaml 來進行專案架構上的切分，利用 makefile 來加速部署的流程、速度"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">weddingcnp via GCP - 1. 專案架構切分</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2017-06-12>2017-06-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1067 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#weddingcnp-系例傳送門>weddingcnp 系例傳送門</a></li><li><a href=#weddingcnp-專案架構>weddingcnp 專案架構</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><p>此篇就對 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> 中實作的專案架構進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹</p><h4 id=weddingcnp-系例傳送門>weddingcnp 系例傳送門</h4><ol><li><a href=https://kaichu.io/2017/06/08/weddingcnp-via-gcp/ target=_blank rel="noopener noreffer">weddingcnp via GCP 簡介</a></li><li><a href=https://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=https://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=https://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 3. endpointAPI 設計實作</a></li><li>weddingcnp 前端 vue.js 設計實作</li><li>weddingcnp edm 寄送 sendgrid</li></ol><h4 id=weddingcnp-專案架構>weddingcnp 專案架構</h4><p><a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> 完全架構在 Google App Engine 上，再功能任務上需要達到幾個要求</p><ul><li>服務靜態頁面, 一堆的 html/css/javascript 及些許的動態資料</li><li>作為 API 的伺服器，收集前端表單送過來的資料並儲存至 Datastore 中</li><li>webmasters domain owner</li></ul><p><strong>project structure</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>.
 ├── endpoints               // endpoints instance
 │   ├── apis
 │   ├── handler
@@ -33,64 +68,113 @@
 │   └── googleae8f4bcce8bec00c.html
 ├── dispatch.yaml           // dispatch.yaml
 └── makefile                // cli helper makefile
-</code></pre><p>整個專案的檔案架構如上，可以分為 <code>endpoints</code>、<code>frontend</code>、<code>ownership</code> 三個 Service(Module), 而 Google App Engine 可以非常有彈性的透過 Service<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> 的方式針對不同的任務給予不同資源<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup>，而 <a href=http://weddingcnp.appspot.com/>Cage & Ping wedding</a> 基本上使用預計的部份就足夠了，不需特別指派</p><p><strong>dispatch.yaml</strong></p><pre><code class=language-yaml>dispatch:
-  - url: &quot;*/_ah/spi/*&quot;
-    module: default
+</code></pre></td></tr></table></div></div><p>整個專案的檔案架構如上，可以分為 <code>endpoints</code>、<code>frontend</code>、<code>ownership</code> 三個 Service(Module), 而 Google App Engine 可以非常有彈性的透過 Service<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> 的方式針對不同的任務給予不同資源<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup>，而 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> 基本上使用預計的部份就足夠了，不需特別指派</p><p><strong>dispatch.yaml</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-yaml data-lang=yaml><span class=nt>dispatch</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/_ah/spi/*&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/tasks/*&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/favicon.ico&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/googleae8f4bcce8bec00c.html&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>ownership</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/*&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span></code></pre></td></tr></table></div></div><p>上述的 <code>dispatch.yaml</code> 可以幫我們重導流量至我們設定的 Service(Module)，不過在部署的部份則是需要一個一個 Service(Module)來進行部署，部署完之後會在 Google App Engine Services 中看到所有的 Services</p><a class=lightgallery href=/posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_1.png title=/posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_1.png data-thumbnail=/posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_1.png><img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gcp-1_1.png data-srcset="/posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_1.png, img/weddingcnp-via-gcp-1_1.png 1.5x, /posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_1.png 2x" data-sizes=auto alt=/posts/weddingcnp-via-gcp-1/img/weddingcnp-via-gcp-1_1.png></a><p>再則我們可以透過 version<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup> 的方式來管理部署的 Service</p><a class=lightgallery href=img/weddingcnp-via-gcp-1_2.png title=img/weddingcnp-via-gcp-1_2.png data-thumbnail=img/weddingcnp-via-gcp-1_2.png><img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gcp-1_2.png data-srcset="img/weddingcnp-via-gcp-1_2.png, img/weddingcnp-via-gcp-1_2.png 1.5x, img/weddingcnp-via-gcp-1_2.png 2x" data-sizes=auto alt=img/weddingcnp-via-gcp-1_2.png></a><p>當 Google App Engine Service 切分的越細，雖然可以任務的資源給予更細的調整，不過卻也造成部署上的複雜度，因此可以透過 <code>mikefile</code> 來加速部署的流程與速度</p><p><strong>makefile</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=nv>ACCOUNT</span> <span class=o>=</span> cage.chung@gmail.com
+<span class=nv>PROJECT</span> <span class=o>=</span> weddingcnp
+<span class=nv>VERSION</span> <span class=o>=</span> b7484dd
 
-  - url: &quot;*/tasks/*&quot;
-    module: default
-
-  - url: &quot;*/favicon.ico&quot;
-    module: frontend
-
-  - url: &quot;*/googleae8f4bcce8bec00c.html&quot;
-    module: ownership
-
-  - url: &quot;*/*&quot;
-    module: frontend
-</code></pre><p>上述的 <code>dispatch.yaml</code> 可以幫我們重導流量至我們設定的 Service(Module)，不過在部署的部份則是需要一個一個 Service(Module)來進行部署，部署完之後會在 Google App Engine Services 中看到所有的 Services</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-1/weddingcnp-via-gcp-1_1.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-1/weddingcnp-via-gcp-1_1.png></a></div><p>再則我們可以透過 version<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup> 的方式來管理部署的 Service</p><div class=fancybox><a data-fancybox=gallery href=https://kaichu.io/posts/weddingcnp-via-gcp-1/weddingcnp-via-gcp-1_2.png data-caption><img src=https://kaichu.io/posts/weddingcnp-via-gcp-1/weddingcnp-via-gcp-1_2.png></a></div><p>當 Google App Engine Service 切分的越細，雖然可以任務的資源給予更細的調整，不過卻也造成部署上的複雜度，因此可以透過 <code>mikefile</code> 來加速部署的流程與速度</p><p><strong>makefile</strong></p><pre><code class=language-bash>ACCOUNT = cage.chung@gmail.com
-PROJECT = weddingcnp
-VERSION = b7484dd
-
-NODE_BIN = $(shell npm bin)
+<span class=nv>NODE_BIN</span> <span class=o>=</span> <span class=k>$(</span>shell npm bin<span class=k>)</span>
 
 set_config:
-	gcloud config set account $(ACCOUNT)
-	gcloud config set project $(PROJECT)
+	gcloud config <span class=nb>set</span> account <span class=k>$(</span>ACCOUNT<span class=k>)</span>
+	gcloud config <span class=nb>set</span> project <span class=k>$(</span>PROJECT<span class=k>)</span>
 
 install:
-	# endpoints dependency pakcage
+	<span class=c1># endpoints dependency pakcage</span>
 	pip install -r endpoints/requirements.txt -t endpoints/lib
 
 run:
-	# node devServer.js &amp;
-	#goapp serve	dispatch.yaml frontend/app.yaml	endpoints/app.yaml ownership/app.yaml
-	dev_appserver.py dispatch.yaml frontend/app.yaml endpoints/app.yaml ownership/app.yaml --appidentity_email_address=save-avatar@weddingcnp.iam.gserviceaccount.com --appidentity_private_key_path=/Users/cage/.gvm/pkgsets/go1.7/global/src/github.com/cage1016/weddingcnp/endpoints/weddingcnp-3a652c96507d.pem --skip_sdk_update_check=yes --host 0.0.0.0 --enable_sendmail=yes
+	<span class=c1># node devServer.js &amp;</span>
+	<span class=c1>#goapp serve	dispatch.yaml frontend/app.yaml	endpoints/app.yaml ownership/app.yaml</span>
+	dev_appserver.py dispatch.yaml frontend/app.yaml endpoints/app.yaml ownership/app.yaml --appidentity_email_address<span class=o>=</span>save-avatar@weddingcnp.iam.gserviceaccount.com --appidentity_private_key_path<span class=o>=</span>/Users/cage/.gvm/pkgsets/go1.7/global/src/github.com/cage1016/weddingcnp/endpoints/weddingcnp-3a652c96507d.pem --skip_sdk_update_check<span class=o>=</span>yes --host 0.0.0.0 --enable_sendmail<span class=o>=</span>yes
 
 update_frontend:
-	goapp deploy -application $(PROJECT) -version $(VERSION) frontend/app.yaml
+	goapp deploy -application <span class=k>$(</span>PROJECT<span class=k>)</span> -version <span class=k>$(</span>VERSION<span class=k>)</span> frontend/app.yaml
 
 update_endpoints:
-	goapp deploy -application $(PROJECT) -version $(VERSION) endpoints/app.yaml
+	goapp deploy -application <span class=k>$(</span>PROJECT<span class=k>)</span> -version <span class=k>$(</span>VERSION<span class=k>)</span> endpoints/app.yaml
 
 update_ownership:
-	appcfg.py update --application=$(PROJECT) --version=1 ownership/app.yaml
+	appcfg.py update --application<span class=o>=</span><span class=k>$(</span>PROJECT<span class=k>)</span> --version<span class=o>=</span><span class=m>1</span> ownership/app.yaml
 
 update_dispatch:
-	appcfg.py --application=$(PROJECT) --version=$(VERSION) update_dispatch .
+	appcfg.py --application<span class=o>=</span><span class=k>$(</span>PROJECT<span class=k>)</span> --version<span class=o>=</span><span class=k>$(</span>VERSION<span class=k>)</span> update_dispatch .
 
 update_index:
-	appcfg.py --application=$(PROJECT) --version=$(VERSION) update_indexes endpoints
+	appcfg.py --application<span class=o>=</span><span class=k>$(</span>PROJECT<span class=k>)</span> --version<span class=o>=</span><span class=k>$(</span>VERSION<span class=k>)</span> update_indexes endpoints
 
 update_queue:
-	appcfg.py --application=$(PROJECT) --version=$(VERSION) update_queues endpoints
+	appcfg.py --application<span class=o>=</span><span class=k>$(</span>PROJECT<span class=k>)</span> --version<span class=o>=</span><span class=k>$(</span>VERSION<span class=k>)</span> update_queues endpoints
 
 update: update_frontend update_endpoints update_ownership update_dispatch update_index update_queue
-</code></pre><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>Service == Module, 以前的名子叫作 Module, 後來改名為 Service，透過 <code>dispatch.yaml</code> 來指定，可以針對 Service 給予不同的 runtime、機器資源或是用另一種程式語言混搭&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p><a href=https://www.slideshare.net/cagechung/waldogcp>waldogcp</a> 一個也是基於 GCP 上建構出來的最佳路徑服務，亦使用 <code>dispatch.yaml</code> 來指派，對於服務中運算最重的部份(基因演算法)給予較大的機器&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p>將版號命名為 git 的 commit, 可以讓自己比較容易進行 Service 的版本管控&#160;<a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/weddingcnp-via-gcp/>weddingcnp via GCP</a></li><li><a href=/posts/gae-go-image-api/>GAE go Image API for GCS</a></li><li><a href=/posts/gae-link-pip-helper/>gae link pip helper</a></li><li><a href=/posts/gae-appcfg-update-403/>gae appcfg update 403</a></li><li><a href=/posts/managed-vms-lab/>Managed VMs lab</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
-<a href=https://kaichu.io/tags/gae/>GAE</a>
-<a href=https://kaichu.io/tags/gce/>GCE</a>
-<a href=https://kaichu.io/tags/datastore/>Datastore</a>
-<a href=https://kaichu.io/tags/endpointapi/>EndpointAPI</a>
-<a href=https://kaichu.io/tags/sendgrid/>sendgrid</a>
-<a href=https://kaichu.io/tags/api/>API</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//kaichuio.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
-<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['[[',']]']],processEscapes:!0,processEnvironments:!0,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}}),MathJax.Hub.Queue(function(){var b=MathJax.Hub.getAllJax(),a;for(a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-65308340-1','auto'),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="media!='all'&&(media='all')"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/'"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(a){a.classList.add('line-numbers')})"></script></body></html>
+</code></pre></td></tr></table></div></div><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>Service == Module, 以前的名子叫作 Module, 後來改名為 Service，透過 <code>dispatch.yaml</code> 來指定，可以針對 Service 給予不同的 runtime、機器資源或是用另一種程式語言混搭&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p><a href=https://www.slideshare.net/cagechung/waldogcp target=_blank rel="noopener noreffer">waldogcp</a> 一個也是基於 GCP 上建構出來的最佳路徑服務，亦使用 <code>dispatch.yaml</code> 來指派，對於服務中運算最重的部份(基因演算法)給予較大的機器&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p>將版號命名為 git 的 commit, 可以讓自己比較容易進行 Service 的版本管控&#160;<a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2021-05-17&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9ba3d46a17f8164088bbda18a68fe835039b6b0d target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9ba3d46a17f8164088bbda18a68fe835039b6b0d: fix(algolia): change wangchucheng/test-action@master to update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>9ba3d46</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/weddingcnp-via-gcp-1/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/weddingcnp-via-gcp-1/ data-title="weddingcnp via GCP - 1. 專案架構切分" data-via=CageChung data-hashtags=GAE,GCE,Datastore,EndpointAPI,sendgrid,API><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/weddingcnp-via-gcp-1/ data-hashtag=GAE><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/weddingcnp-via-gcp-1/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/gae/>GAE</a>,&nbsp;<a href=/tags/gce/>GCE</a>,&nbsp;<a href=/tags/datastore/>Datastore</a>,&nbsp;<a href=/tags/endpointapi/>EndpointAPI</a>,&nbsp;<a href=/tags/sendgrid/>sendgrid</a>,&nbsp;<a href=/tags/api/>API</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/weddingcnp-via-gcp/ class=prev rel=prev title="weddingcnp via GCP"><i class="fas fa-angle-left fa-fw"></i>weddingcnp via GCP</a>
+<a href=/posts/weddingcnp-via-gcp-2/ class=next rel=next title="weddingcnp via GCP - 2. 前端頁面設計實作">weddingcnp via GCP - 2. 前端頁面設計實作<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=disqus_thread class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://disqus.com/?ref_noscript>Disqus</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://kaichuio.disqus.com/embed.js defer></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

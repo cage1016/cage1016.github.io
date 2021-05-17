@@ -1,347 +1,681 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="KaiChu"><title>Postgres Transpose Rows to Columns ｜ KaiChu</title><meta name=description content="延續上一篇文章 Rbac1 Design ｜ KaiChu, 我們透過 Postgres 中的 CTE (common table expression) recursive query 來查詢有繼承 Role 的有對應的權限
-user_id permission    user_id key     87gb8fKJHGxh2Pz_Gk_R2 create:devops   87gb8fKJHGxh2Pz_Gk_R2 create:rbac   87gb8fKJHGxh2Pz_Gk_R2 create:users   87gb8fKJHGxh2Pz_Gk_R2 delete:devops   87gb8fKJHGxh2Pz_Gk_R2 delete:rbac   87gb8fKJHGxh2Pz_Gk_R2 delete:users   87gb8fKJHGxh2Pz_Gk_R2 read:devops   87gb8fKJHGxh2Pz_Gk_R2 read:rbac   87gb8fKJHGxh2Pz_Gk_R2 read:users   87gb8fKJHGxh2Pz_Gk_R2 update:devops   87gb8fKJHGxh2Pz_Gk_R2 update:rbac   87gb8fKJHGxh2Pz_Gk_R2 update:users   h8Iqlb8Ixc4IltuOoY5QC create:devops   h8Iqlb8Ixc4IltuOoY5QC delete:devops   h8Iqlb8Ixc4IltuOoY5QC read:devops   h8Iqlb8Ixc4IltuOoY5QC update:devops   SbZeBSpuy2OdJ0WZ2Z_Qo read:devops   SJ36zw7nRS4lx18dZlCoo create:users   SJ36zw7nRS4lx18dZlCoo delete:users   SJ36zw7nRS4lx18dZlCoo read:users   SJ36zw7nRS4lx18dZlCoo update:users    user vs resource permission  read:R, write:C, delete:D, update:U
-    user_id devops rbac users     87gb8fKJHGxh2Pz_Gk_R2 CDRU CDRU CDRU   h8Iqlb8Ixc4IltuOoY5QC CDRU NULL NULL   SbZeBSpuy2OdJ0WZ2Z_Qo R NULL NULL   SJ36zw7nRS4lx18dZlCoo NULL NULL CDRU    透過 postgres 的 Transpose Rows to Columns 可以得到上面一個人眼比較直覺得大表 核心的 sql 就是使用 crosstab 指令, 完整操作請看下方 full sql
-"><meta name=keywords content="Hugo,theme,zozo"><link rel="shortcut icon" href=https://kaichu.io/images/favicon.ico><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/zozo.css><link rel=stylesheet type=text/css media=screen href=https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css><link rel=stylesheet type=text/css media=screen href=https://kaichu.io/css/highlight.css><link rel=stylesheet href=https://kaichu.io/css/add-on.css><link rel=stylesheet href=/css/prism-ghcolors.css></head><body><div class="main animate__animated animate__fadeInDown"><div class="nav_container animated fadeInDown"><div class=site_nav id=site_nav><ul><li><a href=/>Home</a></li><li><a href=/posts/>Archive</a></li><li><a href=/tags/>Tags</a></li><li><a href=/about/>About</a></li></ul></div><div class=menu_icon><a id=menu_icon><i class=ri-menu-line></i></a></div></div><div class="header animated fadeInDown"><div class=site_title_container><div class=site_title><h1><a href=https://kaichu.io/><span>KaiChu</span></a></h1></div><div class=description><p class=sub_title>Life is unique by how you shape it</p><div class=my_socials><a href=https://github.com/cage1016 title=github target=_blank><i class=ri-github-fill></i></a>
-<a href=https://www.instagram.com/cage1016/ title=instagram target=_blank><i class=ri-instagram-fill></i></a>
-<a href=https://www.linkedin.com/in/kaichuchung title=linkedin target=_blank><i class=ri-linkedin-fill></i></a>
-<a href=https://www.slideshare.net/cagechung title=slideshow target=_blank><i class=ri-slideshow-fill></i></a>
-<a href=https://twitter.com/CageChung title=twitter target=_blank><i class=ri-twitter-fill></i></a>
-<a href=https://kaichu.io/index.xml type=application/rss+xml title=rss target=_blank><i class=ri-rss-fill></i></a></div></div></div></div><div class=content><div class=post_page><div class="post animate__animated animate__fadeInDown"><div class="post_title post_detail_title"><h2><a href=/posts/postgres-transpose-rows-to-columns/>Postgres Transpose Rows to Columns</a></h2><span class=date>2021.02.04</span></div><div class="post_content markdown"><p>延續上一篇文章 <a href=https://kaichu.io/posts/rbac1-design/>Rbac1 Design ｜ KaiChu</a>, 我們透過 Postgres 中的 CTE (common table expression) recursive query 來查詢有繼承 Role 的有對應的權限</p><h3 id=user_id-permission>user_id permission</h3><table><thead><tr><th style=text-align:left>user_id</th><th style=text-align:left>key</th></tr></thead><tbody><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>create:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>create:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>create:users</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>delete:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>delete:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>delete:users</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>read:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>read:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>read:users</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>update:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>update:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>update:users</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>create:devops</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>delete:devops</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>read:devops</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>update:devops</td></tr><tr><td style=text-align:left>SbZeBSpuy2OdJ0WZ2Z_Qo</td><td style=text-align:left>read:devops</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>create:users</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>delete:users</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>read:users</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>update:users</td></tr></tbody></table><h3 id=user-vs-resource-permission>user vs resource permission</h3><blockquote><p>read:R, write:C, delete:D, update:U</p></blockquote><table><thead><tr><th style=text-align:left>user_id</th><th style=text-align:left>devops</th><th style=text-align:left>rbac</th><th style=text-align:left>users</th></tr></thead><tbody><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>CDRU</td><td style=text-align:left>CDRU</td><td style=text-align:left>CDRU</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>CDRU</td><td style=text-align:left>NULL</td><td style=text-align:left>NULL</td></tr><tr><td style=text-align:left>SbZeBSpuy2OdJ0WZ2Z_Qo</td><td style=text-align:left>R</td><td style=text-align:left>NULL</td><td style=text-align:left>NULL</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>NULL</td><td style=text-align:left>NULL</td><td style=text-align:left>CDRU</td></tr></tbody></table><p>透過 postgres 的 Transpose Rows to Columns 可以得到上面一個人眼比較直覺得大表
-核心的 sql 就是使用 <code>crosstab</code> 指令, 完整操作請看下方 full sql</p><pre><code class=language-sql>select *
-from crosstab(
-             'query order by 1',
-             'query distinct resource order by 1'
-         ) as (
-               user_id text,
-               &quot;devops&quot; text,
-               &quot;rbac&quot; text,
-               &quot;users&quot; text
-    )
-</code></pre><p><strong>full sql</strong></p><pre><code class=language-sql>create table roles
-(
-    id          varchar(21) not null
-        constraint roles_pkey
-            primary key,
-    parent_id   varchar(21)
-        constraint fk_roles_roles
-            references roles,
-    role_name   text,
-    description text,
-    type        bigint,
-    enabled     boolean,
-    created_at  timestamp with time zone,
-    updated_at  timestamp with time zone
-);
-
-
-create table permissions
-(
-    id          varchar(21) not null
-        constraint permissions_pkey
-            primary key,
-    action_id   text,
-    resource_id text,
-    key         text,
-    created_at  timestamp with time zone,
-    updated_at  timestamp with time zone
-);
-
-
-create table role_permission
-(
-    permission_id varchar(21) not null
-        constraint fk_role_permission_permission
-            references permissions,
-    role_id       varchar(21) not null
-        constraint fk_role_permission_role
-            references roles,
-    constraint role_permission_pkey
-        primary key (permission_id, role_id)
-);
-
-
-create table actions
-(
-    id          varchar(21) not null
-        constraint actions_pkey
-            primary key,
-    name        text,
-    description text,
-    created_at  timestamp with time zone,
-    updated_at  timestamp with time zone
-);
-
-
-create table resources
-(
-    id         varchar(21) not null
-        constraint resources_pkey
-            primary key,
-    name       text,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
-);
-
-
-create table users
-(
-    id         varchar(21) not null
-        constraint users_pkey
-            primary key,
-    name       text,
-    enabled    boolean,
-    created_at timestamp with time zone,
-    updated_at timestamp with time zone
-);
-
-
-create table user_role
-(
-    role_id varchar(21) not null
-        constraint fk_user_role_role
-            references roles,
-    user_id varchar(21) not null
-        constraint fk_user_role_user
-            references users,
-    constraint user_role_pkey
-        primary key (role_id, user_id)
-);
-
-
--- data
-INSERT INTO actions (id, name, description, created_at, updated_at)
-VALUES ('QPjlpxmEE7fSjeTvavn0C', 'create', 'create', '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-INSERT INTO actions (id, name, description, created_at, updated_at)
-VALUES ('2iNamDFktFA6qfz_Tk5nH', 'update', 'update', '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-INSERT INTO actions (id, name, description, created_at, updated_at)
-VALUES ('kZBX-FnIYa374wt4D5OlK', 'delete', 'delete', '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-INSERT INTO actions (id, name, description, created_at, updated_at)
-VALUES ('ozXzHwl1tDLmgIwCBjQMc', 'read', 'read', '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-
-INSERT INTO resources (id, name, created_at, updated_at)
-VALUES ('k4Wcq9zGqShiSH6-HmR9_', 'rbac', '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-INSERT INTO resources (id, name, created_at, updated_at)
-VALUES ('AoiiJEVfm3Fe8gtlZvE0_', 'users', '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-INSERT INTO resources (id, name, created_at, updated_at)
-VALUES ('_-0lB0FJklZQf0wMCOdb3', 'devops', '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('7BvEdc4TA-gDOF-mfR3Wy', 'ozXzHwl1tDLmgIwCBjQMc', '_-0lB0FJklZQf0wMCOdb3', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'read:devops');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('4vIzJkqwRPj2vN_w4Oq88', 'QPjlpxmEE7fSjeTvavn0C', 'k4Wcq9zGqShiSH6-HmR9_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'create:rbac');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('0rhMOepRtB5GPO_6xDLZ3', 'ozXzHwl1tDLmgIwCBjQMc', 'k4Wcq9zGqShiSH6-HmR9_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'read:rbac');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('4P3xauyVkRxinMmKPL6Lh', '2iNamDFktFA6qfz_Tk5nH', 'k4Wcq9zGqShiSH6-HmR9_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'update:rbac');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('S8uK_bjaCDPveyyYqUIJc', 'kZBX-FnIYa374wt4D5OlK', 'k4Wcq9zGqShiSH6-HmR9_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'delete:rbac');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('G_8IyfomSis4Mbk9hqCt9', 'QPjlpxmEE7fSjeTvavn0C', 'AoiiJEVfm3Fe8gtlZvE0_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'create:users');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('6Mh4-cezNheXhIIMmIIjk', 'ozXzHwl1tDLmgIwCBjQMc', 'AoiiJEVfm3Fe8gtlZvE0_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'read:users');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('VgoFSnty6aiBPZUtlsWfg', '2iNamDFktFA6qfz_Tk5nH', 'AoiiJEVfm3Fe8gtlZvE0_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'update:users');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('l4QFZ7gg4K8EhCj_rvduc', 'kZBX-FnIYa374wt4D5OlK', 'AoiiJEVfm3Fe8gtlZvE0_', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'delete:users');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('cdemu6I9VAjcYtQURUQJH', 'QPjlpxmEE7fSjeTvavn0C', '_-0lB0FJklZQf0wMCOdb3', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'create:devops');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('tIUyyl9n6NKFesDzPlbON', '2iNamDFktFA6qfz_Tk5nH', '_-0lB0FJklZQf0wMCOdb3', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'update:devops');
-INSERT INTO permissions (id, action_id, resource_id, created_at, updated_at, key)
-VALUES ('JK_oVtMSqFPjHklwCedJJ', 'kZBX-FnIYa374wt4D5OlK', '_-0lB0FJklZQf0wMCOdb3', '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00', 'delete:devops');
-
-INSERT INTO roles (id, parent_id, role_name, type, description, enabled, created_at, updated_at)
-VALUES ('AsaN4Lp62jeT9jaJl1Nlj', null, 'admin-manager', 0, 'admin-manager', true, '2021-01-24T10:24:17+08:00',
-        '2021-01-24T10:24:17+08:00');
-INSERT INTO roles (id, parent_id, role_name, type, description, enabled, created_at, updated_at)
-VALUES ('-Nmq8l1U-gfQtgTvxAXDJ', 'AsaN4Lp62jeT9jaJl1Nlj', 'users-manager', 0, 'users-manager', true,
-        '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-INSERT INTO roles (id, parent_id, role_name, type, description, enabled, created_at, updated_at)
-VALUES ('gXWvkQRzMaE6fZnKsbVPD', 'AsaN4Lp62jeT9jaJl1Nlj', 'devops-manager', 0, 'devops-manager', true,
-        '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-INSERT INTO roles (id, parent_id, role_name, type, description, enabled, created_at, updated_at)
-VALUES ('EhZ0CHPt5oc5oe9osk0eQ', 'gXWvkQRzMaE6fZnKsbVPD', 'devops-runner', 0, 'devops-runner', true,
-        '2021-01-24T10:24:17+08:00', '2021-01-24T10:24:17+08:00');
-
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('EhZ0CHPt5oc5oe9osk0eQ', '7BvEdc4TA-gDOF-mfR3Wy');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('AsaN4Lp62jeT9jaJl1Nlj', '4vIzJkqwRPj2vN_w4Oq88');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('AsaN4Lp62jeT9jaJl1Nlj', '0rhMOepRtB5GPO_6xDLZ3');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('AsaN4Lp62jeT9jaJl1Nlj', '4P3xauyVkRxinMmKPL6Lh');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('AsaN4Lp62jeT9jaJl1Nlj', 'S8uK_bjaCDPveyyYqUIJc');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('-Nmq8l1U-gfQtgTvxAXDJ', 'G_8IyfomSis4Mbk9hqCt9');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('-Nmq8l1U-gfQtgTvxAXDJ', '6Mh4-cezNheXhIIMmIIjk');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('-Nmq8l1U-gfQtgTvxAXDJ', 'VgoFSnty6aiBPZUtlsWfg');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('-Nmq8l1U-gfQtgTvxAXDJ', 'l4QFZ7gg4K8EhCj_rvduc');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('gXWvkQRzMaE6fZnKsbVPD', 'cdemu6I9VAjcYtQURUQJH');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('gXWvkQRzMaE6fZnKsbVPD', 'tIUyyl9n6NKFesDzPlbON');
-INSERT INTO role_permission (role_id, permission_id)
-VALUES ('gXWvkQRzMaE6fZnKsbVPD', 'JK_oVtMSqFPjHklwCedJJ');
-
-INSERT INTO users (id, name, enabled, created_at, updated_at)
-VALUES ('87gb8fKJHGxh2Pz_Gk_R2', 'User1', true, '2020-09-17 07:56:09.000000', '2021-01-21 15:00:00.000000');
-INSERT INTO users (id, name, enabled, created_at, updated_at)
-VALUES ('SJ36zw7nRS4lx18dZlCoo', 'User2', true, '2021-01-21 15:00:00.000000', '2021-01-21 15:00:00.000000');
-INSERT INTO users (id, name, enabled, created_at, updated_at)
-VALUES ('h8Iqlb8Ixc4IltuOoY5QC', 'User3', true, '2021-01-21 15:00:00.000000', '2021-01-21 15:00:00.000000');
-INSERT INTO users (id, name, enabled, created_at, updated_at)
-VALUES ('SbZeBSpuy2OdJ0WZ2Z_Qo', 'User4', true, '2021-01-21 15:00:00.000000', '2021-01-21 15:00:00.000000');
-
-INSERT INTO user_role (user_id, role_id)
-VALUES ('87gb8fKJHGxh2Pz_Gk_R2', 'AsaN4Lp62jeT9jaJl1Nlj');
-INSERT INTO user_role (user_id, role_id)
-VALUES ('SJ36zw7nRS4lx18dZlCoo', '-Nmq8l1U-gfQtgTvxAXDJ');
-INSERT INTO user_role (user_id, role_id)
-VALUES ('h8Iqlb8Ixc4IltuOoY5QC', 'gXWvkQRzMaE6fZnKsbVPD');
-INSERT INTO user_role (user_id, role_id)
-VALUES ('SbZeBSpuy2OdJ0WZ2Z_Qo', 'EhZ0CHPt5oc5oe9osk0eQ');
-
-
-create or replace view policies_permissions(user_id, key) as
-SELECT DISTINCT gpd.user_id,
-                p.key
-FROM (SELECT gdr.user_id,
-             gdr.role_id,
-             gdr.role_parent_id,
-             rp.permission_id
-      FROM (WITH RECURSIVE deep_roles AS (
-          SELECT ur.user_id,
-                 rr.id,
-                 rr.parent_id,
-                 1 AS level
-          FROM roles rr
-                   JOIN user_role ur ON rr.id::text = ur.role_id::text
-          WHERE rr.enabled = true
-          UNION ALL
-          SELECT deep_roles_1.user_id,
-                 rr.id,
-                 rr.parent_id,
-                 deep_roles_1.level + 1 AS level
-          FROM roles rr
-                   JOIN deep_roles deep_roles_1 ON rr.parent_id::text = deep_roles_1.id::text
-          WHERE rr.enabled = true
-      )
-            SELECT deep_roles.user_id,
-                   deep_roles.id        AS role_id,
-                   deep_roles.parent_id AS role_parent_id,
-                   deep_roles.level
-            FROM deep_roles) gdr
-               JOIN role_permission rp ON rp.role_id::text = gdr.role_id::text) gpd
-         JOIN permissions p ON p.id::text = gpd.permission_id::text;
-
-CREATE EXTENSION IF NOT EXISTS tablefunc;
-
--- Multi Replace plpgsql - PostgreSQL wiki - https://wiki.postgresql.org/wiki/Multi_Replace_plpgsql
-create or replace function quote_meta(text) returns text
-    immutable
-    strict
-    language sql
-as
-$$
-select regexp_replace($1, '([\[\]\\\^\$\.\|\?\*\+\(\)])', '\\\1', 'g');
-$$;
-
---
-create or replace function multi_replace(str text, substitutions jsonb) returns text
-    immutable
-    strict
-    language plpgsql
-as
-$$
-DECLARE
-    rx     text;
-    s_left text;
-    s_tail text;
-    res    text := '';
-BEGIN
-    select string_agg(quote_meta(term), '|')
-    from jsonb_object_keys(substitutions) as x(term)
-    where term &lt;&gt; ''
-    into rx;
-
-    if (coalesce(rx, '') = '') then
-        -- the loop on the RE can't work with an empty alternation
-        return str;
-    end if;
-
-    rx := concat('^(.*?)(', rx, ')(.*)$'); -- match no more than 1 row
-
-    loop
-        s_tail := str;
-        select concat(matches[1], substitutions -&gt;&gt; matches[2]),
-               matches[3]
-        from regexp_matches(str, rx, 'g') as matches
-        into s_left, str;
-
-        exit when s_left is null;
-        res := res || s_left;
-
-    end loop;
-
-    res := res || s_tail;
-    return res;
-END
-$$;
-
-
-select *
-from crosstab(
-             'select *
-                from (select dt.user_id,
-                             a[2] as resource,
-                             multi_replace(string_agg(a[1], '''' order by a[1]), ''{
-                               &quot;delete&quot;: &quot;D&quot;,
-                               &quot;read&quot;: &quot;R&quot;,
-                               &quot;create&quot;: &quot;C&quot;,
-                               &quot;update&quot;: &quot;U&quot;
-                             }'')  as action
-                      from (select regexp_split_to_array(policies_permissions.key, '':''), user_id from policies_permissions) as dt(a)
-                      group by 1, 2) as t
-                order by 1;',
-             'select distinct resource
-                from (select dt.user_id,
-                             a[2] as resource,
-                             multi_replace(string_agg(a[1], '''' order by a[1]), ''{
-                               &quot;delete&quot;: &quot;D&quot;,
-                               &quot;read&quot;: &quot;R&quot;,
-                               &quot;create&quot;: &quot;C&quot;,
-                               &quot;update&quot;: &quot;U&quot;
-                             }'')  as action
-                      from (select regexp_split_to_array(policies_permissions.key, '':''), user_id from policies_permissions) as dt(a)
-                      group by 1, 2) as t
-                order by 1;'
-         ) as (
-               user_id text,
-               &quot;devops&quot; text,
-               &quot;rbac&quot; text,
-               &quot;users&quot; text
-    )
-
-
-</code></pre></div><div class=post_footer><div class="post_content markdown"><h3>See Also</h3><ul><li><a href=/posts/rbac1-design/>Rbac1 Design</a></li></ul></div><div class=meta><div class=info><span class="field tags"><i class=ri-stack-line></i>
-<a href=https://kaichu.io/tags/rbac1/>rbac1</a>
-<a href=https://kaichu.io/tags/rbac/>rbac</a>
-<a href=https://kaichu.io/tags/postgres/>postgres</a></span></div></div></div></div><div class=doc_comments><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//kaichuio.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div></div></div></div><a id=back_to_top href=# class=back_to_top><i class=ri-arrow-up-s-line></i></a><footer class=footer><div class=powered_by><a href=https://varkai.com>Designed by VarKai,</a>
-<a href=http://www.gohugo.io/>Proudly published with Hugo</a></div><div class=footer_slogan><span>My spiritual home</span></div></footer><script src=https://kaichu.io/js/jquery-3.5.1.min.js></script><link href=https://kaichu.io/css/fancybox.min.css rel=stylesheet><script src=https://kaichu.io/js/fancybox.min.js></script><script src=https://kaichu.io/js/zozo.js></script><script type=text/javascript async src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML">MathJax.Hub.Config({tex2jax:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['[[',']]']],processEscapes:!0,processEnvironments:!0,skipTags:['script','noscript','style','textarea','pre'],TeX:{equationNumbers:{autoNumber:"AMS"},extensions:["AMSmath.js","AMSsymbols.js"]}}}),MathJax.Hub.Queue(function(){var b=MathJax.Hub.getAllJax(),a;for(a=0;a<b.length;a+=1)b[a].SourceElement().parentNode.className+=' has-jax'})</script><style>code.has-jax{font:inherit;font-size:100%;background:inherit;border:inherit;color:#515151}</style><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-65308340-1','auto'),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script><script src=/js/add-on.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.css crossorigin=anonymous onload="media!='all'&&(media='all')"><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-core.min.js crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js crossorigin=anonymous onload="Prism.plugins.autoloader.languages_path='https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/'"></script><script defer src=https://cdn.jsdelivr.net/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js crossorigin=anonymous onload="document.querySelectorAll('pre>code').forEach(function(a){a.classList.add('line-numbers')})"></script></body></html>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Postgres Transpose Rows to Columns - KaiChu</title><meta name=Description content="延續上一篇文章 Rbac1 Design，透過 Postgres Transpose Rows to Columns (crosstab) 將行列互換，可以拿到一個基於每一個使用者基於 RBAC resource 對應操作權限"><meta property="og:title" content="Postgres Transpose Rows to Columns"><meta property="og:description" content="延續上一篇文章 Rbac1 Design，透過 Postgres Transpose Rows to Columns (crosstab) 將行列互換，可以拿到一個基於每一個使用者基於 RBAC resource 對應操作權限"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/postgres-transpose-rows-to-columns/"><meta property="og:image" content="https://kaichu.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-02-04T10:52:45+08:00"><meta property="article:modified_time" content="2021-05-17T15:21:01+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/logo.png"><meta name=twitter:title content="Postgres Transpose Rows to Columns"><meta name=twitter:description content="延續上一篇文章 Rbac1 Design，透過 Postgres Transpose Rows to Columns (crosstab) 將行列互換，可以拿到一個基於每一個使用者基於 RBAC resource 對應操作權限"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/postgres-transpose-rows-to-columns/><link rel=prev href=https://kaichu.io/posts/rbac1-design/><link rel=next href=https://kaichu.io/posts/cloud-run-button-tips/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Postgres Transpose Rows to Columns","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/postgres-transpose-rows-to-columns\/"},"image":["https:\/\/kaichu.io\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"rbac1, rbac, postgres","wordcount":628,"url":"https:\/\/kaichu.io\/posts\/postgres-transpose-rows-to-columns\/","datePublished":"2021-02-04T10:52:45+08:00","dateModified":"2021-05-17T15:21:01+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"延續上一篇文章 Rbac1 Design，透過 Postgres Transpose Rows to Columns (crosstab) 將行列互換，可以拿到一個基於每一個使用者基於 RBAC resource 對應操作權限"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu><span class=header-title-pre><i class="fas fa-chess-rook"></i></span>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Postgres Transpose Rows to Columns</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-02-04>2021-02-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;628 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#user_id-permission>user_id permission</a></li><li><a href=#user-vs-resource-permission>user vs resource permission</a></li></ul></li></ul></nav></div></div><div class=content id=content><p>延續上一篇文章 <a href=https://kaichu.io/posts/rbac1-design/ target=_blank rel="noopener noreffer">Rbac1 Design ｜ KaiChu</a>, 我們透過 Postgres 中的 CTE (common table expression) recursive query 來查詢有繼承 Role 的有對應的權限</p><h3 id=user_id-permission>user_id permission</h3><table><thead><tr><th style=text-align:left>user_id</th><th style=text-align:left>key</th></tr></thead><tbody><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>create:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>create:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>create:users</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>delete:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>delete:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>delete:users</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>read:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>read:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>read:users</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>update:devops</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>update:rbac</td></tr><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>update:users</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>create:devops</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>delete:devops</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>read:devops</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>update:devops</td></tr><tr><td style=text-align:left>SbZeBSpuy2OdJ0WZ2Z_Qo</td><td style=text-align:left>read:devops</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>create:users</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>delete:users</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>read:users</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>update:users</td></tr></tbody></table><h3 id=user-vs-resource-permission>user vs resource permission</h3><blockquote><p>read:R, write:C, delete:D, update:U</p></blockquote><table><thead><tr><th style=text-align:left>user_id</th><th style=text-align:left>devops</th><th style=text-align:left>rbac</th><th style=text-align:left>users</th></tr></thead><tbody><tr><td style=text-align:left>87gb8fKJHGxh2Pz_Gk_R2</td><td style=text-align:left>CDRU</td><td style=text-align:left>CDRU</td><td style=text-align:left>CDRU</td></tr><tr><td style=text-align:left>h8Iqlb8Ixc4IltuOoY5QC</td><td style=text-align:left>CDRU</td><td style=text-align:left>NULL</td><td style=text-align:left>NULL</td></tr><tr><td style=text-align:left>SbZeBSpuy2OdJ0WZ2Z_Qo</td><td style=text-align:left>R</td><td style=text-align:left>NULL</td><td style=text-align:left>NULL</td></tr><tr><td style=text-align:left>SJ36zw7nRS4lx18dZlCoo</td><td style=text-align:left>NULL</td><td style=text-align:left>NULL</td><td style=text-align:left>CDRU</td></tr></tbody></table><p>透過 postgres 的 Transpose Rows to Columns 可以得到上面一個人眼比較直覺得大表
+核心的 sql 就是使用 <code>crosstab</code> 指令, 完整操作請看下方 full sql</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-sql data-lang=sql><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w>
+</span><span class=w></span><span class=k>from</span><span class=w> </span><span class=n>crosstab</span><span class=p>(</span><span class=w>
+</span><span class=w>             </span><span class=s1>&#39;query order by 1&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>             </span><span class=s1>&#39;query distinct resource order by 1&#39;</span><span class=w>
+</span><span class=w>         </span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=p>(</span><span class=w>
+</span><span class=w>               </span><span class=n>user_id</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>               </span><span class=s2>&#34;devops&#34;</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>               </span><span class=s2>&#34;rbac&#34;</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>               </span><span class=s2>&#34;users&#34;</span><span class=w> </span><span class=nb>text</span><span class=w>
+</span><span class=w>    </span><span class=p>)</span><span class=w>
+</span></code></pre></td></tr></table></div></div><p><strong>full sql</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span><span class=lnt>208
+</span><span class=lnt>209
+</span><span class=lnt>210
+</span><span class=lnt>211
+</span><span class=lnt>212
+</span><span class=lnt>213
+</span><span class=lnt>214
+</span><span class=lnt>215
+</span><span class=lnt>216
+</span><span class=lnt>217
+</span><span class=lnt>218
+</span><span class=lnt>219
+</span><span class=lnt>220
+</span><span class=lnt>221
+</span><span class=lnt>222
+</span><span class=lnt>223
+</span><span class=lnt>224
+</span><span class=lnt>225
+</span><span class=lnt>226
+</span><span class=lnt>227
+</span><span class=lnt>228
+</span><span class=lnt>229
+</span><span class=lnt>230
+</span><span class=lnt>231
+</span><span class=lnt>232
+</span><span class=lnt>233
+</span><span class=lnt>234
+</span><span class=lnt>235
+</span><span class=lnt>236
+</span><span class=lnt>237
+</span><span class=lnt>238
+</span><span class=lnt>239
+</span><span class=lnt>240
+</span><span class=lnt>241
+</span><span class=lnt>242
+</span><span class=lnt>243
+</span><span class=lnt>244
+</span><span class=lnt>245
+</span><span class=lnt>246
+</span><span class=lnt>247
+</span><span class=lnt>248
+</span><span class=lnt>249
+</span><span class=lnt>250
+</span><span class=lnt>251
+</span><span class=lnt>252
+</span><span class=lnt>253
+</span><span class=lnt>254
+</span><span class=lnt>255
+</span><span class=lnt>256
+</span><span class=lnt>257
+</span><span class=lnt>258
+</span><span class=lnt>259
+</span><span class=lnt>260
+</span><span class=lnt>261
+</span><span class=lnt>262
+</span><span class=lnt>263
+</span><span class=lnt>264
+</span><span class=lnt>265
+</span><span class=lnt>266
+</span><span class=lnt>267
+</span><span class=lnt>268
+</span><span class=lnt>269
+</span><span class=lnt>270
+</span><span class=lnt>271
+</span><span class=lnt>272
+</span><span class=lnt>273
+</span><span class=lnt>274
+</span><span class=lnt>275
+</span><span class=lnt>276
+</span><span class=lnt>277
+</span><span class=lnt>278
+</span><span class=lnt>279
+</span><span class=lnt>280
+</span><span class=lnt>281
+</span><span class=lnt>282
+</span><span class=lnt>283
+</span><span class=lnt>284
+</span><span class=lnt>285
+</span><span class=lnt>286
+</span><span class=lnt>287
+</span><span class=lnt>288
+</span><span class=lnt>289
+</span><span class=lnt>290
+</span><span class=lnt>291
+</span><span class=lnt>292
+</span><span class=lnt>293
+</span><span class=lnt>294
+</span><span class=lnt>295
+</span><span class=lnt>296
+</span><span class=lnt>297
+</span><span class=lnt>298
+</span><span class=lnt>299
+</span><span class=lnt>300
+</span><span class=lnt>301
+</span><span class=lnt>302
+</span><span class=lnt>303
+</span><span class=lnt>304
+</span><span class=lnt>305
+</span><span class=lnt>306
+</span><span class=lnt>307
+</span><span class=lnt>308
+</span><span class=lnt>309
+</span><span class=lnt>310
+</span><span class=lnt>311
+</span><span class=lnt>312
+</span><span class=lnt>313
+</span><span class=lnt>314
+</span><span class=lnt>315
+</span><span class=lnt>316
+</span><span class=lnt>317
+</span><span class=lnt>318
+</span><span class=lnt>319
+</span><span class=lnt>320
+</span><span class=lnt>321
+</span><span class=lnt>322
+</span><span class=lnt>323
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-sql data-lang=sql><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>roles</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>id</span><span class=w>          </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>roles_pkey</span><span class=w>
+</span><span class=w>            </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>parent_id</span><span class=w>   </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>fk_roles_roles</span><span class=w>
+</span><span class=w>            </span><span class=k>references</span><span class=w> </span><span class=n>roles</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>role_name</span><span class=w>   </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>description</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=k>type</span><span class=w>        </span><span class=nb>bigint</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>enabled</span><span class=w>     </span><span class=nb>boolean</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>created_at</span><span class=w>  </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>updated_at</span><span class=w>  </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>permissions</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>id</span><span class=w>          </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>permissions_pkey</span><span class=w>
+</span><span class=w>            </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>action_id</span><span class=w>   </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>resource_id</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=k>key</span><span class=w>         </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>created_at</span><span class=w>  </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>updated_at</span><span class=w>  </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>role_permission</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>permission_id</span><span class=w> </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>fk_role_permission_permission</span><span class=w>
+</span><span class=w>            </span><span class=k>references</span><span class=w> </span><span class=n>permissions</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>role_id</span><span class=w>       </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>fk_role_permission_role</span><span class=w>
+</span><span class=w>            </span><span class=k>references</span><span class=w> </span><span class=n>roles</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=k>constraint</span><span class=w> </span><span class=n>role_permission_pkey</span><span class=w>
+</span><span class=w>        </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=w> </span><span class=p>(</span><span class=n>permission_id</span><span class=p>,</span><span class=w> </span><span class=n>role_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>actions</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>id</span><span class=w>          </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>actions_pkey</span><span class=w>
+</span><span class=w>            </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>name</span><span class=w>        </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>description</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>created_at</span><span class=w>  </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>updated_at</span><span class=w>  </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>resources</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>id</span><span class=w>         </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>resources_pkey</span><span class=w>
+</span><span class=w>            </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>name</span><span class=w>       </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>created_at</span><span class=w> </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>updated_at</span><span class=w> </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>users</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>id</span><span class=w>         </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>users_pkey</span><span class=w>
+</span><span class=w>            </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>name</span><span class=w>       </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>enabled</span><span class=w>    </span><span class=nb>boolean</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>created_at</span><span class=w> </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>updated_at</span><span class=w> </span><span class=k>timestamp</span><span class=w> </span><span class=k>with</span><span class=w> </span><span class=n>time</span><span class=w> </span><span class=k>zone</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>user_role</span><span class=w>
+</span><span class=w></span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>role_id</span><span class=w> </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>fk_user_role_role</span><span class=w>
+</span><span class=w>            </span><span class=k>references</span><span class=w> </span><span class=n>roles</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>user_id</span><span class=w> </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>21</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w>
+</span><span class=w>        </span><span class=k>constraint</span><span class=w> </span><span class=n>fk_user_role_user</span><span class=w>
+</span><span class=w>            </span><span class=k>references</span><span class=w> </span><span class=n>users</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=k>constraint</span><span class=w> </span><span class=n>user_role_pkey</span><span class=w>
+</span><span class=w>        </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>user_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=c1>-- data
+</span><span class=c1></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>actions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;QPjlpxmEE7fSjeTvavn0C&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;create&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;create&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>actions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;2iNamDFktFA6qfz_Tk5nH&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;update&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;update&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>actions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;kZBX-FnIYa374wt4D5OlK&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;delete&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;delete&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>actions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;ozXzHwl1tDLmgIwCBjQMc&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;read&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;read&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>resources</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;k4Wcq9zGqShiSH6-HmR9_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;rbac&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>resources</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;AoiiJEVfm3Fe8gtlZvE0_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;users&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>resources</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;_-0lB0FJklZQf0wMCOdb3&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;devops&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;7BvEdc4TA-gDOF-mfR3Wy&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;ozXzHwl1tDLmgIwCBjQMc&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;_-0lB0FJklZQf0wMCOdb3&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;read:devops&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;4vIzJkqwRPj2vN_w4Oq88&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;QPjlpxmEE7fSjeTvavn0C&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;k4Wcq9zGqShiSH6-HmR9_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;create:rbac&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;0rhMOepRtB5GPO_6xDLZ3&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;ozXzHwl1tDLmgIwCBjQMc&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;k4Wcq9zGqShiSH6-HmR9_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;read:rbac&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;4P3xauyVkRxinMmKPL6Lh&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2iNamDFktFA6qfz_Tk5nH&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;k4Wcq9zGqShiSH6-HmR9_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;update:rbac&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;S8uK_bjaCDPveyyYqUIJc&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;kZBX-FnIYa374wt4D5OlK&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;k4Wcq9zGqShiSH6-HmR9_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;delete:rbac&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;G_8IyfomSis4Mbk9hqCt9&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;QPjlpxmEE7fSjeTvavn0C&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;AoiiJEVfm3Fe8gtlZvE0_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;create:users&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;6Mh4-cezNheXhIIMmIIjk&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;ozXzHwl1tDLmgIwCBjQMc&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;AoiiJEVfm3Fe8gtlZvE0_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;read:users&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;VgoFSnty6aiBPZUtlsWfg&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2iNamDFktFA6qfz_Tk5nH&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;AoiiJEVfm3Fe8gtlZvE0_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;update:users&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;l4QFZ7gg4K8EhCj_rvduc&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;kZBX-FnIYa374wt4D5OlK&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;AoiiJEVfm3Fe8gtlZvE0_&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;delete:users&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;cdemu6I9VAjcYtQURUQJH&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;QPjlpxmEE7fSjeTvavn0C&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;_-0lB0FJklZQf0wMCOdb3&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;create:devops&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;tIUyyl9n6NKFesDzPlbON&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2iNamDFktFA6qfz_Tk5nH&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;_-0lB0FJklZQf0wMCOdb3&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;update:devops&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>action_id</span><span class=p>,</span><span class=w> </span><span class=n>resource_id</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;JK_oVtMSqFPjHklwCedJJ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;kZBX-FnIYa374wt4D5OlK&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;_-0lB0FJklZQf0wMCOdb3&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;delete:devops&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>roles</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>parent_id</span><span class=p>,</span><span class=w> </span><span class=n>role_name</span><span class=p>,</span><span class=w> </span><span class=k>type</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>,</span><span class=w> </span><span class=k>null</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;admin-manager&#39;</span><span class=p>,</span><span class=w> </span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;admin-manager&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>roles</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>parent_id</span><span class=p>,</span><span class=w> </span><span class=n>role_name</span><span class=p>,</span><span class=w> </span><span class=k>type</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;-Nmq8l1U-gfQtgTvxAXDJ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;users-manager&#39;</span><span class=p>,</span><span class=w> </span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;users-manager&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>roles</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>parent_id</span><span class=p>,</span><span class=w> </span><span class=n>role_name</span><span class=p>,</span><span class=w> </span><span class=k>type</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;gXWvkQRzMaE6fZnKsbVPD&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;devops-manager&#39;</span><span class=p>,</span><span class=w> </span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;devops-manager&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>roles</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>parent_id</span><span class=p>,</span><span class=w> </span><span class=n>role_name</span><span class=p>,</span><span class=w> </span><span class=k>type</span><span class=p>,</span><span class=w> </span><span class=n>description</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;EhZ0CHPt5oc5oe9osk0eQ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;gXWvkQRzMaE6fZnKsbVPD&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;devops-runner&#39;</span><span class=p>,</span><span class=w> </span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;devops-runner&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w>
+</span><span class=w>        </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-24T10:24:17+08:00&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;EhZ0CHPt5oc5oe9osk0eQ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;7BvEdc4TA-gDOF-mfR3Wy&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;4vIzJkqwRPj2vN_w4Oq88&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;0rhMOepRtB5GPO_6xDLZ3&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;4P3xauyVkRxinMmKPL6Lh&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;S8uK_bjaCDPveyyYqUIJc&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;-Nmq8l1U-gfQtgTvxAXDJ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;G_8IyfomSis4Mbk9hqCt9&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;-Nmq8l1U-gfQtgTvxAXDJ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;6Mh4-cezNheXhIIMmIIjk&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;-Nmq8l1U-gfQtgTvxAXDJ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;VgoFSnty6aiBPZUtlsWfg&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;-Nmq8l1U-gfQtgTvxAXDJ&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;l4QFZ7gg4K8EhCj_rvduc&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;gXWvkQRzMaE6fZnKsbVPD&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;cdemu6I9VAjcYtQURUQJH&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;gXWvkQRzMaE6fZnKsbVPD&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;tIUyyl9n6NKFesDzPlbON&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=p>(</span><span class=n>role_id</span><span class=p>,</span><span class=w> </span><span class=n>permission_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;gXWvkQRzMaE6fZnKsbVPD&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;JK_oVtMSqFPjHklwCedJJ&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>users</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;87gb8fKJHGxh2Pz_Gk_R2&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;User1&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2020-09-17 07:56:09.000000&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-21 15:00:00.000000&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>users</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;SJ36zw7nRS4lx18dZlCoo&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;User2&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-21 15:00:00.000000&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-21 15:00:00.000000&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>users</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;h8Iqlb8Ixc4IltuOoY5QC&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;User3&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-21 15:00:00.000000&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-21 15:00:00.000000&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>users</span><span class=w> </span><span class=p>(</span><span class=n>id</span><span class=p>,</span><span class=w> </span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=n>enabled</span><span class=p>,</span><span class=w> </span><span class=n>created_at</span><span class=p>,</span><span class=w> </span><span class=n>updated_at</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;SbZeBSpuy2OdJ0WZ2Z_Qo&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;User4&#39;</span><span class=p>,</span><span class=w> </span><span class=k>true</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-21 15:00:00.000000&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2021-01-21 15:00:00.000000&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>user_role</span><span class=w> </span><span class=p>(</span><span class=n>user_id</span><span class=p>,</span><span class=w> </span><span class=n>role_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;87gb8fKJHGxh2Pz_Gk_R2&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;AsaN4Lp62jeT9jaJl1Nlj&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>user_role</span><span class=w> </span><span class=p>(</span><span class=n>user_id</span><span class=p>,</span><span class=w> </span><span class=n>role_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;SJ36zw7nRS4lx18dZlCoo&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;-Nmq8l1U-gfQtgTvxAXDJ&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>user_role</span><span class=w> </span><span class=p>(</span><span class=n>user_id</span><span class=p>,</span><span class=w> </span><span class=n>role_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;h8Iqlb8Ixc4IltuOoY5QC&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;gXWvkQRzMaE6fZnKsbVPD&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>INSERT</span><span class=w> </span><span class=k>INTO</span><span class=w> </span><span class=n>user_role</span><span class=w> </span><span class=p>(</span><span class=n>user_id</span><span class=p>,</span><span class=w> </span><span class=n>role_id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=k>VALUES</span><span class=w> </span><span class=p>(</span><span class=s1>&#39;SbZeBSpuy2OdJ0WZ2Z_Qo&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;EhZ0CHPt5oc5oe9osk0eQ&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>or</span><span class=w> </span><span class=k>replace</span><span class=w> </span><span class=k>view</span><span class=w> </span><span class=n>policies_permissions</span><span class=p>(</span><span class=n>user_id</span><span class=p>,</span><span class=w> </span><span class=k>key</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w>
+</span><span class=w></span><span class=k>SELECT</span><span class=w> </span><span class=k>DISTINCT</span><span class=w> </span><span class=n>gpd</span><span class=p>.</span><span class=n>user_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                </span><span class=n>p</span><span class=p>.</span><span class=k>key</span><span class=w>
+</span><span class=w></span><span class=k>FROM</span><span class=w> </span><span class=p>(</span><span class=k>SELECT</span><span class=w> </span><span class=n>gdr</span><span class=p>.</span><span class=n>user_id</span><span class=p>,</span><span class=w>
+</span><span class=w>             </span><span class=n>gdr</span><span class=p>.</span><span class=n>role_id</span><span class=p>,</span><span class=w>
+</span><span class=w>             </span><span class=n>gdr</span><span class=p>.</span><span class=n>role_parent_id</span><span class=p>,</span><span class=w>
+</span><span class=w>             </span><span class=n>rp</span><span class=p>.</span><span class=n>permission_id</span><span class=w>
+</span><span class=w>      </span><span class=k>FROM</span><span class=w> </span><span class=p>(</span><span class=k>WITH</span><span class=w> </span><span class=k>RECURSIVE</span><span class=w> </span><span class=n>deep_roles</span><span class=w> </span><span class=k>AS</span><span class=w> </span><span class=p>(</span><span class=w>
+</span><span class=w>          </span><span class=k>SELECT</span><span class=w> </span><span class=n>ur</span><span class=p>.</span><span class=n>user_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                 </span><span class=n>rr</span><span class=p>.</span><span class=n>id</span><span class=p>,</span><span class=w>
+</span><span class=w>                 </span><span class=n>rr</span><span class=p>.</span><span class=n>parent_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                 </span><span class=mi>1</span><span class=w> </span><span class=k>AS</span><span class=w> </span><span class=k>level</span><span class=w>
+</span><span class=w>          </span><span class=k>FROM</span><span class=w> </span><span class=n>roles</span><span class=w> </span><span class=n>rr</span><span class=w>
+</span><span class=w>                   </span><span class=k>JOIN</span><span class=w> </span><span class=n>user_role</span><span class=w> </span><span class=n>ur</span><span class=w> </span><span class=k>ON</span><span class=w> </span><span class=n>rr</span><span class=p>.</span><span class=n>id</span><span class=p>::</span><span class=nb>text</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ur</span><span class=p>.</span><span class=n>role_id</span><span class=p>::</span><span class=nb>text</span><span class=w>
+</span><span class=w>          </span><span class=k>WHERE</span><span class=w> </span><span class=n>rr</span><span class=p>.</span><span class=n>enabled</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>true</span><span class=w>
+</span><span class=w>          </span><span class=k>UNION</span><span class=w> </span><span class=k>ALL</span><span class=w>
+</span><span class=w>          </span><span class=k>SELECT</span><span class=w> </span><span class=n>deep_roles_1</span><span class=p>.</span><span class=n>user_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                 </span><span class=n>rr</span><span class=p>.</span><span class=n>id</span><span class=p>,</span><span class=w>
+</span><span class=w>                 </span><span class=n>rr</span><span class=p>.</span><span class=n>parent_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                 </span><span class=n>deep_roles_1</span><span class=p>.</span><span class=k>level</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=mi>1</span><span class=w> </span><span class=k>AS</span><span class=w> </span><span class=k>level</span><span class=w>
+</span><span class=w>          </span><span class=k>FROM</span><span class=w> </span><span class=n>roles</span><span class=w> </span><span class=n>rr</span><span class=w>
+</span><span class=w>                   </span><span class=k>JOIN</span><span class=w> </span><span class=n>deep_roles</span><span class=w> </span><span class=n>deep_roles_1</span><span class=w> </span><span class=k>ON</span><span class=w> </span><span class=n>rr</span><span class=p>.</span><span class=n>parent_id</span><span class=p>::</span><span class=nb>text</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>deep_roles_1</span><span class=p>.</span><span class=n>id</span><span class=p>::</span><span class=nb>text</span><span class=w>
+</span><span class=w>          </span><span class=k>WHERE</span><span class=w> </span><span class=n>rr</span><span class=p>.</span><span class=n>enabled</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>true</span><span class=w>
+</span><span class=w>      </span><span class=p>)</span><span class=w>
+</span><span class=w>            </span><span class=k>SELECT</span><span class=w> </span><span class=n>deep_roles</span><span class=p>.</span><span class=n>user_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                   </span><span class=n>deep_roles</span><span class=p>.</span><span class=n>id</span><span class=w>        </span><span class=k>AS</span><span class=w> </span><span class=n>role_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                   </span><span class=n>deep_roles</span><span class=p>.</span><span class=n>parent_id</span><span class=w> </span><span class=k>AS</span><span class=w> </span><span class=n>role_parent_id</span><span class=p>,</span><span class=w>
+</span><span class=w>                   </span><span class=n>deep_roles</span><span class=p>.</span><span class=k>level</span><span class=w>
+</span><span class=w>            </span><span class=k>FROM</span><span class=w> </span><span class=n>deep_roles</span><span class=p>)</span><span class=w> </span><span class=n>gdr</span><span class=w>
+</span><span class=w>               </span><span class=k>JOIN</span><span class=w> </span><span class=n>role_permission</span><span class=w> </span><span class=n>rp</span><span class=w> </span><span class=k>ON</span><span class=w> </span><span class=n>rp</span><span class=p>.</span><span class=n>role_id</span><span class=p>::</span><span class=nb>text</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>gdr</span><span class=p>.</span><span class=n>role_id</span><span class=p>::</span><span class=nb>text</span><span class=p>)</span><span class=w> </span><span class=n>gpd</span><span class=w>
+</span><span class=w>         </span><span class=k>JOIN</span><span class=w> </span><span class=n>permissions</span><span class=w> </span><span class=n>p</span><span class=w> </span><span class=k>ON</span><span class=w> </span><span class=n>p</span><span class=p>.</span><span class=n>id</span><span class=p>::</span><span class=nb>text</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>gpd</span><span class=p>.</span><span class=n>permission_id</span><span class=p>::</span><span class=nb>text</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>CREATE</span><span class=w> </span><span class=n>EXTENSION</span><span class=w> </span><span class=k>IF</span><span class=w> </span><span class=k>NOT</span><span class=w> </span><span class=k>EXISTS</span><span class=w> </span><span class=n>tablefunc</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=c1>-- Multi Replace plpgsql - PostgreSQL wiki - https://wiki.postgresql.org/wiki/Multi_Replace_plpgsql
+</span><span class=c1></span><span class=k>create</span><span class=w> </span><span class=k>or</span><span class=w> </span><span class=k>replace</span><span class=w> </span><span class=k>function</span><span class=w> </span><span class=n>quote_meta</span><span class=p>(</span><span class=nb>text</span><span class=p>)</span><span class=w> </span><span class=k>returns</span><span class=w> </span><span class=nb>text</span><span class=w>
+</span><span class=w>    </span><span class=k>immutable</span><span class=w>
+</span><span class=w>    </span><span class=k>strict</span><span class=w>
+</span><span class=w>    </span><span class=k>language</span><span class=w> </span><span class=k>sql</span><span class=w>
+</span><span class=w></span><span class=k>as</span><span class=w>
+</span><span class=w></span><span class=err>$$</span><span class=w>
+</span><span class=w></span><span class=k>select</span><span class=w> </span><span class=n>regexp_replace</span><span class=p>(</span><span class=err>$</span><span class=mi>1</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;([\[\]\\\^\$\.\|\?\*\+\(\)])&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;\\\1&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;g&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=err>$$</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=c1>--
+</span><span class=c1></span><span class=k>create</span><span class=w> </span><span class=k>or</span><span class=w> </span><span class=k>replace</span><span class=w> </span><span class=k>function</span><span class=w> </span><span class=n>multi_replace</span><span class=p>(</span><span class=n>str</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w> </span><span class=n>substitutions</span><span class=w> </span><span class=n>jsonb</span><span class=p>)</span><span class=w> </span><span class=k>returns</span><span class=w> </span><span class=nb>text</span><span class=w>
+</span><span class=w>    </span><span class=k>immutable</span><span class=w>
+</span><span class=w>    </span><span class=k>strict</span><span class=w>
+</span><span class=w>    </span><span class=k>language</span><span class=w> </span><span class=n>plpgsql</span><span class=w>
+</span><span class=w></span><span class=k>as</span><span class=w>
+</span><span class=w></span><span class=err>$$</span><span class=w>
+</span><span class=w></span><span class=k>DECLARE</span><span class=w>
+</span><span class=w>    </span><span class=n>rx</span><span class=w>     </span><span class=nb>text</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=n>s_left</span><span class=w> </span><span class=nb>text</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=n>s_tail</span><span class=w> </span><span class=nb>text</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=n>res</span><span class=w>    </span><span class=nb>text</span><span class=w> </span><span class=p>:</span><span class=o>=</span><span class=w> </span><span class=s1>&#39;&#39;</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=k>BEGIN</span><span class=w>
+</span><span class=w>    </span><span class=k>select</span><span class=w> </span><span class=n>string_agg</span><span class=p>(</span><span class=n>quote_meta</span><span class=p>(</span><span class=n>term</span><span class=p>),</span><span class=w> </span><span class=s1>&#39;|&#39;</span><span class=p>)</span><span class=w>
+</span><span class=w>    </span><span class=k>from</span><span class=w> </span><span class=n>jsonb_object_keys</span><span class=p>(</span><span class=n>substitutions</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=n>x</span><span class=p>(</span><span class=n>term</span><span class=p>)</span><span class=w>
+</span><span class=w>    </span><span class=k>where</span><span class=w> </span><span class=n>term</span><span class=w> </span><span class=o>&lt;&gt;</span><span class=w> </span><span class=s1>&#39;&#39;</span><span class=w>
+</span><span class=w>    </span><span class=k>into</span><span class=w> </span><span class=n>rx</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>coalesce</span><span class=p>(</span><span class=n>rx</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;&#39;</span><span class=p>)</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s1>&#39;&#39;</span><span class=p>)</span><span class=w> </span><span class=k>then</span><span class=w>
+</span><span class=w>        </span><span class=c1>-- the loop on the RE can&#39;t work with an empty alternation
+</span><span class=c1></span><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>str</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=k>end</span><span class=w> </span><span class=k>if</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w>    </span><span class=n>rx</span><span class=w> </span><span class=p>:</span><span class=o>=</span><span class=w> </span><span class=n>concat</span><span class=p>(</span><span class=s1>&#39;^(.*?)(&#39;</span><span class=p>,</span><span class=w> </span><span class=n>rx</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;)(.*)$&#39;</span><span class=p>);</span><span class=w> </span><span class=c1>-- match no more than 1 row
+</span><span class=c1></span><span class=w>
+</span><span class=w>    </span><span class=n>loop</span><span class=w>
+</span><span class=w>        </span><span class=n>s_tail</span><span class=w> </span><span class=p>:</span><span class=o>=</span><span class=w> </span><span class=n>str</span><span class=p>;</span><span class=w>
+</span><span class=w>        </span><span class=k>select</span><span class=w> </span><span class=n>concat</span><span class=p>(</span><span class=n>matches</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span><span class=w> </span><span class=n>substitutions</span><span class=w> </span><span class=o>-&gt;&gt;</span><span class=w> </span><span class=n>matches</span><span class=p>[</span><span class=mi>2</span><span class=p>]),</span><span class=w>
+</span><span class=w>               </span><span class=n>matches</span><span class=p>[</span><span class=mi>3</span><span class=p>]</span><span class=w>
+</span><span class=w>        </span><span class=k>from</span><span class=w> </span><span class=n>regexp_matches</span><span class=p>(</span><span class=n>str</span><span class=p>,</span><span class=w> </span><span class=n>rx</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;g&#39;</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=n>matches</span><span class=w>
+</span><span class=w>        </span><span class=k>into</span><span class=w> </span><span class=n>s_left</span><span class=p>,</span><span class=w> </span><span class=n>str</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w>        </span><span class=n>exit</span><span class=w> </span><span class=k>when</span><span class=w> </span><span class=n>s_left</span><span class=w> </span><span class=k>is</span><span class=w> </span><span class=k>null</span><span class=p>;</span><span class=w>
+</span><span class=w>        </span><span class=n>res</span><span class=w> </span><span class=p>:</span><span class=o>=</span><span class=w> </span><span class=n>res</span><span class=w> </span><span class=o>||</span><span class=w> </span><span class=n>s_left</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w>    </span><span class=k>end</span><span class=w> </span><span class=n>loop</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w>    </span><span class=n>res</span><span class=w> </span><span class=p>:</span><span class=o>=</span><span class=w> </span><span class=n>res</span><span class=w> </span><span class=o>||</span><span class=w> </span><span class=n>s_tail</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>res</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=k>END</span><span class=w>
+</span><span class=w></span><span class=err>$$</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w>
+</span><span class=w></span><span class=k>from</span><span class=w> </span><span class=n>crosstab</span><span class=p>(</span><span class=w>
+</span><span class=w>             </span><span class=s1>&#39;select *
+</span><span class=s1>                from (select dt.user_id,
+</span><span class=s1>                             a[2] as resource,
+</span><span class=s1>                             multi_replace(string_agg(a[1], &#39;&#39;&#39;&#39; order by a[1]), &#39;&#39;{
+</span><span class=s1>                               &#34;delete&#34;: &#34;D&#34;,
+</span><span class=s1>                               &#34;read&#34;: &#34;R&#34;,
+</span><span class=s1>                               &#34;create&#34;: &#34;C&#34;,
+</span><span class=s1>                               &#34;update&#34;: &#34;U&#34;
+</span><span class=s1>                             }&#39;&#39;)  as action
+</span><span class=s1>                      from (select regexp_split_to_array(policies_permissions.key, &#39;&#39;:&#39;&#39;), user_id from policies_permissions) as dt(a)
+</span><span class=s1>                      group by 1, 2) as t
+</span><span class=s1>                order by 1;&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>             </span><span class=s1>&#39;select distinct resource
+</span><span class=s1>                from (select dt.user_id,
+</span><span class=s1>                             a[2] as resource,
+</span><span class=s1>                             multi_replace(string_agg(a[1], &#39;&#39;&#39;&#39; order by a[1]), &#39;&#39;{
+</span><span class=s1>                               &#34;delete&#34;: &#34;D&#34;,
+</span><span class=s1>                               &#34;read&#34;: &#34;R&#34;,
+</span><span class=s1>                               &#34;create&#34;: &#34;C&#34;,
+</span><span class=s1>                               &#34;update&#34;: &#34;U&#34;
+</span><span class=s1>                             }&#39;&#39;)  as action
+</span><span class=s1>                      from (select regexp_split_to_array(policies_permissions.key, &#39;&#39;:&#39;&#39;), user_id from policies_permissions) as dt(a)
+</span><span class=s1>                      group by 1, 2) as t
+</span><span class=s1>                order by 1;&#39;</span><span class=w>
+</span><span class=w>         </span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=p>(</span><span class=w>
+</span><span class=w>               </span><span class=n>user_id</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>               </span><span class=s2>&#34;devops&#34;</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>               </span><span class=s2>&#34;rbac&#34;</span><span class=w> </span><span class=nb>text</span><span class=p>,</span><span class=w>
+</span><span class=w>               </span><span class=s2>&#34;users&#34;</span><span class=w> </span><span class=nb>text</span><span class=w>
+</span><span class=w>    </span><span class=p>)</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2021-05-17&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9ba3d46a17f8164088bbda18a68fe835039b6b0d target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9ba3d46a17f8164088bbda18a68fe835039b6b0d: fix(algolia): change wangchucheng/test-action@master to update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>9ba3d46</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/postgres-transpose-rows-to-columns/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/postgres-transpose-rows-to-columns/ data-title="Postgres Transpose Rows to Columns" data-via=CageChung data-hashtags=rbac1,rbac,postgres><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/postgres-transpose-rows-to-columns/ data-hashtag=rbac1><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/postgres-transpose-rows-to-columns/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/rbac1/>rbac1</a>,&nbsp;<a href=/tags/rbac/>rbac</a>,&nbsp;<a href=/tags/postgres/>postgres</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/rbac1-design/ class=prev rel=prev title="Rbac1 Design"><i class="fas fa-angle-left fa-fw"></i>Rbac1 Design</a>
+<a href=/posts/cloud-run-button-tips/ class=next rel=next title="Cloud Run Button Tips">Cloud Run Button Tips<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=disqus_thread class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://disqus.com/?ref_noscript>Disqus</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://kaichuio.disqus.com/embed.js defer></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
