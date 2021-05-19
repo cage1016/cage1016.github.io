@@ -2,7 +2,7 @@
 
 
 
-{{<image src="/images/avatar.png" caption="KAI CHU CHUNG" src_s="/images/avatar.png" src_l="/images/avatar.png" >}}
+{{<image src="/logo.png" caption="KAI CHU CHUNG" src_s="/logo.png" src_l="/logo.png" >}}
 
 
 - Cloud GDE

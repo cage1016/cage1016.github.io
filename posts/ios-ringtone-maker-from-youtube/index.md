@@ -147,3 +147,5 @@ Pkh8UtuejGw.m4r
 DONE!
 
 BTW. 有時候再來弄 UI
+
+{{< music url="Pkh8UtuejGw.m4r" name=Wavelength artist=oldmanyoung cover="/images/Wavelength.jpg" >}}
