@@ -39,7 +39,7 @@
 1. 共 30 秒
 1. 音頻漸入漸出效果: fadein 3 秒， fadeout 3 秒
 
-{{< asciinema rows="20" key="/posts/ios-ringtone-maker-from-youtube/414953" start-at="5" loop="true" >}}
+{{< asciinema rows="20" key="414953" start-at="5" loop="true" >}}
 
 鈴聲直接輸出在執行 docker 路徑下 `./output` 
 

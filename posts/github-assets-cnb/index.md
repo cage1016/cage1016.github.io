@@ -91,6 +91,50 @@ RUN ASSET_ID=$(if [ $VERSION != "latest" ]; then \
 
 1. demo
 
-    ![Demo](img/demo.gif "Demo")
+    {{< asciinema rows="20" key="408800" start-at="5" loop="true" >}}
 
 1. 詳細實作的細節請至 [cage1016/github-assets-cnb](https://github.com/cage1016/github-assets-cnb) 查閱
+
+#### Update github-assets-cnb@2.0.0
+
+github-assets-cnb@1.1.0 我們在 `project.toml` 中配置相關的的 `[[build.env]]` 來指定對應的 Github Assets 參數。基本上可以達成一開始的期望在 Buildpack 構建 Container image 過期程中下載 Github Assses 的檔案，不過如果有需求下載 **多個** Assets 時就沒有辦法滿足這個需求了
+
+所以在 [github-assets-cnb@2.0.0](https://github.com/cage1016/github-assets-cnb) 中增加了
+
+- 可以指定多個 Github Assets
+- 如果 Github Asset 是 `.gz`, `.sz`, `.xz`, `.lz4`, `tgz`, `zip`, `.tar`, `.bz2` 壓縮檔，也支援解壓
+
+1. 一樣透過 `project.toml` 來配置相關參數
+
+    ```bash
+    cat <<EOF >> project.toml
+    # [[metadata.githubasset]]
+    # repo = "GoogleContainerTools/skaffold"    # required
+    # token = ""                                # optional for private repo
+    # file = "skaffold-linux-amd64"             # required
+    # version = ""                              # optional, default set to "latest"
+    # target = "skaffold"                       # optional, default set to file name
+    # untarpath = ""                            # optional, default set to asset layer (".gz", ".sz", ".xz", ".lz4", "tgz", "zip", ".tar", ".bz2")
+
+    [[metadata.githubasset]]
+    repo = "eugeneware/ffmpeg-static"
+    file = "linux-x64"
+    target = "ffmpeg"
+
+    [[metadata.githubasset]]
+    repo = "kkdai/youtube"
+    file = "youtubedr_2.7.0_linux_arm64.tar.gz"
+    untarpath = "bin"
+    EOF
+    ```
+
+1. Build container image
+
+    ```
+    pack build myapp --buildpack cage1016/github-assets-cnb@2.0.0
+    ```
+
+1. Check `/layers/cage1016_github-assets-cnb`
+
+    ![snipaste](img/snipaste.png "snipaste")
+
