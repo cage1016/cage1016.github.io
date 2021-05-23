@@ -95,46 +95,58 @@ RUN ASSET_ID=$(if [ $VERSION != "latest" ]; then \
 
 1. 詳細實作的細節請至 [cage1016/github-assets-cnb](https://github.com/cage1016/github-assets-cnb) 查閱
 
-#### Update github-assets-cnb@2.0.0
+#### github-assets-cnb@2.1.0
 
 github-assets-cnb@1.1.0 我們在 `project.toml` 中配置相關的的 `[[build.env]]` 來指定對應的 Github Assets 參數。基本上可以達成一開始的期望在 Buildpack 構建 Container image 過期程中下載 Github Assses 的檔案，不過如果有需求下載 **多個** Assets 時就沒有辦法滿足這個需求了
 
-所以在 [github-assets-cnb@2.0.0](https://github.com/cage1016/github-assets-cnb) 中增加了
+所以在 [github-assets-cnb@2.1.0](https://github.com/cage1016/github-assets-cnb) 中增加了
 
-- 可以指定多個 Github Assets
-- 如果 Github Asset 是 `.gz`, `.sz`, `.xz`, `.lz4`, `tgz`, `zip`, `.tar`, `.bz2` 壓縮檔，也支援解壓
+- Support Download Public/Private Github Assets
+- `x-tar`, `gzip`, `x-zx`, `zip` auto unarchive
 
-1. 一樣透過 `project.toml` 來配置相關參數
+Support `metadata.githubassets` fields
+
+- `repo`: Github Repo 
+- `asset`: Github Repo asset name
+- `tag`: Release tag name, default set to "latest"
+- `token_env`: (optional), Please assign ENV name for private repo
+- `destination`: download asset destination path to, `bin/<your-asset>` for `application/x-executable` asset
+- `strip_components`: `x-tar`, `gzip`, `x-zx` suuport StripComponents feature.
+
+1. Create `project.toml` if you want to embed github assets
 
     ```bash
     cat <<EOF >> project.toml
-    # [[metadata.githubasset]]
-    # repo = "GoogleContainerTools/skaffold"    # required
-    # token = ""                                # optional for private repo
-    # file = "skaffold-linux-amd64"             # required
-    # version = ""                              # optional, default set to "latest"
-    # target = "skaffold"                       # optional, default set to file name
-    # untarpath = ""                            # optional, default set to asset layer (".gz", ".sz", ".xz", ".lz4", "tgz", "zip", ".tar", ".bz2")
+    # assign token
+    [[build.env]]
+    name = "APITEST_TOOLCHAIN_TOKEN"
+    value = "<github-token>"
 
-    [[metadata.githubasset]]
-    repo = "eugeneware/ffmpeg-static"
-    file = "linux-x64"
-    target = "ffmpeg"
-
-    [[metadata.githubasset]]
+    [[metadata.githubassets]]
     repo = "kkdai/youtube"
-    file = "youtubedr_2.7.0_linux_arm64.tar.gz"
-    untarpath = "bin"
+    asset = "youtubedr_2.7.0_linux_arm64.tar.gz"
+    destination = "bin"
+
+    [[metadata.githubassets]]
+    repo = "qeek-dev/apitest-toolchain"
+    token_env = "APITEST_TOOLCHAIN_TOKEN"
+    asset = "apitest-toolchain-linux-amd64"
+    destination = "bin/apitest-toolchain"
+    tag = "v0.1.0"
+
+    [[metadata.githubassets]]
+    repo = "stedolan/jq"
+    asset = "jq-linux64"
+    destination = "bin/jq"
     EOF
     ```
 
-1. Build container image
+2. Build container image
 
     ```
-    pack build myapp --buildpack cage1016/github-assets-cnb@2.0.0
+    pack build myapp --buildpack cage1016/github-assets-cnb@2.1.0
     ```
 
-1. Check `/layers/cage1016_github-assets-cnb`
+3. Check `/layers/cage1016_github-assets-cnb`
 
-    ![snipaste](img/snipaste.png "snipaste")
-
+    ![snipaste](img/snipaste.png "Container image")
