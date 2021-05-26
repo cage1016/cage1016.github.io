@@ -154,43 +154,40 @@ ENTRYPOINT ["/exe"]
 
 > [cage1016/github-assets-cnb: A Cloud Native Buildpack that Download Github Assets](https://github.com/cage1016/github-assets-cnb)
 
-buildpack `cage1016/github-assets-cnb@1.1.0` 提供了一個簡易的方式讓你透過 pack 建構 container image 時動態下載所需的 Github Assets，在這一次的使用情境也派上了用場
+buildpack `cage1016/github-assets-cnb@2.1.0` 提供了一個簡易的方式讓你透過 pack 建構 container image 時動態下載所需的 Github Assets，在這一次的使用情境也派上了用場
 
 1. 建立一個 `project.toml` 並配置 buildpack `cage1016/github-assets-cnb` 所需的參數
 
-    - `TOKEN`: 公開專案可以忽略
-    - `REPO`: `grpc-ecosystem/grpc-health-probe`: Github Repo name
-    - `FILE`: `grpc_health_probe-linux-amd64`: grpc-ecosystem/grpc-health-probe Asset 所需的檔案
-    - `TARGET`: `grpc_health_probe`: 下載後重新命名的名子
-    - `VERSION`: 不指定預設下載 latest
+    - `repo`: Github Repo
+    - `asset`: Github Repo asset name
+    - `tag`: Release tag name, default set to "latest"
+    - `token_env`: (optional), Please assign ENV name for private repo
+    - `destination`: download asset destination path to, `bin/<your-asset>` for `application/x-executable` asset
+    - `strip_components`: `x-tar`, `gzip`, `x-zx` suuport StripComponents feature.
 
     ```bash
     cat <<EOF >> project.toml
-    # [[build.env]]
-    # optional, github token for private assets
-    # name = "TOKEN"
-    # value = "<github-token>"
-
-    # skaffold
+    # assign token
     [[build.env]]
-    # required
-    name = "REPO"
-    value = "grpc-ecosystem/grpc-health-probe"
+    name = "APITEST_TOOLCHAIN_TOKEN"
+    value = "<github-token>"
 
-    [[build.env]]
-    # required
-    name = "FILE"
-    value = "grpc_health_probe-linux-amd64"
+    [[metadata.githubassets]]
+    repo = "kkdai/youtube"
+    asset = "youtubedr_2.7.0_linux_arm64.tar.gz"
+    destination = "bin"
 
-    [[build.env]]
-    # optional, default set to FILE value
-    name = "TARGET"
-    value = "grpc_health_probe"
+    [[metadata.githubassets]]
+    repo = "qeek-dev/apitest-toolchain"
+    token_env = "APITEST_TOOLCHAIN_TOKEN"
+    asset = "apitest-toolchain-linux-amd64"
+    destination = "bin/apitest-toolchain"
+    tag = "v0.1.0"
 
-    # [[build.env]]
-    # # optional, default set to 'latest'
-    # name = "VERSION"
-    # value = "v1.22.0"
+    [[metadata.githubassets]]
+    repo = "stedolan/jq"
+    asset = "jq-linux64"
+    destination = "bin/jq"
     EOF
     ```
 
@@ -248,49 +245,7 @@ buildpack `cage1016/github-assets-cnb@1.1.0` 提供了一個簡易的方式讓�
 
     最後因為我們沒有客製自己的 builder，所以必需明確指定 buildpack，加上下載 Github Asset 用的 `cage1016/github-assets-cnb`，原來 `google.go.runtime` `google.go.build` `google.utils.label` 共記 4 個
 
-1. 使用的方式一: 逐一明確指定 4 個所需的 buildpack
-
-    ```bash
-    pack build aa -B gcr.io/buildpacks/builder:v1 \
-                  -b google.go.runtime0.9.1 \
-                  -b google.go.build@0.9.0 \
-                  -b google.utils.label@0.0.1 \
-                  -b cage1016/github-assets-cnb@1.1.0 \
-                  --env GOOGLE_BUILDABLE=cmd/add/main.go
-    ```
-
-    ```bash
-    ...
-    Digest: sha256:b84f2034fd21136d1a37572829b81a9b9bf7d29f328db6d741ff787573ff70fe
-    Status: Image is up to date for ghcr.io/cage1016/buildpacks/cage1016_github-assets-cnb@sha256:b84f2034fd21136d1a37572829b81a9b9bf7d29f328db6d741ff787573ff70fe
-    ===> DETECTING
-    google.go.runtime          0.9.1
-    google.go.build            0.9.0
-    google.utils.label         0.0.1
-    cage1016/github-assets-cnb 1.1.0
-    ===> ANALYZING
-    ===> RESTORING
-    ===> BUILDING
-    === Go - Runtime (google.go.runtime@0.9.1) ===
-    Using runtime version from go.mod: 1.14
-    ...
-    Done "go build -o /layers/google.go.build/bin/main cmd/add/main.go..." (11.6495527s)
-    === Utils - Label Image (google.utils.label@0.0.1) ===
-    -----> Download jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
-    -----> Download Github grpc-ecosystem/grpc-health-probe asset grpc_health_probe-linux-amd64 as grpc_health_probe
-    ===> EXPORTING
-    Adding layer 'goo
-    ...
-    ...
-    ```
-
-    我們可以看到 `DETECTING` 的階段有正確偵測到我們明確指定的 4 個 buildpack，並在 `BUILDING` 階段也有正確下載 Github grpc-ecosystem/grpc-health-probe asset 至 container image 中
-
-    ![grpc-health-probe asset container image](img/dive-0.png "grpc-health-probe asset container image")
-
-    而依照 `cage1016/github-assets-cnb` 中實作 buildpack sepc 所提供的目錄為 `/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe` 如圖所示，而這個路徑也是我們在 Kubernetes Pod 在 `livenessProbe` 及 `readinessProbe` 探針指令執行檔所在
-
-1. 使用的方式二: 在 `project.toml` 增加明確指定所需要的 4 個 buildpack
+1. 在 `project.toml` 增加明確指定所需要的 4 個 buildpack 及 Github Asset 相關的 metadata
 
     ```bash
     cat <<EOF >> project.toml
@@ -306,17 +261,30 @@ buildpack `cage1016/github-assets-cnb@1.1.0` 提供了一個簡易的方式讓�
     id = "google.utils.label"
     version = "0.0.1"
 
+    [[metadata.githubassets]]
+    repo = "grpc-ecosystem/grpc-health-probe"
+    asset = "grpc_health_probe-linux-amd64"
+    destination = "bin/grpc_health_probe"
+
     [[build.buildpacks]]
     id = "cage1016/github-assets-cnb"
-    version = "1.1.0"
+    version = "2.1.1"
     EOF
     ```
 
     ```bash
     pack build aa -B gcr.io/buildpacks/builder:v1 \
-                  --projectDescriptor=project.toml
+                  -d=project.toml \
                   --env GOOGLE_BUILDABLE=cmd/add/main.go
     ```
+
+    {{< asciinema rows="25" key="tmpiz54xlrh-ascii" start-at="5" loop="true" >}}
+
+    我們可以看到 `DETECTING` 的階段有正確偵測到我們明確指定的 4 個 buildpack，並在 `BUILDING` 階段也有正確下載 Github grpc-ecosystem/grpc-health-probe asset 至 container image 中
+
+    ![grpc-health-probe asset container image](img/dive-0.png "grpc-health-probe asset container image")
+
+    而依照 `cage1016/github-assets-cnb` 中實作 buildpack sepc 所提供的目錄為 `/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe` 如圖所示，而這個路徑也是我們在 Kubernetes Pod 在 `livenessProbe` 及 `readinessProbe` 探針指令執行檔所在
 
 1. 基本上二種方式的結果都是一樣的，就看你喜歡那一種
 
@@ -364,11 +332,11 @@ ports:
   - containerPort: 10021
 readinessProbe:
   exec:
-    command: ["/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe", "-addr=:10021"]
+    command: ["/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe", "-addr=:10021"]
   initialDelaySeconds: 5
 livenessProbe:
   exec:
-    command: ["/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe", "-addr=:10021"]
+    command: ["/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe", "-addr=:10021"]
   initialDelaySeconds: 10
 ...
 ```
