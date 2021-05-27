@@ -3,7 +3,7 @@
 
 <!--more-->
 
-![Kuberntes Pod 生命周期](img/pod-loap.jpeg "Kuberntes Pod 生命周期")
+![Kuberntes Pod 生命周期](img/pod-loap.webp "Kuberntes Pod 生命周期")
 
 在 Kubernetes Pod 完整的生命周期包含了三個部份: `Iinit container` `Pod Hook` `健康檢查`。這三部都會影響到 Pod 的生命周期，而本篇文章說明如何使用 pack 打包 [grpc-health-probe](https://github.com/grpc-ecosystem/grpc-health-probe/) 來支援 GRPC 健康檢查
 
