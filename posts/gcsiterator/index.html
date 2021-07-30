@@ -1,17 +1,114 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE - KaiChu</title><meta name=Description content="最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` & `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)"><meta property="og:title" content="GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE"><meta property="og:description" content="最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` & `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/gcsiterator/"><meta property="og:image" content="https://kaichu.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2015-07-28T12:03:48+08:00"><meta property="article:modified_time" content="2021-06-17T04:09:48+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/logo.png"><meta name=twitter:title content="GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE"><meta name=twitter:description content="最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` & `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/gcsiterator/><link rel=prev href=https://kaichu.io/posts/gae-todomvc/><link rel=next href=https://kaichu.io/posts/webpack-es6-demo/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/gcsiterator\/"},"image":["https:\/\/kaichu.io\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"GCS, GAE, csv, Python","wordcount":1262,"url":"https:\/\/kaichu.io\/posts\/gcsiterator\/","datePublished":"2015-07-28T12:03:48+08:00","dateModified":"2021-06-17T04:09:48+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` \u0026 `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
-<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2015-07-28>2015-07-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1262 words&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#gcsiteratorpy>GCSIterator.py</a></li><li><a href=#getting-started>Getting Started</a></li><li><a href=#reference>Reference</a></li></ul></nav></div></div><div class=content id=content><p>最近的專案常常需要在 <a href=https://cloud.google.com/appengine/docs/python/ target=_blank rel="noopener noreffer">GAE - Python</a> 跟大 CSV (40MB)檔打交道。在 Python 中利用 <code>csv.reader</code> & <code>csv.DictReader</code>
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE - KaiChu</title><meta name=Description content="最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` & `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)"><meta property="og:title" content="GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE">
+<meta property="og:description" content="最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` & `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/posts/gcsiterator/"><meta property="og:image" content="https://kaichu.io/logo.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2015-07-28T12:03:48+08:00">
+<meta property="article:modified_time" content="2021-07-30T07:49:31+00:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/logo.png">
+<meta name=twitter:title content="GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE">
+<meta name=twitter:description content="最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` & `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/gcsiterator/><link rel=prev href=https://kaichu.io/posts/gae-todomvc/><link rel=next href=https://kaichu.io/posts/webpack-es6-demo/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/gcsiterator\/"},"image":["https:\/\/kaichu.io\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"GCS, GAE, csv, Python","wordcount":1262,"url":"https:\/\/kaichu.io\/posts\/gcsiterator\/","datePublished":"2015-07-28T12:03:48+08:00","dateModified":"2021-07-30T07:49:31+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"最近的專案常常需要在 GAE - Python 跟大 CSV (40MB)檔打交道。在 Python 中利用 `csv.reader` \u0026 `csv.DictReader` 可以很容易的處理 `csv` 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 **60s**，而 Tasks Request 則有 **10mins** 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到 `DeadlineExceededErrors` 的雷也會踩到 `Exceeded soft private memory limit` 的問題(預設 instance 的記憶體只有 **128MB**，在處理大 CSV 檔很容易踩到的雷)"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/ title=Home> Home </a><a class=menu-item href=/posts/> Posts </a><a class=menu-item href=/tags/> Tags </a><a class=menu-item href=/about/> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+Cancel
+</a>
+</div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>Contents</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2015-07-28>2015-07-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1262 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#gcsiteratorpy>GCSIterator.py</a></li>
+<li><a href=#getting-started>Getting Started</a></li>
+<li><a href=#reference>Reference</a></li>
+</ul>
+</nav></div>
+</div><div class=content id=content><p>最近的專案常常需要在 <a href=https://cloud.google.com/appengine/docs/python/ target=_blank rel="noopener noreffer">GAE - Python</a> 跟大 CSV (40MB)檔打交道。在 Python 中利用 <code>csv.reader</code> & <code>csv.DictReader</code>
 可以很容易的處理 <code>csv</code> 讀取的動作。但是在 GAE 平台上一般 Request 時間只有 <strong>60s</strong>，而 Tasks Request 則有 <strong>10mins</strong> 的限制[3]，而在 GAE 上處理超大檔案的時候除了會遇到
-<code>DeadlineExceededErrors</code> 的雷也會踩到 <code>Exceeded soft private memory limit</code> 的問題(預設 instance 的記憶體只有 <strong>128MB</strong>，在處理大 CSV 檔很容易踩到的雷)</p><p>所以在處理大 CSV 檔最好不要一次就把所有的資料讀到記憶體中，而 GAE 上又有檔案存取的限制，所以大部份會搭配 <a href=https://cloud.google.com/storage/ target=_blank rel="noopener noreffer">GCS</a> 一起使用，
-把檔案放在 GCS 上，由 GAE 透過 <code>google-api-python-client</code> 到 GCS 進行檔案的存取</p><p><code>google-api-python-client</code> 中實作了 GCS JSON API 的 chunks 下載(<strong>MediaIoBaseDownload</strong> [4])，在 chunks 下載時就必需另外處理斷行的問題(實作 Python csv.DictReader iterator 內解決斷行問題)</p><h2 id=gcsiteratorpy>GCSIterator.py</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>  1
+<code>DeadlineExceededErrors</code> 的雷也會踩到 <code>Exceeded soft private memory limit</code> 的問題(預設 instance 的記憶體只有 <strong>128MB</strong>，在處理大 CSV 檔很容易踩到的雷)</p>
+<p>所以在處理大 CSV 檔最好不要一次就把所有的資料讀到記憶體中，而 GAE 上又有檔案存取的限制，所以大部份會搭配 <a href=https://cloud.google.com/storage/ target=_blank rel="noopener noreffer">GCS</a> 一起使用，
+把檔案放在 GCS 上，由 GAE 透過 <code>google-api-python-client</code> 到 GCS 進行檔案的存取</p>
+<p><code>google-api-python-client</code> 中實作了 GCS JSON API 的 chunks 下載(<strong>MediaIoBaseDownload</strong> [4])，在 chunks 下載時就必需另外處理斷行的問題(實作 Python csv.DictReader iterator 內解決斷行問題)</p>
+<h2 id=gcsiteratorpy>GCSIterator.py</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
 </span><span class=lnt>  2
 </span><span class=lnt>  3
 </span><span class=lnt>  4
@@ -170,7 +267,9 @@
 </span><span class=lnt>157
 </span><span class=lnt>158
 </span><span class=lnt>159
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=c1># GCSIterator.py</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># GCSIterator.py</span>
 
 <span class=kn>import</span> <span class=nn>random</span>
 <span class=kn>import</span> <span class=nn>re</span>
@@ -196,15 +295,15 @@
     <span class=bp>self</span><span class=o>.</span><span class=n>_chunksize</span> <span class=o>=</span> <span class=n>chunksize</span>
     <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>=</span> <span class=n>progress</span>
     <span class=bp>self</span><span class=o>.</span><span class=n>_init_progress</span> <span class=o>=</span> <span class=n>progress</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span> <span class=o>=</span> <span class=bp>None</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=bp>False</span>
+    <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span> <span class=o>=</span> <span class=kc>None</span>
+    <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=kc>False</span>
 
     <span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span>
     <span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span> <span class=o>=</span> <span class=mi>0</span>
     <span class=bp>self</span><span class=o>.</span><span class=n>_lines</span> <span class=o>=</span> <span class=p>[]</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span> <span class=o>=</span> <span class=bp>None</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=bp>False</span>
-    <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span> <span class=o>=</span> <span class=bp>False</span>
+    <span class=bp>self</span><span class=o>.</span><span class=n>_buffer</span> <span class=o>=</span> <span class=kc>None</span>
+    <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=kc>False</span>
+    <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span> <span class=o>=</span> <span class=kc>False</span>
 
     <span class=bp>self</span><span class=o>.</span><span class=n>_bytes_read</span> <span class=o>=</span> <span class=mi>0</span>
 
@@ -238,7 +337,7 @@
         <span class=k>raise</span> <span class=ne>StopIteration</span>
 
       <span class=k>else</span><span class=p>:</span>
-        <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span> <span class=o>=</span> <span class=bp>True</span>
+        <span class=bp>self</span><span class=o>.</span><span class=n>_done_and_last_line</span> <span class=o>=</span> <span class=kc>True</span>
 
     <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_line_num</span> <span class=o>==</span> <span class=mi>0</span> <span class=ow>and</span> <span class=nb>len</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_last_line</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
       <span class=c1># print &#39;fixing&#39;</span>
@@ -290,13 +389,13 @@
           <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>_chunksize</span><span class=p>)</span>
       <span class=p>}</span>
       <span class=n>http</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_request</span><span class=o>.</span><span class=n>http</span>
-      <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;read bytes={:d}-{:d}/{}&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_progress</span><span class=p>,</span>
+      <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;read bytes=</span><span class=si>{:d}</span><span class=s1>-</span><span class=si>{:d}</span><span class=s1>/</span><span class=si>{}</span><span class=s1>&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_progress</span><span class=p>,</span>
                                              <span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>+</span> <span class=bp>self</span><span class=o>.</span><span class=n>_chunksize</span><span class=p>),</span>
                                              <span class=nb>str</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span><span class=p>)</span> <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span> <span class=k>else</span> <span class=s1>&#39;*&#39;</span><span class=p>)</span>
       <span class=n>logging</span><span class=o>.</span><span class=n>info</span><span class=p>(</span><span class=n>msg</span><span class=p>)</span>
-      <span class=k>print</span> <span class=n>msg</span>
+      <span class=nb>print</span> <span class=n>msg</span>
 
-      <span class=k>for</span> <span class=n>retry_num</span> <span class=ow>in</span> <span class=nb>xrange</span><span class=p>(</span><span class=n>num_retries</span> <span class=o>+</span> <span class=mi>1</span><span class=p>):</span>
+      <span class=k>for</span> <span class=n>retry_num</span> <span class=ow>in</span> <span class=n>xrange</span><span class=p>(</span><span class=n>num_retries</span> <span class=o>+</span> <span class=mi>1</span><span class=p>):</span>
         <span class=k>if</span> <span class=n>retry_num</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>:</span>
           <span class=bp>self</span><span class=o>.</span><span class=n>_sleep</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_rand</span><span class=p>()</span> <span class=o>*</span> <span class=mi>2</span> <span class=o>**</span> <span class=n>retry_num</span><span class=p>)</span>
           <span class=n>logging</span><span class=o>.</span><span class=n>warning</span><span class=p>(</span>
@@ -318,7 +417,7 @@
           <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>length</span><span class=p>)</span>
 
         <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_progress</span> <span class=o>==</span> <span class=bp>self</span><span class=o>.</span><span class=n>_total_size</span><span class=p>:</span>
-          <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=bp>True</span>
+          <span class=bp>self</span><span class=o>.</span><span class=n>_done</span> <span class=o>=</span> <span class=kc>True</span>
         <span class=k>return</span> <span class=n>content</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>_done</span>
       <span class=k>else</span><span class=p>:</span>
         <span class=k>raise</span> <span class=n>HttpError</span><span class=p>(</span><span class=n>resp</span><span class=p>,</span> <span class=n>content</span><span class=p>,</span> <span class=n>uri</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>_uri</span><span class=p>)</span>
@@ -329,7 +428,13 @@
 
       <span class=bp>self</span><span class=o>.</span><span class=n>_sleep</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>_rand</span><span class=p>()</span> <span class=o>*</span> <span class=mi>2</span> <span class=o>**</span> <span class=mi>2</span><span class=p>)</span>
       <span class=bp>self</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
-</code></pre></td></tr></table></div></div><p>在 <code>GCSIterator.py</code> 中把 GCS JSON API 的 chunks 下載 csv 資料的程式碼植入 iterator 並解決斷行的問題。</p><h2 id=getting-started>Getting Started</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>GCSIterator.py</code> 中把 GCS JSON API 的 chunks 下載 csv 資料的程式碼植入 iterator 並解決斷行的問題。</p>
+<h2 id=getting-started>Getting Started</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -341,7 +446,9 @@
 </span><span class=lnt>10
 </span><span class=lnt>11
 </span><span class=lnt>12
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell><span class=c1># Get gcloud</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=c1># Get gcloud</span>
 $ curl https://sdk.cloud.google.com <span class=p>|</span> bash
 
 <span class=c1># Get App Engine component</span>
@@ -353,7 +460,12 @@ $ git clone https://github.com/cage1016/GCSIterator
 
 <span class=c1># Install pip packages</span>
 $ sudo pip install -r requirements.txt -t lib
-</code></pre></td></tr></table></div></div><p>Replace your <code>bucket-name</code> and <code>object-name</code>. You may also modify <code>chunksize</code> at line 24 in <code>main.py</code> file.</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div><p>Replace your <code>bucket-name</code> and <code>object-name</code>. You may also modify <code>chunksize</code> at line 24 in <code>main.py</code> file.</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -371,7 +483,9 @@ $ sudo pip install -r requirements.txt -t lib
 </span><span class=lnt>16
 </span><span class=lnt>17
 </span><span class=lnt>18
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-python data-lang=python><span class=c1># main.py</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># main.py</span>
 <span class=o>...</span>
 
 <span class=k>def</span> <span class=nf>get_authenticated_service</span><span class=p>():</span>
@@ -386,10 +500,15 @@ $ sudo pip install -r requirements.txt -t lib
 <span class=n>request</span> <span class=o>=</span> <span class=n>gcs_service</span><span class=o>.</span><span class=n>objects</span><span class=p>()</span><span class=o>.</span><span class=n>get_media</span><span class=p>(</span><span class=n>bucket</span><span class=o>=</span><span class=n>bucket_name</span><span class=p>,</span> <span class=nb>object</span><span class=o>=</span><span class=n>object_name</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s1>&#39;utf8&#39;</span><span class=p>))</span>
 <span class=n>iterator</span> <span class=o>=</span> <span class=n>GCSIterator</span><span class=p>(</span><span class=n>request</span><span class=p>,</span> <span class=n>chunksize</span><span class=o>=</span><span class=mi>512</span><span class=p>)</span>
 
-<span class=n>reader</span> <span class=o>=</span> <span class=n>csv</span><span class=o>.</span><span class=n>DictReader</span><span class=p>(</span><span class=n>iterator</span><span class=p>,</span> <span class=n>skipinitialspace</span><span class=o>=</span><span class=bp>True</span><span class=p>,</span> <span class=n>delimiter</span><span class=o>=</span><span class=s1>&#39;,&#39;</span><span class=p>)</span>
+<span class=n>reader</span> <span class=o>=</span> <span class=n>csv</span><span class=o>.</span><span class=n>DictReader</span><span class=p>(</span><span class=n>iterator</span><span class=p>,</span> <span class=n>skipinitialspace</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>delimiter</span><span class=o>=</span><span class=s1>&#39;,&#39;</span><span class=p>)</span>
 <span class=k>for</span> <span class=n>row</span> <span class=ow>in</span> <span class=n>reader</span><span class=p>:</span>
-  <span class=k>print</span> <span class=n>row</span>
-</code></pre></td></tr></table></div></div><p>Execute <code>main.py</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+  <span class=nb>print</span> <span class=n>row</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Execute <code>main.py</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -420,7 +539,9 @@ $ sudo pip install -r requirements.txt -t lib
 </span><span class=lnt>29
 </span><span class=lnt>30
 </span><span class=lnt>31
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell><span class=c1># sample output</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=c1># sample output</span>
 $ python main.py
 <span class=nb>read</span> <span class=nv>bytes</span><span class=o>=</span>0-512/*
 <span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000000@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000000&#39;</span><span class=o>}</span>
@@ -451,7 +572,54 @@ $ python main.py
 <span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000023@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000023&#39;</span><span class=o>}</span>
 <span class=o>{</span><span class=s1>&#39;email&#39;</span>: <span class=s1>&#39;kaichu_1016+00000024@gmail.com&#39;</span>, <span class=s1>&#39;name&#39;</span>: <span class=s1>&#39;cage00000024&#39;</span><span class=o>}</span>
 ...
-</code></pre></td></tr></table></div></div><h2 id=reference>Reference</h2><ol><li><a href=https://cloud.google.com/appengine/docs/python/ target=_blank rel="noopener noreffer">GAE - Python</a></li><li><a href=https://docs.python.org/2/library/csv.html target=_blank rel="noopener noreffer">13.1. csv — CSV File Reading and Writing — Python 2.7.10 documentation</a></li><li><a href=https://cloud.google.com/appengine/articles/deadlineexceedederrors target=_blank rel="noopener noreffer">Dealing with DeadlineExceededErrors - App Engine — Google Cloud Platform</a></li><li><a href=https://github.com/google/google-api-python-client/blob/80da1eff23d7dc02d9f66f82754aa86b55f73be6/googleapiclient/http.py#L477 target=_blank rel="noopener noreffer">google-api-python-client/http.py at 80da1eff23d7dc02d9f66f82754aa86b55f73be6 · google/google-api-python-client</a></li><li><a href=https://github.com/cage1016/GCSIterator target=_blank rel="noopener noreffer">cage1016/GCSIterator</a></li></ol></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2021-06-17&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/e57a692684f2f65c31769c039666a915456b1236 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) e57a692684f2f65c31769c039666a915456b1236: feat(content): add Pack 0.19.0 Solved Invalid Cross Device Link at Google Cloud Build">
-<i class="fas fa-hashtag fa-fw"></i>e57a692</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/gcsiterator/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/gcsiterator/ data-title="GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE" data-via=CageChung data-hashtags=GCS,GAE,csv,Python><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/gcsiterator/ data-hashtag=GCS><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/gcsiterator/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/gcs/>GCS</a>,&nbsp;<a href=/tags/gae/>GAE</a>,&nbsp;<a href=/tags/csv/>csv</a>,&nbsp;<a href=/tags/python/>Python</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/gae-todomvc/ class=prev rel=prev title=GAE-todomvc><i class="fas fa-angle-left fa-fw"></i>GAE-todomvc</a>
-<a href=/posts/webpack-es6-demo/ class=next rel=next title="webpack es6 demo">webpack es6 demo<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=reference>Reference</h2>
+<ol>
+<li><a href=https://cloud.google.com/appengine/docs/python/ target=_blank rel="noopener noreffer">GAE - Python</a></li>
+<li><a href=https://docs.python.org/2/library/csv.html target=_blank rel="noopener noreffer">13.1. csv — CSV File Reading and Writing — Python 2.7.10 documentation</a></li>
+<li><a href=https://cloud.google.com/appengine/articles/deadlineexceedederrors target=_blank rel="noopener noreffer">Dealing with DeadlineExceededErrors - App Engine — Google Cloud Platform</a></li>
+<li><a href=https://github.com/google/google-api-python-client/blob/80da1eff23d7dc02d9f66f82754aa86b55f73be6/googleapiclient/http.py#L477 target=_blank rel="noopener noreffer">google-api-python-client/http.py at 80da1eff23d7dc02d9f66f82754aa86b55f73be6 · google/google-api-python-client</a></li>
+<li><a href=https://github.com/cage1016/GCSIterator target=_blank rel="noopener noreffer">cage1016/GCSIterator</a></li>
+</ol></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>Updated on 2021-07-30&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/09e39720bb78617317de8fcc56c9f361470437ff target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 09e39720bb78617317de8fcc56c9f361470437ff: add NATS quick expose for local test">
+<i class="fas fa-hashtag fa-fw"></i>09e3972</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/posts/gcsiterator/index.md target=_blank>Read Markdown</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/gcsiterator/ data-title="GCSIterator (Python CSV iterator for Google Cloud Storage) via GAE" data-via=CageChung data-hashtags=GCS,GAE,csv,Python><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/gcsiterator/ data-hashtag=GCS><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/gcsiterator/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/gcs/>GCS</a>,&nbsp;<a href=/tags/gae/>GAE</a>,&nbsp;<a href=/tags/csv/>csv</a>,&nbsp;<a href=/tags/python/>Python</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/posts/gae-todomvc/ class=prev rel=prev title=GAE-todomvc><i class="fas fa-angle-left fa-fw"></i>GAE-todomvc</a>
+<a href=/posts/webpack-es6-demo/ class=next rel=next title="webpack es6 demo">webpack es6 demo<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.86.0">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments">
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>

@@ -1,14 +1,135 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Gokit microservice demo - KaiChu</title><meta name=Description content="Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo"><meta property="og:title" content="Gokit microservice demo"><meta property="og:description" content="Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/gokit-ms-demo/"><meta property="og:image" content="https://kaichu.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-11-03T17:50:10+00:00"><meta property="article:modified_time" content="2021-06-17T04:09:48+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/logo.png"><meta name=twitter:title content="Gokit microservice demo"><meta name=twitter:description content="Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/gokit-ms-demo/><link rel=prev href=https://kaichu.io/posts/ios-ringtone-maker-from-youtube/><link rel=next href=https://kaichu.io/posts/gokit-engineering-operation/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Gokit microservice demo","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/gokit-ms-demo\/"},"image":["https:\/\/kaichu.io\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"gokit, kubernetes, microservices, istio","wordcount":479,"url":"https:\/\/kaichu.io\/posts\/gokit-ms-demo\/","datePublished":"2020-11-03T17:50:10+00:00","dateModified":"2021-06-17T04:09:48+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
-<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Gokit microservice demo</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-11-03>2020-11-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;479 words&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;One minute&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#cage1016ms-demo>cage1016/ms-demo</a><ul><li><a href=#install>Install</a></li><li><a href=#cleanup>CleanUP</a></li></ul></li></ul></nav></div></div><div class=content id=content><p>小弟在 GDG Devfest 2019 分享過 <a href=https://www.slideshare.net/cagechung/gdg-devfest-2019-build-go-kit-microservices-at-kubernetes-with-ease target=_blank rel="noopener noreffer">Build go kit microservices at kubernetes with ease</a>，Gokit 是一個建立 microservice 的 toolkit，Gokit 提出 <code>Transport</code> <code>Endpoint</code> <code>Service</code> 三種概念來幫助開始者進行架構分離，對單一微服務進行架構強制分離或許會增加程式碼的閱讀性，不過對一定規模的微服務來說，一致性的程式架構分離反而會增加多人開發的效率</p><h2 id=cage1016ms-demo>cage1016/ms-demo</h2><table><thead><tr><th>Service</th><th>Description</th></tr></thead><tbody><tr><td>add</td><td>Expose Sum method</td></tr><tr><td>tictac</td><td>Expose Tic/Tac method</td></tr></tbody></table><p><a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo: gokit microservice demo</a> 提供了使用 gokit 建立的 kubernetes/istio 的 manifest, 可以讓使用者快速的練習基於 kubernetes/istio 來搭建 gokit 微服務</p><h3 id=install>Install</h3><ol><li>Run <code>skaffold run</code> (first time will be slow)</li><li>Set the <code>ADD_HTTP_LB_URL/ADD_GRPC_LB_URL</code> & <code>TICTAC_HTTP_LB_URL/TICTAC_GRPC_LB_URL</code> environment variable in your shell to the public IP/port of the Kubernetes loadBalancer<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>Gokit microservice demo - KaiChu</title><meta name=Description content="Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo"><meta property="og:title" content="Gokit microservice demo">
+<meta property="og:description" content="Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/posts/gokit-ms-demo/"><meta property="og:image" content="https://kaichu.io/logo.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2020-11-03T17:50:10+00:00">
+<meta property="article:modified_time" content="2021-07-30T07:49:31+00:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/logo.png">
+<meta name=twitter:title content="Gokit microservice demo">
+<meta name=twitter:description content="Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/gokit-ms-demo/><link rel=prev href=https://kaichu.io/posts/ios-ringtone-maker-from-youtube/><link rel=next href=https://kaichu.io/posts/gokit-engineering-operation/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Gokit microservice demo","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/gokit-ms-demo\/"},"image":["https:\/\/kaichu.io\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"gokit, kubernetes, microservices, istio","wordcount":479,"url":"https:\/\/kaichu.io\/posts\/gokit-ms-demo\/","datePublished":"2020-11-03T17:50:10+00:00","dateModified":"2021-07-30T07:49:31+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"Kubernetes Nginx ingress/Istio manifest for Gokit microservice demo"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/ title=Home> Home </a><a class=menu-item href=/posts/> Posts </a><a class=menu-item href=/tags/> Tags </a><a class=menu-item href=/about/> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+Cancel
+</a>
+</div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>Contents</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">Gokit microservice demo</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-11-03>2020-11-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;479 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;One minute&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#cage1016ms-demo>cage1016/ms-demo</a>
+<ul>
+<li><a href=#install>Install</a></li>
+<li><a href=#cleanup>CleanUP</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
+</div><div class=content id=content><p>小弟在 GDG Devfest 2019 分享過 <a href=https://www.slideshare.net/cagechung/gdg-devfest-2019-build-go-kit-microservices-at-kubernetes-with-ease target=_blank rel="noopener noreffer">Build go kit microservices at kubernetes with ease</a>，Gokit 是一個建立 microservice 的 toolkit，Gokit 提出 <code>Transport</code> <code>Endpoint</code> <code>Service</code> 三種概念來幫助開始者進行架構分離，對單一微服務進行架構強制分離或許會增加程式碼的閱讀性，不過對一定規模的微服務來說，一致性的程式架構分離反而會增加多人開發的效率</p>
+<h2 id=cage1016ms-demo>cage1016/ms-demo</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>add</td>
+<td>Expose Sum method</td>
+</tr>
+<tr>
+<td>tictac</td>
+<td>Expose Tic/Tac method</td>
+</tr>
+</tbody>
+</table>
+<p><a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo: gokit microservice demo</a> 提供了使用 gokit 建立的 kubernetes/istio 的 manifest, 可以讓使用者快速的練習基於 kubernetes/istio 來搭建 gokit 微服務</p>
+<h3 id=install>Install</h3>
+<ol>
+<li>Run <code>skaffold run</code> (first time will be slow)</li>
+<li>Set the <code>ADD_HTTP_LB_URL/ADD_GRPC_LB_URL</code> & <code>TICTAC_HTTP_LB_URL/TICTAC_GRPC_LB_URL</code> environment variable in your shell to the public IP/port of the Kubernetes loadBalancer
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -23,7 +144,9 @@
 </span><span class=lnt>13
 </span><span class=lnt>14
 </span><span class=lnt>15
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell><span class=nb>export</span> <span class=nv>ADD_HTTP_LB_PORT</span><span class=o>=</span><span class=k>$(</span>kubectl get service add-external -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.spec.ports[?(@.name==&#34;http&#34;)].port}&#39;</span><span class=k>)</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=nb>export</span> <span class=nv>ADD_HTTP_LB_PORT</span><span class=o>=</span><span class=k>$(</span>kubectl get service add-external -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.spec.ports[?(@.name==&#34;http&#34;)].port}&#39;</span><span class=k>)</span>
 <span class=nb>export</span> <span class=nv>ADD_GRPC_LB_PORT</span><span class=o>=</span><span class=k>$(</span>kubectl get service add-external -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.spec.ports[?(@.name==&#34;grpc&#34;)].port}&#39;</span><span class=k>)</span>
 <span class=nb>export</span> <span class=nv>ADD_LB_HOST</span><span class=o>=</span><span class=k>$(</span>kubectl get service add-external -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.status.loadBalancer.ingress[0].hostname}&#39;</span><span class=k>)</span>
 <span class=nb>export</span> <span class=nv>ADD_HTTP_LB_URL</span><span class=o>=</span><span class=nv>$ADD_LB_HOST</span>:<span class=nv>$ADD_HTTP_LB_PORT</span>
@@ -38,81 +161,193 @@
 <span class=nb>export</span> <span class=nv>TICTAC_GRPC_LB_URL</span><span class=o>=</span><span class=nv>$TICTAC_LB_HOST</span>:<span class=nv>$TICTAC_GRPC_LB_PORT</span>
 <span class=nb>echo</span> <span class=nv>$TICTAC_HTTP_LB_URL</span>
 <span class=nb>echo</span> <span class=nv>$TICTAC_GRPC_LB_URL</span>
-</code></pre></td></tr></table></div></div></li><li>Access by command<ul><li>sum method</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>Access by command
+<ul>
+<li>sum method</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$ADD_HTTP_LB_URL</span>/sum -d <span class=s1>&#39;{&#34;a&#34;: 1, &#34;b&#34;:1}&#39;</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$ADD_HTTP_LB_URL</span>/sum -d <span class=s1>&#39;{&#34;a&#34;: 1, &#34;b&#34;:1}&#39;</span>
 
 or
 
 grpcurl -d <span class=s1>&#39;{&#34;a&#34;: 1, &#34;b&#34;:1}&#39;</span> -plaintext -proto ./pb/add/add.proto <span class=nv>$ADD_GRPC_LB_URL</span> pb.Add.Sum
-</code></pre></td></tr></table></div></div><ul><li>tic method</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>tic method</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$TICTAC_HTTP_LB_URL</span>/tic
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$TICTAC_HTTP_LB_URL</span>/tic
 
 or
 
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class=nv>$TICTAC_GRPC_LB_URL</span> pb.Tictac.Tic
-</code></pre></td></tr></table></div></div><ul><li>tac method</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>tac method</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>curl <span class=nv>$TICTAC_HTTP_LB_URL</span>/tac
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>curl <span class=nv>$TICTAC_HTTP_LB_URL</span>/tac
 
 or
 
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class=nv>$TICTAC_GRPC_LB_URL</span> pb.Tictac.Tac
-</code></pre></td></tr></table></div></div></li><li>Apply istio manifests <code>kubectl apply -f deployments/istio-manifests</code></li><li>Set the <code>GATEWAY_HTTP_URL/GATEWAY_GRPC_URL</code> environment variable in your shell to the public IP/port of the Istio Ingress gateway.<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>Apply istio manifests <code>kubectl apply -f deployments/istio-manifests</code></li>
+<li>Set the <code>GATEWAY_HTTP_URL/GATEWAY_GRPC_URL</code> environment variable in your shell to the public IP/port of the Istio Ingress gateway.
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
 </span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell><span class=nb>export</span> <span class=nv>INGRESS_HTTP_PORT</span><span class=o>=</span><span class=k>$(</span>kubectl -n istio-system get service istio-ingressgateway -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.spec.ports[?(@.name==&#34;http2&#34;)].port}&#39;</span><span class=k>)</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=nb>export</span> <span class=nv>INGRESS_HTTP_PORT</span><span class=o>=</span><span class=k>$(</span>kubectl -n istio-system get service istio-ingressgateway -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.spec.ports[?(@.name==&#34;http2&#34;)].port}&#39;</span><span class=k>)</span>
 <span class=nb>export</span> <span class=nv>INGRESS_GRPC_PORT</span><span class=o>=</span><span class=k>$(</span>kubectl -n istio-system get service istio-ingressgateway -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.spec.ports[?(@.name==&#34;https&#34;)].port}&#39;</span><span class=k>)</span>
 <span class=nb>export</span> <span class=nv>INGRESS_HOST</span><span class=o>=</span><span class=k>$(</span>kubectl -n istio-system get service istio-ingressgateway -o <span class=nv>jsonpath</span><span class=o>=</span><span class=s1>&#39;{.status.loadBalancer.ingress[0].hostname}&#39;</span><span class=k>)</span>
 <span class=nb>export</span> <span class=nv>GATEWAY_HTTP_URL</span><span class=o>=</span><span class=nv>$INGRESS_HOST</span>:<span class=nv>$INGRESS_HTTP_PORT</span>
 <span class=nb>export</span> <span class=nv>GATEWAY_GRPC_URL</span><span class=o>=</span><span class=nv>$INGRESS_HOST</span>:<span class=nv>$INGRESS_GRPC_PORT</span>
 <span class=nb>echo</span> <span class=nv>$GATEWAY_HTTP_URL</span>
 <span class=nb>echo</span> <span class=nv>$GATEWAY_GRPC_URL</span>
-</code></pre></td></tr></table></div></div></li><li>Access by command<ul><li>sum method</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>Access by command
+<ul>
+<li>sum method</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$GATEWAY_HTTP_URL</span>/api/v1/add/sum -d <span class=s1>&#39;{&#34;a&#34;: 1, &#34;b&#34;:1}&#39;</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$GATEWAY_HTTP_URL</span>/api/v1/add/sum -d <span class=s1>&#39;{&#34;a&#34;: 1, &#34;b&#34;:1}&#39;</span>
 
 or
 
 grpcurl -d <span class=s1>&#39;{&#34;a&#34;: 1, &#34;b&#34;:1}&#39;</span> -plaintext -proto ./pb/add/add.proto <span class=nv>$GATEWAY_GRPC_URL</span> pb.Add.Sum
-</code></pre></td></tr></table></div></div><ul><li>tic method</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>tic method</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$GATEWAY_HTTP_URL</span>/api/v1/tictac/tic
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>curl -X POST <span class=nv>$GATEWAY_HTTP_URL</span>/api/v1/tictac/tic
 
 or
 
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class=nv>$GATEWAY_GRPC_URL</span> pb.Tictac.Tic
-</code></pre></td></tr></table></div></div><ul><li>tac method</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>tac method</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>curl <span class=nv>$GATEWAY_HTTP_URL</span>/api/v1/tictac/tac
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>curl <span class=nv>$GATEWAY_HTTP_URL</span>/api/v1/tictac/tac
 
 or
 
 grpcurl -plaintext -proto ./pb/tictac/tictac.proto <span class=nv>$GATEWAY_GRPC_URL</span> pb.Tictac.Tac
-</code></pre></td></tr></table></div></div></li></ol><h3 id=cleanup>CleanUP</h3><p><code>skaffold delete</code></p><p>or</p><p><code>kubectl delete -f deployments/istio-manifests</code></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2021-06-17&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/e57a692684f2f65c31769c039666a915456b1236 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) e57a692684f2f65c31769c039666a915456b1236: feat(content): add Pack 0.19.0 Solved Invalid Cross Device Link at Google Cloud Build">
-<i class="fas fa-hashtag fa-fw"></i>e57a692</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/gokit-ms-demo/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/gokit-ms-demo/ data-title="Gokit microservice demo" data-via=CageChung data-hashtags=gokit,kubernetes,microservices,istio><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/gokit-ms-demo/ data-hashtag=gokit><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/gokit-ms-demo/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/gokit/>gokit</a>,&nbsp;<a href=/tags/kubernetes/>kubernetes</a>,&nbsp;<a href=/tags/microservices/>microservices</a>,&nbsp;<a href=/tags/istio/>istio</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/ios-ringtone-maker-from-youtube/ class=prev rel=prev title="iOS ringtone maker from YouTube video"><i class="fas fa-angle-left fa-fw"></i>iOS ringtone maker from YouTube video</a>
-<a href=/posts/gokit-engineering-operation/ class=next rel=next title="GoPherCon 2020 TW: 如何透過 Go-kit 快速搭建微服務架構應用程式實戰">GoPherCon 2020 TW: 如何透過 Go-kit 快速搭建微服務架構應用程式實戰<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h3 id=cleanup>CleanUP</h3>
+<p><code>skaffold delete</code></p>
+<p>or</p>
+<p><code>kubectl delete -f deployments/istio-manifests</code></p></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>Updated on 2021-07-30&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/09e39720bb78617317de8fcc56c9f361470437ff target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 09e39720bb78617317de8fcc56c9f361470437ff: add NATS quick expose for local test">
+<i class="fas fa-hashtag fa-fw"></i>09e3972</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/posts/gokit-ms-demo/index.md target=_blank>Read Markdown</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/gokit-ms-demo/ data-title="Gokit microservice demo" data-via=CageChung data-hashtags=gokit,kubernetes,microservices,istio><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/gokit-ms-demo/ data-hashtag=gokit><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/gokit-ms-demo/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/gokit/>gokit</a>,&nbsp;<a href=/tags/kubernetes/>kubernetes</a>,&nbsp;<a href=/tags/microservices/>microservices</a>,&nbsp;<a href=/tags/istio/>istio</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/posts/ios-ringtone-maker-from-youtube/ class=prev rel=prev title="iOS ringtone maker from YouTube video"><i class="fas fa-angle-left fa-fw"></i>iOS ringtone maker from YouTube video</a>
+<a href=/posts/gokit-engineering-operation/ class=next rel=next title="GoPherCon 2020 TW: 如何透過 Go-kit 快速搭建微服務架構應用程式實戰">GoPherCon 2020 TW: 如何透過 Go-kit 快速搭建微服務架構應用程式實戰<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.86.0">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments">
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>

@@ -1,16 +1,160 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Velero 初探與實踐 - KaiChu</title><meta name=Description content="文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制"><meta property="og:title" content="Velero 初探與實踐"><meta property="og:description" content="文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/velero-research-practice/"><meta property="og:image" content="https://kaichu.io/posts/velero-research-practice/img/velero.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-06-02T08:23:06+00:00"><meta property="article:modified_time" content="2021-06-17T04:09:48+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/posts/velero-research-practice/img/velero.png"><meta name=twitter:title content="Velero 初探與實踐"><meta name=twitter:description content="文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/velero-research-practice/><link rel=prev href=https://kaichu.io/posts/docker-tuntap-osx-wordpress/><link rel=next href=https://kaichu.io/posts/velero-research-report/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Velero 初探與實踐","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/velero-research-practice\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/velero-research-practice\/img\/velero.png","width":535,"height":224}],"genre":"posts","keywords":"velero, restic, kind, minio, gke, kubernetes, rocketchat","wordcount":3871,"url":"https:\/\/kaichu.io\/posts\/velero-research-practice\/","datePublished":"2021-06-02T08:23:06+00:00","dateModified":"2021-06-17T04:09:48+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
-<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
-<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Velero 初探與實踐</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-06-02>2021-06-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;3871 words&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#what-is-velerohttpsveleroiodocsv16indexhtml>What is <a href=https://velero.io/docs/v1.6/index.html>Velero</a>?</a><ul><li><a href=#backup-process>backup process</a></li></ul></li><li><a href=#questions>Questions?</a><ul><li><a href=#集群備份到底包含了什麼東西>集群備份到底包含了什麼東西?</a></li><li><a href=#集群復原到底包含了什麼東西>集群復原到底包含了什麼東西?</a></li><li><a href=#集群遷移可以跨-cloud-provider-嗎>集群遷移可以跨 Cloud provider 嗎?</a></li></ul></li><li><a href=#跨-provider-集群遷移-demo>跨 Provider 集群遷移 Demo</a><ul><li><a href=#集群遷移的概念>集群遷移的概念</a></li><li><a href=#注意事項>注意事項</a></li><li><a href=#操作步骤>操作步骤</a><ul><li><a href=#在本地-kind-集群進行備份>在本地 KIND 集群進行備份</a></li><li><a href=#在-gke-上建立新的-k8s-集群並復原-workload>在 GKE 上建立新的 K8s 集群並復原 Workload</a></li></ul></li></ul></li><li><a href=#心得>心得</a></li></ul></nav></div></div><div class=content id=content><p><a href=https://velero.io/ target=_blank rel="noopener noreffer">Velero</a> 是一個開源的 Kubernetes 集群備份和遷移工具 (2019 年初 VMware 完成了對於容器技術廠商 Heptio 的收購後更名為 Velero, 其中的冷知識故事可以至 <a href=https://blogs.vmware.com/vmware-taiwan/2019/03/01/%E9%97%9C%E6%96%BC-heptio-%E4%BD%A0%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84/ target=_blank rel="noopener noreffer">關於 Heptio 你需要知道的 - VMware 繁體中文部落格</a> 閱讀)</p><h2 id=what-is-velerohttpsveleroiodocsv16indexhtml>What is <a href=https://velero.io/docs/v1.6/index.html target=_blank rel="noopener noreffer">Velero</a>?</h2><p>Velero is an open source tool to safely backup and restore,
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>Velero 初探與實踐 - KaiChu</title><meta name=Description content="文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制"><meta property="og:title" content="Velero 初探與實踐">
+<meta property="og:description" content="文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/posts/velero-research-practice/"><meta property="og:image" content="https://kaichu.io/posts/velero-research-practice/img/velero.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-06-02T08:23:06+00:00">
+<meta property="article:modified_time" content="2021-07-30T07:49:31+00:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/posts/velero-research-practice/img/velero.png">
+<meta name=twitter:title content="Velero 初探與實踐">
+<meta name=twitter:description content="文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/velero-research-practice/><link rel=prev href=https://kaichu.io/posts/docker-tuntap-osx-wordpress/><link rel=next href=https://kaichu.io/posts/velero-research-report/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Velero 初探與實踐","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/velero-research-practice\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/velero-research-practice\/img\/velero.png","width":535,"height":224}],"genre":"posts","keywords":"velero, restic, kind, minio, gke, kubernetes, rocketchat","wordcount":3871,"url":"https:\/\/kaichu.io\/posts\/velero-research-practice\/","datePublished":"2021-06-02T08:23:06+00:00","dateModified":"2021-07-30T07:49:31+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/ title=Home> Home </a><a class=menu-item href=/posts/> Posts </a><a class=menu-item href=/tags/> Tags </a><a class=menu-item href=/about/> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+Cancel
+</a>
+</div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>Contents</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">Velero 初探與實踐</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-06-02>2021-06-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;3871 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;8 minutes&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#what-is-velerohttpsveleroiodocsv16indexhtml>What is <a href=https://velero.io/docs/v1.6/index.html>Velero</a>?</a>
+<ul>
+<li><a href=#backup-process>backup process</a></li>
+</ul>
+</li>
+<li><a href=#questions>Questions?</a>
+<ul>
+<li><a href=#集群備份到底包含了什麼東西>集群備份到底包含了什麼東西?</a></li>
+<li><a href=#集群復原到底包含了什麼東西>集群復原到底包含了什麼東西?</a></li>
+<li><a href=#集群遷移可以跨-cloud-provider-嗎>集群遷移可以跨 Cloud provider 嗎?</a></li>
+</ul>
+</li>
+<li><a href=#跨-provider-集群遷移-demo>跨 Provider 集群遷移 Demo</a>
+<ul>
+<li><a href=#集群遷移的概念>集群遷移的概念</a></li>
+<li><a href=#注意事項>注意事項</a></li>
+<li><a href=#操作步骤>操作步骤</a>
+<ul>
+<li><a href=#在本地-kind-集群進行備份>在本地 KIND 集群進行備份</a></li>
+<li><a href=#在-gke-上建立新的-k8s-集群並復原-workload>在 GKE 上建立新的 K8s 集群並復原 Workload</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href=#心得>心得</a></li>
+</ul>
+</nav></div>
+</div><div class=content id=content><p><a href=https://velero.io/ target=_blank rel="noopener noreffer">Velero</a> 是一個開源的 Kubernetes 集群備份和遷移工具 (2019 年初 VMware 完成了對於容器技術廠商 Heptio 的收購後更名為 Velero, 其中的冷知識故事可以至 <a href=https://blogs.vmware.com/vmware-taiwan/2019/03/01/%E9%97%9C%E6%96%BC-heptio-%E4%BD%A0%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84/ target=_blank rel="noopener noreffer">關於 Heptio 你需要知道的 - VMware 繁體中文部落格</a> 閱讀)</p>
+<h2 id=what-is-velerohttpsveleroiodocsv16indexhtml>What is <a href=https://velero.io/docs/v1.6/index.html target=_blank rel="noopener noreffer">Velero</a>?</h2>
+<p>Velero is an open source tool to safely backup and restore,
 perform disaster recovery, and migrate Kubernetes cluster
-resources and persistent volumes</p><p>Aiming to help with:</p><ul><li>Disaster Recovery: Recover from an issue</li><li>Data Migration: Migrate apps between clusters</li><li>Data Protection: Scheduled Actions</li></ul><h3 id=backup-process>backup process</h3><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/backup-process.png title="&amp;ldquo;backup process&amp;rdquo;" data-thumbnail=/posts/velero-research-practice/img/backup-process.png data-sub-html="<h2>backup process</h2><p>&amp;ldquo;backup process&amp;rdquo;</p>"><img class=lazyload src=/svg/loading.min.svg data-src=img/backup-process.png data-srcset="/posts/velero-research-practice/img/backup-process.png, img/backup-process.png 1.5x, /posts/velero-research-practice/img/backup-process.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/backup-process.png></a><figcaption class=image-caption>backup process</figcaption></figure></p><ol><li>Velero 的基本操作就是 CLI 會去操作 Kubernetes API 建立 <code>Backup</code> 物件</li><li><code>BackupController</code> 偵測到新的 <code>Backup</code> 物件並檢查</li><li>檢查通過後就會操作 Kubernetes API Server 進行資料的備份</li><li><code>BackupController</code> 就會透過 Plugin 會操作對應用 Object Storage Service 上傳檔案</li><li>如果 Provider 支援原生的快照操作, Plugin 就可以透過 API 備分永久磁碟區</li></ol><h2 id=questions>Questions?</h2><p>圍繞這個備份流程就會衍申很多細節出來，讓我們慢慢的疏理</p><ul><li><a href=#%e9%9b%86%e7%be%a4%e5%82%99%e4%bb%bd%e5%88%b0%e5%ba%95%e5%8c%85%e5%90%ab%e4%ba%86%e4%bb%80%e9%ba%bc%e6%9d%b1%e8%a5%bf rel>集群備份到底包含了什麼東西?</a></li><li><a href=#%e9%9b%86%e7%be%a4%e5%be%a9%e5%8e%9f%e5%88%b0%e5%ba%95%e5%8c%85%e5%90%ab%e4%ba%86%e4%bb%80%e9%ba%bc%e6%9d%b1%e8%a5%bf rel>集群復原到底包含了什麼東西?</a></li><li><a href=#%e9%9b%86%e7%be%a4%e9%81%b7%e7%a7%bb%e5%8f%af%e4%bb%a5%e8%b7%a8-cloud-provider-%e5%97%8e rel>集群遷移可以跨 Cloud provider 嗎?</a></li></ul><h3 id=集群備份到底包含了什麼東西>集群備份到底包含了什麼東西?</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+resources and persistent volumes</p>
+<p>Aiming to help with:</p>
+<ul>
+<li>Disaster Recovery: Recover from an issue</li>
+<li>Data Migration: Migrate apps between clusters</li>
+<li>Data Protection: Scheduled Actions</li>
+</ul>
+<h3 id=backup-process>backup process</h3>
+<p><figure><a class=lightgallery href=/posts/velero-research-practice/img/backup-process.png title="&amp;ldquo;backup process&amp;rdquo;" data-thumbnail=/posts/velero-research-practice/img/backup-process.png data-sub-html="<h2>backup process</h2><p>&amp;ldquo;backup process&amp;rdquo;</p>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/backup-process.png data-srcset="/posts/velero-research-practice/img/backup-process.png, img/backup-process.png 1.5x, /posts/velero-research-practice/img/backup-process.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/backup-process.png>
+</a><figcaption class=image-caption>backup process</figcaption>
+</figure></p>
+<ol>
+<li>Velero 的基本操作就是 CLI 會去操作 Kubernetes API 建立 <code>Backup</code> 物件</li>
+<li><code>BackupController</code> 偵測到新的 <code>Backup</code> 物件並檢查</li>
+<li>檢查通過後就會操作 Kubernetes API Server 進行資料的備份</li>
+<li><code>BackupController</code> 就會透過 Plugin 會操作對應用 Object Storage Service 上傳檔案</li>
+<li>如果 Provider 支援原生的快照操作, Plugin 就可以透過 API 備分永久磁碟區</li>
+</ol>
+<h2 id=questions>Questions?</h2>
+<p>圍繞這個備份流程就會衍申很多細節出來，讓我們慢慢的疏理</p>
+<ul>
+<li><a href=#%e9%9b%86%e7%be%a4%e5%82%99%e4%bb%bd%e5%88%b0%e5%ba%95%e5%8c%85%e5%90%ab%e4%ba%86%e4%bb%80%e9%ba%bc%e6%9d%b1%e8%a5%bf rel>集群備份到底包含了什麼東西?</a></li>
+<li><a href=#%e9%9b%86%e7%be%a4%e5%be%a9%e5%8e%9f%e5%88%b0%e5%ba%95%e5%8c%85%e5%90%ab%e4%ba%86%e4%bb%80%e9%ba%bc%e6%9d%b1%e8%a5%bf rel>集群復原到底包含了什麼東西?</a></li>
+<li><a href=#%e9%9b%86%e7%be%a4%e9%81%b7%e7%a7%bb%e5%8f%af%e4%bb%a5%e8%b7%a8-cloud-provider-%e5%97%8e rel>集群遷移可以跨 Cloud provider 嗎?</a></li>
+</ul>
+<h3 id=集群備份到底包含了什麼東西>集群備份到底包含了什麼東西?</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -21,7 +165,9 @@ resources and persistent volumes</p><p>Aiming to help with:</p><ul><li>Disaster 
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>backups.velero.io
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>backups.velero.io
 backupstoragelocations.velero.io
 deletebackuprequests.velero.io
 downloadrequests.velero.io
@@ -32,7 +178,25 @@ restores.velero.io
 schedules.velero.io
 serverstatusrequests.velero.io
 volumesnapshotlocations.velero.io
-</code></pre></td></tr></table></div></div><p>Velero 所定義的 CRD (Custom Resource Definitions) 來看</p><ul><li><code>backups.velero.io</code> 備份是一種 Velero 資源，表示在某個時間點（API 物件和關聯的磁碟區狀態）捕獲 Kubernetes 集群狀態</li><li>對應備份的就是 <code>restores.velero.io</code>，恢復也是一種 Velero 資源，代表從 Velero 備份到目標 Kubernetes 集群的資源應用。</li><li><code>backupstoragelocations.velero.io</code> & <code>volumesnapshotlocations.velero.io</code> 則是 Velero 儲存備份物件的位置及 Velero 磁碟區快照的位置</li><li><code>schedules.velero.io</code> 表示應該運行的預調度或定期備份</li><li><code>serverstatusrequests.velero.io</code> 是訪問有關 Velero 服務器的當前狀態信息的請求</li><li><code>downloadrequests.velero.io</code> 是從備份物件儲存下載工件的請求，例如備份日誌文件。</li></ul><p>備份的分類就 CRD 來看可以分成二塊</p><ul><li>一個是 Kubernetes 集群範圍內的資源(pod, service, secret, etc.)</li><li>另一個就是磁碟區快照 (預設 Velero 會對任何的永久磁碟區進行磁碟快照，如果 Provider 有原生支援磁碟區快照的話就會透過 Plugin 進行 API 的操作，如果沒有原生支援磁碟區快照時可以啟用 <code>Restic</code> 一起使用，當然 <code>Restic</code> 也是有一些<a href=https://velero.io/docs/v1.6/restic/#limitations target=_blank rel="noopener noreffer">限制</a>, <code>hostPath</code> 類型的磁碟區就沒有支原，不過 <a href=https://kubernetes.io/docs/concepts/storage/volumes/#local target=_blank rel="noopener noreffer">Local persistent volumes</a> 是有的，在本地 K8s 集群測試時就可以選用，只是需要手動配置 PV)</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div><p>Velero 所定義的 CRD (Custom Resource Definitions) 來看</p>
+<ul>
+<li><code>backups.velero.io</code> 備份是一種 Velero 資源，表示在某個時間點（API 物件和關聯的磁碟區狀態）捕獲 Kubernetes 集群狀態</li>
+<li>對應備份的就是 <code>restores.velero.io</code>，恢復也是一種 Velero 資源，代表從 Velero 備份到目標 Kubernetes 集群的資源應用。</li>
+<li><code>backupstoragelocations.velero.io</code> & <code>volumesnapshotlocations.velero.io</code> 則是 Velero 儲存備份物件的位置及 Velero 磁碟區快照的位置</li>
+<li><code>schedules.velero.io</code> 表示應該運行的預調度或定期備份</li>
+<li><code>serverstatusrequests.velero.io</code> 是訪問有關 Velero 服務器的當前狀態信息的請求</li>
+<li><code>downloadrequests.velero.io</code> 是從備份物件儲存下載工件的請求，例如備份日誌文件。</li>
+</ul>
+<p>備份的分類就 CRD 來看可以分成二塊</p>
+<ul>
+<li>一個是 Kubernetes 集群範圍內的資源(pod, service, secret, etc.)</li>
+<li>另一個就是磁碟區快照 (預設 Velero 會對任何的永久磁碟區進行磁碟快照，如果 Provider 有原生支援磁碟區快照的話就會透過 Plugin 進行 API 的操作，如果沒有原生支援磁碟區快照時可以啟用 <code>Restic</code> 一起使用，當然 <code>Restic</code> 也是有一些<a href=https://velero.io/docs/v1.6/restic/#limitations target=_blank rel="noopener noreffer">限制</a>, <code>hostPath</code> 類型的磁碟區就沒有支原，不過 <a href=https://kubernetes.io/docs/concepts/storage/volumes/#local target=_blank rel="noopener noreffer">Local persistent volumes</a> 是有的，在本地 K8s 集群測試時就可以選用，只是需要手動配置 PV)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -52,7 +216,9 @@ volumesnapshotlocations.velero.io
 </span><span class=lnt>18
 </span><span class=lnt>19
 </span><span class=lnt>20
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>velero backup describe rocketchat-backup --details
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>velero backup describe rocketchat-backup --details
 ...
 
 Resource List:
@@ -72,19 +238,105 @@ Velero-Native Snapshots: &lt;none included&gt;
 Restic Backups:
   Completed:
     rocketchat/rocketchat-mongodb-primary-0: datadir
-</code></pre></td></tr></table></div></div><p>當備份完成之後我可以用查看備份的詳細資訊，除了 Kubernetes 資源的備份之外，最重要的就是 <code>Restic Backups</code>，列出來相關 Pod 的磁碟區備份的狀態</p><ol><li>Velero 適合無狀態的 Workload，如果是有狀態的 Workload 可以搭配 Restic 來進行備份及復原<div class="details admonition tip open"><div class="details-summary admonition-title"><i class="icon fas fa-lightbulb fa-fw"></i>Tips<i class="details-icon fas fa-angle-right fa-fw"></i></div><div class=details-content><div class=admonition-content>如果沒有跨 Provider 的需求且 Provider 有支援原生磁碟區快照，使用 Velero + Velero-Native Snapshots 就可以了</div></div></div></li><li>安裝 Velero 預設沒有啟用 Restic，需要特別指定, 備份碟碟區也需要手動指定. 另一種方法是使用 <code>--default-volumes-to-restic</code> 備份所有 Pod 的磁碟區</li><li>備份時可以使用 <a href=https://velero.io/docs/v1.6/resource-filtering/ target=_blank rel="noopener noreffer">Resource filtering</a> 正面表列或是負面表例來過濾目標物件 (如: namespace, deployments 等等)</li><li>備份也可提供了 <a href=https://velero.io/docs/v1.6/backup-hooks/#pre-hooks target=_blank rel="noopener noreffer">Pre Hooks</a> 及 <a href=https://velero.io/docs/v1.6/backup-hooks/#post-hooks target=_blank rel="noopener noreffer">Post Hooks</a> 的功能，例如 pre 及 post Hooks 中凍結檔案系統來確保 &mldr;.</li><li>雖說我們可以使用 Restic 來備份磁碟區，<code>hostpath</code> 的儲存類型是不支援的，而本地磁碟區(Local Persistent Volume) 是可以的，所以本地測試的 Kubernetes 需要手動配置本地磁碟區使用 Restic 備份才有效</li></ol><h3 id=集群復原到底包含了什麼東西>集群復原到底包含了什麼東西?</h3><p>當我們完成了備份可以使用 Velero 指令或是 Velero CRDs 查檢查一下備份的訊息</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><p>當備份完成之後我可以用查看備份的詳細資訊，除了 Kubernetes 資源的備份之外，最重要的就是 <code>Restic Backups</code>，列出來相關 Pod 的磁碟區備份的狀態</p>
+<ol>
+<li>Velero 適合無狀態的 Workload，如果是有狀態的 Workload 可以搭配 Restic 來進行備份及復原
+<div class="details admonition tip open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-lightbulb fa-fw"></i>Tips<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content>如果沒有跨 Provider 的需求且 Provider 有支援原生磁碟區快照，使用 Velero + Velero-Native Snapshots 就可以了</div>
+</div>
+</div></li>
+<li>安裝 Velero 預設沒有啟用 Restic，需要特別指定, 備份碟碟區也需要手動指定. 另一種方法是使用 <code>--default-volumes-to-restic</code> 備份所有 Pod 的磁碟區</li>
+<li>備份時可以使用 <a href=https://velero.io/docs/v1.6/resource-filtering/ target=_blank rel="noopener noreffer">Resource filtering</a> 正面表列或是負面表例來過濾目標物件 (如: namespace, deployments 等等)</li>
+<li>備份也可提供了 <a href=https://velero.io/docs/v1.6/backup-hooks/#pre-hooks target=_blank rel="noopener noreffer">Pre Hooks</a> 及 <a href=https://velero.io/docs/v1.6/backup-hooks/#post-hooks target=_blank rel="noopener noreffer">Post Hooks</a> 的功能，例如 pre 及 post Hooks 中凍結檔案系統來確保 &mldr;.</li>
+<li>雖說我們可以使用 Restic 來備份磁碟區，<code>hostpath</code> 的儲存類型是不支援的，而本地磁碟區(Local Persistent Volume) 是可以的，所以本地測試的 Kubernetes 需要手動配置本地磁碟區使用 Restic 備份才有效</li>
+</ol>
+<h3 id=集群復原到底包含了什麼東西>集群復原到底包含了什麼東西?</h3>
+<p>當我們完成了備份可以使用 Velero 指令或是 Velero CRDs 查檢查一下備份的訊息</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ velero backup get
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ velero backup get
 NAME                STATUS      ERRORS   WARNINGS   CREATED                         EXPIRES   STORAGE LOCATION   SELECTOR
 rocketchat-backup   Completed   <span class=m>0</span>        <span class=m>0</span>          2021-06-07 15:43:15 +0800 CST   29d       default            &lt;none&gt;
-</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>$ kubectl get backups.velero.io -n velero
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>$ kubectl get backups.velero.io -n velero
 NAME                AGE
 rocketchat-backup   17h
-</code></pre></td></tr></table></div></div><ol><li>我們可以 <a href=https://velero.io/docs/v1.6/restore-reference/#restoring-into-a-different-namespace target=_blank rel="noopener noreffer">Restoring Into a Different Namespace</a> 將我們的備份復原至另一個 namespace</li><li>復原也是可以使用 <a href=https://velero.io/docs/v1.6/resource-filtering/ target=_blank rel="noopener noreffer">Resource filtering</a> 正面表列或是負面表例來過濾目標物件 (如: namespace, deployments 等等) 指定所需的資源進行復原</li><li>復原時更改儲存類別的對應 <a href=https://velero.io/docs/v1.6/restore-reference/#changing-pvpvc-storage-classes#changing-pvpvc-storage-classes target=_blank rel="noopener noreffer">Changing PV/PVC Storage Classes</a>，例如在本地 Kind Kubernetes 的儲存類別為 <code>local-storage</code> 對到 <code>standard</code> (Cloud Provider 有支援永久磁碟區動態佈建預設類別)</li><li>復原也跟備份一樣提供 Hooks。 <a href=https://velero.io/docs/v1.6/restore-hooks/#initcontainer-restore-hooks#initcontainer-restore-hooks target=_blank rel="noopener noreffer">InitContainer Restore Hooks</a> 及 <a href=https://velero.io/docs/v1.6/restore-hooks/#initcontainer-restore-hooks#exec-restore-hooks target=_blank rel="noopener noreffer">Exec Restore Hooks</a></li></ol><h3 id=集群遷移可以跨-cloud-provider-嗎>集群遷移可以跨 Cloud provider 嗎?</h3><div class="details admonition quote open"><div class="details-summary admonition-title"><i class="icon fas fa-quote-right fa-fw"></i>Quote<i class="details-icon fas fa-angle-right fa-fw"></i></div><div class=details-content><div class=admonition-content>基本上是可以的. 可以使用 Velero + Restic 來完成</div></div></div><p>接下來就示範在本地 Kind Kuberntes 部署 <a href=https://github.com/helm/charts/tree/master/stable/rocketchat target=_blank rel="noopener noreffer">rocketchat</a>，透過 Velero 及 Restic 將 Workload 遷移至 GKE</p><p>簡單的流程如下:</p><ol><li>在本地 Kind Kubernetes 中配置儲存類別為 <code>local-storage</code> 的本地永久磁碟區 (Local Persistent Volume)</li><li>在本地 Kind Kubernetes 中建立 <a href=https://github.com/helm/charts/tree/master/stable/rocketchat target=_blank rel="noopener noreffer">rocketchat</a> 有狀態的 Workload</li><li>在本地 Kind Kubernetes 中建立 Minio server</li><li>透過 Velero 及 Restic 備份相關 Kubernetes 資源及久永磁碟區(Local Persistent Volume) 至 Kind Kubernetes 中的 Minio S3 Bucket</li><li>使用 <code>s3cmd</code> 將 Kind Kubernetes 中的 <code>s3://velero/backups/</code> <code>s3://velero/restic/</code> 下載到本地電腦 <code>backup</code> 目錄</li><li>在 GKE 上建立一個 Kubernetes 集群</li><li>在 GKE 上安裝 Veleor 及 Restic 設定</li><li>使用 <code>s3cmd</code> 將 <code>backup</code> 目錄上傳至 GKE Kubernetes 集群中 minio S3 bucket</li><li>設置 <code>change-storage-class-config</code> 來指定儲存類型的轉換</li><li>使用 Velero 復原 rocketchat workload</li><li>等待 Workload 就緒</li></ol><h2 id=跨-provider-集群遷移-demo>跨 Provider 集群遷移 Demo</h2><h3 id=集群遷移的概念>集群遷移的概念</h3><div class=mermaid id=id-1></div><p>在需要本地 KIND 集群及目標集群 GKE 上都裝上 Velero + Minio Server</p><ol><li>使用 Velero + Restic 在本地 KIND 集群執行備份操作，並將備份儲存至集群內部的 Minio Server</li><li>使用 <code>s3cmd</code> 同步本地 KIND 集群 Minio Server 中的 <code>s3://velero</code> Bucket 至本機 <code>backup</code></li><li>使用 <code>s3cmd</code> 將本機 <code>backup</code> 同步至目標集群 GKE 上 Minio Server <code>s3://velero</code> Bucket</li><li>使用 Velero + Restic 回復 Workload</li></ol><h3 id=注意事項>注意事項</h3><ul><li>為了簡化部署 Minio Server 及 Velero 的方式及資源，使用 helm + 減少 <code>cpu/memory</code> 的請求 size</li><li><a href=https://github.com/vmware-tanzu/helm-charts target=_blank rel="noopener noreffer">vmware-tanzu/helm-charts: Contains Helm charts for Kubernetes related open source tools</a></li><li><a href=https://bitnami.com/stack/minio/helm target=_blank rel="noopener noreffer">Helm Charts to deploy Bitnami Object Storage based on MinIO(R) in Kubernetes</a></li><li>使用 <a href=https://github.com/s3tools/s3cmd target=_blank rel="noopener noreffer">s3tools/s3cmd</a> 來同步備份使用的 Bucket</li></ul><h3 id=操作步骤>操作步骤</h3><h4 id=在本地-kind-集群進行備份>在本地 KIND 集群進行備份</h4><ol><li><p>在本地建立 KIND 集群</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>我們可以 <a href=https://velero.io/docs/v1.6/restore-reference/#restoring-into-a-different-namespace target=_blank rel="noopener noreffer">Restoring Into a Different Namespace</a> 將我們的備份復原至另一個 namespace</li>
+<li>復原也是可以使用 <a href=https://velero.io/docs/v1.6/resource-filtering/ target=_blank rel="noopener noreffer">Resource filtering</a> 正面表列或是負面表例來過濾目標物件 (如: namespace, deployments 等等) 指定所需的資源進行復原</li>
+<li>復原時更改儲存類別的對應 <a href=https://velero.io/docs/v1.6/restore-reference/#changing-pvpvc-storage-classes#changing-pvpvc-storage-classes target=_blank rel="noopener noreffer">Changing PV/PVC Storage Classes</a>，例如在本地 Kind Kubernetes 的儲存類別為 <code>local-storage</code> 對到 <code>standard</code> (Cloud Provider 有支援永久磁碟區動態佈建預設類別)</li>
+<li>復原也跟備份一樣提供 Hooks。 <a href=https://velero.io/docs/v1.6/restore-hooks/#initcontainer-restore-hooks#initcontainer-restore-hooks target=_blank rel="noopener noreffer">InitContainer Restore Hooks</a> 及 <a href=https://velero.io/docs/v1.6/restore-hooks/#initcontainer-restore-hooks#exec-restore-hooks target=_blank rel="noopener noreffer">Exec Restore Hooks</a></li>
+</ol>
+<h3 id=集群遷移可以跨-cloud-provider-嗎>集群遷移可以跨 Cloud provider 嗎?</h3>
+<div class="details admonition quote open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-quote-right fa-fw"></i>Quote<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content>基本上是可以的. 可以使用 Velero + Restic 來完成</div>
+</div>
+</div>
+<p>接下來就示範在本地 Kind Kuberntes 部署 <a href=https://github.com/helm/charts/tree/master/stable/rocketchat target=_blank rel="noopener noreffer">rocketchat</a>，透過 Velero 及 Restic 將 Workload 遷移至 GKE</p>
+<p>簡單的流程如下:</p>
+<ol>
+<li>在本地 Kind Kubernetes 中配置儲存類別為 <code>local-storage</code> 的本地永久磁碟區 (Local Persistent Volume)</li>
+<li>在本地 Kind Kubernetes 中建立 <a href=https://github.com/helm/charts/tree/master/stable/rocketchat target=_blank rel="noopener noreffer">rocketchat</a> 有狀態的 Workload</li>
+<li>在本地 Kind Kubernetes 中建立 Minio server</li>
+<li>透過 Velero 及 Restic 備份相關 Kubernetes 資源及久永磁碟區(Local Persistent Volume) 至 Kind Kubernetes 中的 Minio S3 Bucket</li>
+<li>使用 <code>s3cmd</code> 將 Kind Kubernetes 中的 <code>s3://velero/backups/</code> <code>s3://velero/restic/</code> 下載到本地電腦 <code>backup</code> 目錄</li>
+<li>在 GKE 上建立一個 Kubernetes 集群</li>
+<li>在 GKE 上安裝 Veleor 及 Restic 設定</li>
+<li>使用 <code>s3cmd</code> 將 <code>backup</code> 目錄上傳至 GKE Kubernetes 集群中 minio S3 bucket</li>
+<li>設置 <code>change-storage-class-config</code> 來指定儲存類型的轉換</li>
+<li>使用 Velero 復原 rocketchat workload</li>
+<li>等待 Workload 就緒</li>
+</ol>
+<h2 id=跨-provider-集群遷移-demo>跨 Provider 集群遷移 Demo</h2>
+<h3 id=集群遷移的概念>集群遷移的概念</h3>
+<div class=mermaid id=id-1></div>
+<p>在需要本地 KIND 集群及目標集群 GKE 上都裝上 Velero + Minio Server</p>
+<ol>
+<li>使用 Velero + Restic 在本地 KIND 集群執行備份操作，並將備份儲存至集群內部的 Minio Server</li>
+<li>使用 <code>s3cmd</code> 同步本地 KIND 集群 Minio Server 中的 <code>s3://velero</code> Bucket 至本機 <code>backup</code></li>
+<li>使用 <code>s3cmd</code> 將本機 <code>backup</code> 同步至目標集群 GKE 上 Minio Server <code>s3://velero</code> Bucket</li>
+<li>使用 Velero + Restic 回復 Workload</li>
+</ol>
+<h3 id=注意事項>注意事項</h3>
+<ul>
+<li>為了簡化部署 Minio Server 及 Velero 的方式及資源，使用 helm + 減少 <code>cpu/memory</code> 的請求 size</li>
+<li><a href=https://github.com/vmware-tanzu/helm-charts target=_blank rel="noopener noreffer">vmware-tanzu/helm-charts: Contains Helm charts for Kubernetes related open source tools</a></li>
+<li><a href=https://bitnami.com/stack/minio/helm target=_blank rel="noopener noreffer">Helm Charts to deploy Bitnami Object Storage based on MinIO(R) in Kubernetes</a></li>
+<li>使用 <a href=https://github.com/s3tools/s3cmd target=_blank rel="noopener noreffer">s3tools/s3cmd</a> 來同步備份使用的 Bucket</li>
+</ul>
+<h3 id=操作步骤>操作步骤</h3>
+<h4 id=在本地-kind-集群進行備份>在本地 KIND 集群進行備份</h4>
+<ol>
+<li>
+<p>在本地建立 KIND 集群</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -96,7 +348,9 @@ rocketchat-backup   17h
 </span><span class=lnt>10
 </span><span class=lnt>11
 </span><span class=lnt>12
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; kind-config.yaml
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; kind-config.yaml
 </span><span class=s>kind: Cluster
 </span><span class=s>apiVersion: kind.x-k8s.io/v1alpha4
 </span><span class=s>nodes:
@@ -108,7 +362,14 @@ rocketchat-backup   17h
 </span><span class=s>EOF</span>
 
 kind create cluster --name rocketchat-migrate-demo --config kind-config.yaml
-</code></pre></td></tr></table></div></div></li><li><p>配置 <code>metallb</code> local Balancer</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>配置 <code>metallb</code> local Balancer</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -128,7 +389,9 @@ kind create cluster --name rocketchat-migrate-demo --config kind-config.yaml
 </span><span class=lnt>18
 </span><span class=lnt>19
 </span><span class=lnt>20
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/namespace.yaml
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/namespace.yaml
 kubectl create secret generic -n metallb-system memberlist --from-literal<span class=o>=</span><span class=nv>secretkey</span><span class=o>=</span><span class=s2>&#34;</span><span class=k>$(</span>openssl rand -base64 128<span class=k>)</span><span class=s2>&#34;</span>
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/metallb.yaml
 
@@ -148,11 +411,39 @@ cat <span class=s>&lt;&lt;EOF &gt; metallb-config.yaml
 </span><span class=s>EOF</span>
 
 kubectl apply -f ./metallb-config.yaml
-</code></pre></td></tr></table></div></div></li><li><p>配置 <code>rocketchat-migrate-demo-control-plane</code> 的磁碟區掛載</p><ul><li>連線至 <code>rocketchat-migrate-demo-control-plane</code> node<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>docker <span class=nb>exec</span> -it rocketchat-migrate-demo-control-plane bash
-</code></pre></td></tr></table></div></div></li><li>在 <code>rocketchat-migrate-demo-control-plane</code> node 建立後序所需的磁碟區<div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=k>for</span> vol in pv1<span class=p>;</span> <span class=k>do</span> mkdir /mnt/disks/<span class=nv>$vol</span><span class=p>;</span> mount -t tmpfs <span class=nv>$vol</span> /mnt/disks/<span class=nv>$vol</span><span class=p>;</span> <span class=k>done</span>
-</code></pre></td></tr></table></div></div></li></ul></li><li><p>建立 <code>local-storage</code> 儲存類別</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>配置 <code>rocketchat-migrate-demo-control-plane</code> 的磁碟區掛載</p>
+<ul>
+<li>連線至 <code>rocketchat-migrate-demo-control-plane</code> node
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker <span class=nb>exec</span> -it rocketchat-migrate-demo-control-plane bash
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>在 <code>rocketchat-migrate-demo-control-plane</code> node 建立後序所需的磁碟區
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=k>for</span> vol in pv1<span class=p>;</span> <span class=k>do</span> mkdir /mnt/disks/<span class=nv>$vol</span><span class=p>;</span> mount -t tmpfs <span class=nv>$vol</span> /mnt/disks/<span class=nv>$vol</span><span class=p>;</span> <span class=k>done</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p>建立 <code>local-storage</code> 儲存類別</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -162,7 +453,9 @@ kubectl apply -f ./metallb-config.yaml
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; local-pv-storage.yaml
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; local-pv-storage.yaml
 </span><span class=s>apiVersion: storage.k8s.io/v1
 </span><span class=s>kind: StorageClass
 </span><span class=s>metadata:
@@ -172,7 +465,14 @@ kubectl apply -f ./metallb-config.yaml
 </span><span class=s>EOF</span>
 
 kubectl apply -f local-pv-storage.yaml
-</code></pre></td></tr></table></div></div></li><li><p>手動建立本地久永磁碟區 <code>local-persistent-storage</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>手動建立本地久永磁碟區 <code>local-persistent-storage</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -201,7 +501,9 @@ kubectl apply -f local-pv-storage.yaml
 </span><span class=lnt>27
 </span><span class=lnt>28
 </span><span class=lnt>29
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; local-pv.yaml
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; local-pv.yaml
 </span><span class=s>kind: PersistentVolume
 </span><span class=s>apiVersion: v1
 </span><span class=s>metadata:
@@ -230,7 +532,14 @@ kubectl apply -f local-pv-storage.yaml
 </span><span class=s>EOF</span>
 
 kubectl apply -f local-pv.yaml
-</code></pre></td></tr></table></div></div></li><li><p>建立 Minio Server</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>建立 Minio Server</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -246,7 +555,9 @@ kubectl apply -f local-pv.yaml
 </span><span class=lnt>14
 </span><span class=lnt>15
 </span><span class=lnt>16
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; minio-values.yaml
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; minio-values.yaml
 </span><span class=s>global:
 </span><span class=s>  minio:
 </span><span class=s>    accessKey: minio
@@ -262,7 +573,18 @@ kubectl apply -f local-pv.yaml
 </span><span class=s>EOF</span>
 
 helm install minio --create-namespace --namespace minio -f minio-values.yaml bitnami/minio
-</code></pre></td></tr></table></div></div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/0.png title=minio data-thumbnail=/posts/velero-research-practice/img/0.png data-sub-html="<h2>Minio</h2><p>minio</p>"><img class=lazyload src=/svg/loading.min.svg data-src=img/0.png data-srcset="/posts/velero-research-practice/img/0.png, img/0.png 1.5x, /posts/velero-research-practice/img/0.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/0.png></a><figcaption class=image-caption>Minio</figcaption></figure></p></li><li><p>建立 Demo rocketchat 應用，直接使用 helm 來部署，在 <code>storageClass</code> 中指定我們自定義的 <code>local-storage</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/0.png title=minio data-thumbnail=/posts/velero-research-practice/img/0.png data-sub-html="<h2>Minio</h2><p>minio</p>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/0.png data-srcset="/posts/velero-research-practice/img/0.png, img/0.png 1.5x, /posts/velero-research-practice/img/0.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/0.png>
+</a><figcaption class=image-caption>Minio</figcaption>
+</figure></p>
+</li>
+<li>
+<p>建立 Demo rocketchat 應用，直接使用 helm 來部署，在 <code>storageClass</code> 中指定我們自定義的 <code>local-storage</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -276,7 +598,9 @@ helm install minio --create-namespace --namespace minio -f minio-values.yaml bit
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; rocketchat.yaml
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; rocketchat.yaml
 </span><span class=s>persistence:
 </span><span class=s>  enabled: true
 </span><span class=s>service:
@@ -290,7 +614,22 @@ helm install minio --create-namespace --namespace minio -f minio-values.yaml bit
 </span><span class=s>EOF</span>
 
 helm install rocketchat --namespace rocketchat --create-namespace -f rocketchat.yaml stable/rocketchat
-</code></pre></td></tr></table></div></div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/1.png title=Rocketchat data-thumbnail=/posts/velero-research-practice/img/1.png data-sub-html="<h2>Rocketchat</h2><p>Rocketchat</p>"><img class=lazyload src=/svg/loading.min.svg data-src=img/1.png data-srcset="/posts/velero-research-practice/img/1.png, img/1.png 1.5x, /posts/velero-research-practice/img/1.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/1.png></a><figcaption class=image-caption>Rocketchat</figcaption></figure></p><p>等待 Workload 就序之，經過初始化的設定，就可以開始使用，我們在 Channel <code>#general</code> 中新增一張圖還有一些文字</p></li><li><p>建立 Velero，我們一定使用 helm 來簡化部署的流程。在設定檔中指定了 Minio Server 相關的設定，啟用 Restic，還有為了 Demo 減少了 cpu/memory 的請求 Size</p><blockquote><p>helm repo add vmware-tanzu <a href=https://vmware-tanzu.github.io/helm-chartsk>https://vmware-tanzu.github.io/helm-chartsk</a></p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/1.png title=Rocketchat data-thumbnail=/posts/velero-research-practice/img/1.png data-sub-html="<h2>Rocketchat</h2><p>Rocketchat</p>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/1.png data-srcset="/posts/velero-research-practice/img/1.png, img/1.png 1.5x, /posts/velero-research-practice/img/1.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/1.png>
+</a><figcaption class=image-caption>Rocketchat</figcaption>
+</figure></p>
+<p>等待 Workload 就序之，經過初始化的設定，就可以開始使用，我們在 Channel <code>#general</code> 中新增一張圖還有一些文字</p>
+</li>
+<li>
+<p>建立 Velero，我們一定使用 helm 來簡化部署的流程。在設定檔中指定了 Minio Server 相關的設定，啟用 Restic，還有為了 Demo 減少了 cpu/memory 的請求 Size</p>
+<blockquote>
+<p>helm repo add vmware-tanzu <a href=https://vmware-tanzu.github.io/helm-chartsk target=_blank rel="noopener noreffer">https://vmware-tanzu.github.io/helm-chartsk</a></p>
+</blockquote>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -346,7 +685,9 @@ helm install rocketchat --namespace rocketchat --create-namespace -f rocketchat.
 </span><span class=lnt>54
 </span><span class=lnt>55
 </span><span class=lnt>56
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=nv>MINIO_SVC</span><span class=o>=</span><span class=k>$(</span>kubectl -n minio get svc minio -o<span class=o>=</span><span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&#34;{.status.loadBalancer.ingress[0].ip}&#34;</span><span class=k>)</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nv>MINIO_SVC</span><span class=o>=</span><span class=k>$(</span>kubectl -n minio get svc minio -o<span class=o>=</span><span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&#34;{.status.loadBalancer.ingress[0].ip}&#34;</span><span class=k>)</span>
 <span class=nv>PUBLIC_URL</span><span class=o>=</span>http://<span class=nv>$MINIO_SVC</span>:9000
 
 cat <span class=s>&lt;&lt;EOF &gt; velero-values.yaml
@@ -402,34 +743,78 @@ cat <span class=s>&lt;&lt;EOF &gt; velero-values.yaml
 </span><span class=s>EOF</span>
 
 helm install velero vmware-tanzu/velero --namespace velero --create-namespace -f velero-values.yaml
-</code></pre></td></tr></table></div></div></li><li><p>使用 Velero + Restic 備份 Rocketchat，需要手動指定 mongodb 所在 Pod 對應的永久磁碟區的名子 <code>datadir</code>
-我們先找出 rocketchat 的永久磁碟區</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>使用 Velero + Restic 備份 Rocketchat，需要手動指定 mongodb 所在 Pod 對應的永久磁碟區的名子 <code>datadir</code>
+我們先找出 rocketchat 的永久磁碟區</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ kubectl get pvc -n rocketchat
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ kubectl get pvc -n rocketchat
 NAME                                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS    AGE
 datadir-rocketchat-mongodb-primary-0   Bound    local-persistent-storage                   200Mi      RWO            local-storage   61m
 rocketchat-rocketchat                  Bound    pvc-68f26e06-bf59-4310-8b7c-f5d8f21cb6eb   8Gi        RWO            standard        61m
-</code></pre></td></tr></table></div></div><p>第一個名子 <code>datadir</code> 就是對應 Pod <code>rocketchat-mongodb-primary-0</code> 的磁碟區名子。使用 <code>kubectl</code> annotate 的方式來為 mongodb Pod 加註 metadata <code>backup.velero.io/backup-volumes=datadir</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><p>第一個名子 <code>datadir</code> 就是對應 Pod <code>rocketchat-mongodb-primary-0</code> 的磁碟區名子。使用 <code>kubectl</code> annotate 的方式來為 mongodb Pod 加註 metadata <code>backup.velero.io/backup-volumes=datadir</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ kubectl annotate pod -n rocketchat --selector<span class=o>=</span><span class=nv>release</span><span class=o>=</span>rocketchat,app<span class=o>=</span>mongodb backup.velero.io/backup-volumes<span class=o>=</span>datadir --overwrite
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ kubectl annotate pod -n rocketchat --selector<span class=o>=</span><span class=nv>release</span><span class=o>=</span>rocketchat,app<span class=o>=</span>mongodb backup.velero.io/backup-volumes<span class=o>=</span>datadir --overwrite
 pod/rocketchat-mongodb-primary-0 annotated
 
 $ kubectl -n rocketchat describe po rocketchat-mongodb-primary-0 <span class=p>|</span> grep Annotations
 Annotations:  backup.velero.io/backup-volumes: datadir
-</code></pre></td></tr></table></div></div></li><li><p>現在就可以使用 <code>velero backup</code> 的指令來進行備份動作並指定目際的 namespaces <code>rocketchat</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>velero backup create rocketchat-backup --include-namespaces rocketchat
-</code></pre></td></tr></table></div></div><p>等待備份狀況變成 <code>Completed</code> 之後，我們可以使用 <code>velero backup describe rocketchat-backup --details</code> 來查看 Restic 是否有備份到我們聲名的 <code>datadir</code> 磁碟區</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>現在就可以使用 <code>velero backup</code> 的指令來進行備份動作並指定目際的 namespaces <code>rocketchat</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>velero backup create rocketchat-backup --include-namespaces rocketchat
+</code></pre></td></tr></table>
+</div>
+</div><p>等待備份狀況變成 <code>Completed</code> 之後，我們可以使用 <code>velero backup describe rocketchat-backup --details</code> 來查看 Restic 是否有備份到我們聲名的 <code>datadir</code> 磁碟區</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>Restic Backups:
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>Restic Backups:
   Completed:
     rocketchat/rocketchat-mongodb-primary-0: datadir
-</code></pre></td></tr></table></div></div><p>這時候我們可以在 Minio Server 中 <code>velero/backups</code> 看到我們備份的相關文件</p><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/2.png title=&amp;ldquo;rocketchat-backup&amp;rdquo; data-thumbnail=/posts/velero-research-practice/img/2.png data-sub-html="<h2>rocketchat-backup</h2><p>&amp;ldquo;rocketchat-backup&amp;rdquo;</p>"><img class=lazyload src=/svg/loading.min.svg data-src=img/2.png data-srcset="/posts/velero-research-practice/img/2.png, img/2.png 1.5x, /posts/velero-research-practice/img/2.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/2.png></a><figcaption class=image-caption>rocketchat-backup</figcaption></figure></p></li><li><p>使用 <code>s3cmd</code> 將 KIND 集群的 Velero + Restic 備份檔下載到本機電腦 <code>backup</code> 目錄</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div><p>這時候我們可以在 Minio Server 中 <code>velero/backups</code> 看到我們備份的相關文件</p>
+<p><figure><a class=lightgallery href=/posts/velero-research-practice/img/2.png title=&amp;ldquo;rocketchat-backup&amp;rdquo; data-thumbnail=/posts/velero-research-practice/img/2.png data-sub-html="<h2>rocketchat-backup</h2><p>&amp;ldquo;rocketchat-backup&amp;rdquo;</p>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/2.png data-srcset="/posts/velero-research-practice/img/2.png, img/2.png 1.5x, /posts/velero-research-practice/img/2.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/2.png>
+</a><figcaption class=image-caption>rocketchat-backup</figcaption>
+</figure></p>
+</li>
+<li>
+<p>使用 <code>s3cmd</code> 將 KIND 集群的 Velero + Restic 備份檔下載到本機電腦 <code>backup</code> 目錄</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -441,7 +826,9 @@ Annotations:  backup.velero.io/backup-volumes: datadir
 </span><span class=lnt>10
 </span><span class=lnt>11
 </span><span class=lnt>12
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; ~/.s3cfg
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; ~/.s3cfg
 </span><span class=s>host_base = 172.18.0.155:9000
 </span><span class=s>host_bucket = 172.18.0.155:9000
 </span><span class=s>bucket_location = default
@@ -453,9 +840,38 @@ Annotations:  backup.velero.io/backup-volumes: datadir
 
 mkdir backup
 s3cmd -p sync s3://velero/ backup/
-</code></pre></td></tr></table></div></div></li></ol><h4 id=在-gke-上建立新的-k8s-集群並復原-workload>在 GKE 上建立新的 K8s 集群並復原 Workload</h4><ol><li><p>到 GKE 上面建立一個新的 K8s 集群，用來復原我們 Velero + Restic 備份的目標集群</p></li><li><p>等待 GKE k8s 集群就緒之後，我們也需要部署一份 Minio Server 及 Velero 相關設定</p></li><li><p>可以重復使用 KIND 集群部署 Minio 相關的參數, GKE 對配發一個對外 IP 給 Minio Server 用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>helm install minio --create-namespace --namespace minio -f minio-values.yaml bitnami/minio
-</code></pre></td></tr></table></div></div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/3.png title="GKE Minio Server" data-thumbnail=/posts/velero-research-practice/img/3.png data-sub-html="<h2>GKE Minio Server</h2><p>GKE Minio Server</p>"><img class=lazyload src=/svg/loading.min.svg data-src=img/3.png data-srcset="/posts/velero-research-practice/img/3.png, img/3.png 1.5x, /posts/velero-research-practice/img/3.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/3.png></a><figcaption class=image-caption>GKE Minio Server</figcaption></figure></p></li><li><p>部署 Velero 及 Restic，可以重新使用稍早建立 KIND 集群用的 <code>velero-values.yaml</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id=在-gke-上建立新的-k8s-集群並復原-workload>在 GKE 上建立新的 K8s 集群並復原 Workload</h4>
+<ol>
+<li>
+<p>到 GKE 上面建立一個新的 K8s 集群，用來復原我們 Velero + Restic 備份的目標集群</p>
+</li>
+<li>
+<p>等待 GKE k8s 集群就緒之後，我們也需要部署一份 Minio Server 及 Velero 相關設定</p>
+</li>
+<li>
+<p>可以重復使用 KIND 集群部署 Minio 相關的參數, GKE 對配發一個對外 IP 給 Minio Server 用</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>helm install minio --create-namespace --namespace minio -f minio-values.yaml bitnami/minio
+</code></pre></td></tr></table>
+</div>
+</div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/3.png title="GKE Minio Server" data-thumbnail=/posts/velero-research-practice/img/3.png data-sub-html="<h2>GKE Minio Server</h2><p>GKE Minio Server</p>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/3.png data-srcset="/posts/velero-research-practice/img/3.png, img/3.png 1.5x, /posts/velero-research-practice/img/3.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/3.png>
+</a><figcaption class=image-caption>GKE Minio Server</figcaption>
+</figure></p>
+</li>
+<li>
+<p>部署 Velero 及 Restic，可以重新使用稍早建立 KIND 集群用的 <code>velero-values.yaml</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -463,7 +879,9 @@ s3cmd -p sync s3://velero/ backup/
 </span><span class=lnt>6
 </span><span class=lnt>7
 </span><span class=lnt>8
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=nv>MINIO_SVC</span><span class=o>=</span><span class=k>$(</span>kubectl -n minio get svc minio -o<span class=o>=</span><span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&#34;{.status.loadBalancer.ingress[0].ip}&#34;</span><span class=k>)</span>
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nv>MINIO_SVC</span><span class=o>=</span><span class=k>$(</span>kubectl -n minio get svc minio -o<span class=o>=</span><span class=nv>jsonpath</span><span class=o>=</span><span class=s2>&#34;{.status.loadBalancer.ingress[0].ip}&#34;</span><span class=k>)</span>
 <span class=nv>PUBLIC_URL</span><span class=o>=</span>http://<span class=nv>$MINIO_SVC</span>:9000
 <span class=nb>echo</span> <span class=nv>$PUBLIC_URL</span>
 helm install velero vmware-tanzu/velero <span class=se>\
@@ -471,7 +889,14 @@ helm install velero vmware-tanzu/velero <span class=se>\
 </span><span class=se></span>  --create-namespace <span class=se>\
 </span><span class=se></span>  --set configuration.backupStorageLocation.config.publicUrl<span class=o>=</span><span class=nv>$PUBLIC_URL</span> <span class=se>\
 </span><span class=se></span>  -f velero-values.yaml
-</code></pre></td></tr></table></div></div></li><li><p>使用 <code>s3cmd</code> 將本機電腦 <code>backup</code> 下的檔案同步至 GKE Minio Server 中</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>使用 <code>s3cmd</code> 將本機電腦 <code>backup</code> 下的檔案同步至 GKE Minio Server 中</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -483,7 +908,9 @@ helm install velero vmware-tanzu/velero <span class=se>\
 </span><span class=lnt>10
 </span><span class=lnt>11
 </span><span class=lnt>12
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>MINIO_SVC=$(kubectl -n minio get svc minio -o=jsonpath=&#34;{.status.loadBalancer.ingress[0].ip}&#34;)
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>MINIO_SVC=$(kubectl -n minio get svc minio -o=jsonpath=&#34;{.status.loadBalancer.ingress[0].ip}&#34;)
 cat &lt;&lt;EOF &gt; ~/.s3cfg
 host_base = $MINIO_SVC:9000
 host_bucket = $MINIO_SVC:9000
@@ -495,13 +922,31 @@ signature_v2 = False
 EOF
 
 s3cmd -p sync backup/ s3://velero/
-</code></pre></td></tr></table></div></div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/4.png title="GKE Minio Server" data-thumbnail=/posts/velero-research-practice/img/4.png data-sub-html="<h2>GKE Minio Server</h2><p>GKE Minio Server</p>"><img class=lazyload src=/svg/loading.min.svg data-src=img/4.png data-srcset="/posts/velero-research-practice/img/4.png, img/4.png 1.5x, /posts/velero-research-practice/img/4.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/4.png></a><figcaption class=image-caption>GKE Minio Server</figcaption></figure></p><p>同步完之後可以在 GKE Minio Sever 中看到如同 KIND Minio Server 一樣的資料。 這時候我使用 Velero 來查看備份檔是否正常</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</code></pre></td></tr></table>
+</div>
+</div><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/4.png title="GKE Minio Server" data-thumbnail=/posts/velero-research-practice/img/4.png data-sub-html="<h2>GKE Minio Server</h2><p>GKE Minio Server</p>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/4.png data-srcset="/posts/velero-research-practice/img/4.png, img/4.png 1.5x, /posts/velero-research-practice/img/4.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/4.png>
+</a><figcaption class=image-caption>GKE Minio Server</figcaption>
+</figure></p>
+<p>同步完之後可以在 GKE Minio Sever 中看到如同 KIND Minio Server 一樣的資料。 這時候我使用 Velero 來查看備份檔是否正常</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ velero backup get
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ velero backup get
 NAME                STATUS      ERRORS   WARNINGS   CREATED                         EXPIRES   STORAGE LOCATION   SELECTOR
 rocketchat-backup   Completed   <span class=m>0</span>        <span class=m>0</span>          2021-06-08 15:00:12 +0800 CST   29d       default            &lt;none&gt;
-</code></pre></td></tr></table></div></div></li><li><p>配置之前提到的 <a href=https://velero.io/docs/v1.6/restore-reference/#changing-pvpvc-storage-classes#changing-pvpvc-storage-classes target=_blank rel="noopener noreffer">Changing PV/PVC Storage Classes</a>，這一個步驟非常重要，因為我們受限本地 KIND k8s 集群 <code>hostpath</code> 類型的儲存類別是無法備份永久磁碟區，所以我們定義了一個 <code>local-storage</code> 儲存類別的本地永久磁碟區。而 GKE 是有支援永久磁碟區動態佈建的功能，不過預設的名子是 <code>default</code>，所以我就透過 Veleor 提供 Changing PV/PVC Storage Classes 的功能來進行對應</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>配置之前提到的 <a href=https://velero.io/docs/v1.6/restore-reference/#changing-pvpvc-storage-classes#changing-pvpvc-storage-classes target=_blank rel="noopener noreffer">Changing PV/PVC Storage Classes</a>，這一個步驟非常重要，因為我們受限本地 KIND k8s 集群 <code>hostpath</code> 類型的儲存類別是無法備份永久磁碟區，所以我們定義了一個 <code>local-storage</code> 儲存類別的本地永久磁碟區。而 GKE 是有支援永久磁碟區動態佈建的功能，不過預設的名子是 <code>default</code>，所以我就透過 Veleor 提供 Changing PV/PVC Storage Classes 的功能來進行對應</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -527,7 +972,9 @@ rocketchat-backup   Completed   <span class=m>0</span>        <span class=m>0</s
 </span><span class=lnt>24
 </span><span class=lnt>25
 </span><span class=lnt>26
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; change-storage-class-config.yaml
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt; change-storage-class-config.yaml
 </span><span class=s>apiVersion: v1
 </span><span class=s>kind: ConfigMap
 </span><span class=s>metadata:
@@ -553,9 +1000,23 @@ rocketchat-backup   Completed   <span class=m>0</span>        <span class=m>0</s
 </span><span class=s>EOF</span>
 
 kubectl apply -f change-storage-class-config.yaml -n velero
-</code></pre></td></tr></table></div></div></li><li><p>確認了 Velero 備份及復原儲存類別的對應，就可以使用 Veleor 指定來復原 Rocketchat Workload</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>velero restore create --from-backup rocketchat-backup
-</code></pre></td></tr></table></div></div><p>檢查復原的狀態</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>確認了 Velero 備份及復原儲存類別的對應，就可以使用 Veleor 指定來復原 Rocketchat Workload</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>velero restore create --from-backup rocketchat-backup
+</code></pre></td></tr></table>
+</div>
+</div><p>檢查復原的狀態</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -606,7 +1067,9 @@ kubectl apply -f change-storage-class-config.yaml -n velero
 </span><span class=lnt>49
 </span><span class=lnt>50
 </span><span class=lnt>51
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>$ velero restore describe rocketchat-backup-20210609104124 --details
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ velero restore describe rocketchat-backup-20210609104124 --details
 Name:         rocketchat-backup-20210609104124
 Namespace:    velero
 Labels:       &lt;none&gt;
@@ -657,7 +1120,56 @@ Restic Restores:
     rocketchat/rocketchat-mongodb-primary-0: datadir
 
 Preserve Service NodePorts:  auto
-</code></pre></td></tr></table></div></div><p>這個我們遇到了一些 rocketchat 資源找不到的錯誤，不過我們透過 Resric 備份的 <code>datadir</code> 磁碟區有成功被復原</p><p><figure><a class=lightgallery href=/posts/velero-research-practice/img/5.png title="GKE rocketchat" data-thumbnail=/posts/velero-research-practice/img/5.png data-sub-html="<h2>GKE rocketchat</h2><p>GKE rocketchat</p>"><img class=lazyload src=/svg/loading.min.svg data-src=img/5.png data-srcset="/posts/velero-research-practice/img/5.png, img/5.png 1.5x, /posts/velero-research-practice/img/5.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/5.png></a><figcaption class=image-caption>GKE rocketchat</figcaption></figure></p></li></ol><h2 id=心得>心得</h2><p>文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制</p><p>完整的 Demo code repo <a href=https://github.com/cage1016/velero-research-practice-demo>https://github.com/cage1016/velero-research-practice-demo</a></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2021-06-17&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/e57a692684f2f65c31769c039666a915456b1236 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) e57a692684f2f65c31769c039666a915456b1236: feat(content): add Pack 0.19.0 Solved Invalid Cross Device Link at Google Cloud Build">
-<i class="fas fa-hashtag fa-fw"></i>e57a692</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/velero-research-practice/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/velero-research-practice/ data-title="Velero 初探與實踐" data-via=CageChung data-hashtags=velero,restic,kind,minio,gke,kubernetes,rocketchat><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/velero-research-practice/ data-hashtag=velero><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/velero-research-practice/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/velero/>velero</a>,&nbsp;<a href=/tags/restic/>restic</a>,&nbsp;<a href=/tags/kind/>kind</a>,&nbsp;<a href=/tags/minio/>minio</a>,&nbsp;<a href=/tags/gke/>gke</a>,&nbsp;<a href=/tags/kubernetes/>kubernetes</a>,&nbsp;<a href=/tags/rocketchat/>rocketchat</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/docker-tuntap-osx-wordpress/ class=prev rel=prev title="Docker Tuntap Osx WordPress"><i class="fas fa-angle-left fa-fw"></i>Docker Tuntap Osx WordPress</a>
-<a href=/posts/velero-research-report/ class=next rel=next title="Velero 初探簡報">Velero 初探簡報<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.83.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=/lib/mermaid/mermaid.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/mermaid@8.5.1/dist/mermaid.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},data:{"id-1":"graph LR\n  subgraph Local Desktop\n    a[Backup]\n  end\n\n  subgraph KIND Cluster\n    r1[Rocketchat]-.Velero Backup.-\u003ec1[(Minio Server\u003cbr/\u003es3://velero)]\n  end\n\n  subgraph GKE Cluster\n    c2[(Minio Server\u003cbr/\u003es3://velero)]-.Velero Restore.-\u003er2[Rocketchat]\n  end\n\n  c1--s3cmd sync--\u003ea\n  a--s3cmd sync--\u003ec2"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>
+</code></pre></td></tr></table>
+</div>
+</div><p>這個我們遇到了一些 rocketchat 資源找不到的錯誤，不過我們透過 Resric 備份的 <code>datadir</code> 磁碟區有成功被復原</p>
+<p><figure><a class=lightgallery href=/posts/velero-research-practice/img/5.png title="GKE rocketchat" data-thumbnail=/posts/velero-research-practice/img/5.png data-sub-html="<h2>GKE rocketchat</h2><p>GKE rocketchat</p>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/5.png data-srcset="/posts/velero-research-practice/img/5.png, img/5.png 1.5x, /posts/velero-research-practice/img/5.png 2x" data-sizes=auto alt=/posts/velero-research-practice/img/5.png>
+</a><figcaption class=image-caption>GKE rocketchat</figcaption>
+</figure></p>
+</li>
+</ol>
+<h2 id=心得>心得</h2>
+<p>文篇文章算是研究 Velero 的一些心得，及使用 Velero + Restic 進行跨 Provider 遷移集群的原理、注意事項及操作的過程，成功的將 Mac 本地的 KIND k8s 中的 Rocketchat workload 無縫的遷移到 GKE 中，中間的過程還算是簡單方便(如果沒有跨 Provider 有 Cloud Provider 的原生支援會更快速)，算是一個開源友好的集群遷移工具，不過魔鬼總是藏在細節中，官方文件最好是好好的看一看，要了解其中的限制</p>
+<p>完整的 Demo code repo <a href=https://github.com/cage1016/velero-research-practice-demo target=_blank rel="noopener noreffer">https://github.com/cage1016/velero-research-practice-demo</a></p></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>Updated on 2021-07-30&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/09e39720bb78617317de8fcc56c9f361470437ff target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 09e39720bb78617317de8fcc56c9f361470437ff: add NATS quick expose for local test">
+<i class="fas fa-hashtag fa-fw"></i>09e3972</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/posts/velero-research-practice/index.md target=_blank>Read Markdown</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/velero-research-practice/ data-title="Velero 初探與實踐" data-via=CageChung data-hashtags=velero,restic,kind,minio,gke,kubernetes,rocketchat><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/velero-research-practice/ data-hashtag=velero><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/velero-research-practice/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/velero/>velero</a>,&nbsp;<a href=/tags/restic/>restic</a>,&nbsp;<a href=/tags/kind/>kind</a>,&nbsp;<a href=/tags/minio/>minio</a>,&nbsp;<a href=/tags/gke/>gke</a>,&nbsp;<a href=/tags/kubernetes/>kubernetes</a>,&nbsp;<a href=/tags/rocketchat/>rocketchat</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/posts/docker-tuntap-osx-wordpress/ class=prev rel=prev title="Docker Tuntap Osx WordPress"><i class="fas fa-angle-left fa-fw"></i>Docker Tuntap Osx WordPress</a>
+<a href=/posts/velero-research-report/ class=next rel=next title="Velero 初探簡報">Velero 初探簡報<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.86.0">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments">
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=/lib/mermaid/mermaid.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/mermaid@8.5.1/dist/mermaid.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},data:{"id-1":"graph LR\n  subgraph Local Desktop\n    a[Backup]\n  end\n\n  subgraph KIND Cluster\n    r1[Rocketchat]-.Velero Backup.-\u003ec1[(Minio Server\u003cbr/\u003es3://velero)]\n  end\n\n  subgraph GKE Cluster\n    c2[(Minio Server\u003cbr/\u003es3://velero)]-.Velero Restore.-\u003er2[Rocketchat]\n  end\n\n  c1--s3cmd sync--\u003ea\n  a--s3cmd sync--\u003ec2"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>
