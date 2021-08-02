@@ -1,0 +1,149 @@
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks - KaiChu</title><meta name=Description content="Life is unique by how you shape it"><meta property="og:title" content="Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
+<meta property="og:description" content="CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/"><meta property="og:image" content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.webp"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-08-02T01:57:32+00:00">
+<meta property="article:modified_time" content="2021-08-02T03:26:12+00:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.webp">
+<meta name=twitter:title content="Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
+<meta name=twitter:description content="CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><link rel=prev href=https://kaichu.io/posts/nats-quick-expose-for-local-test/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/img\/cover.webp","width":3e3,"height":1687}],"genre":"posts","keywords":"pack, buildpacks, google, coscup","wordcount":664,"url":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/","datePublished":"2021-08-02T01:57:32+00:00","dateModified":"2021-08-02T03:26:12+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":""}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/ title=Home> Home </a><a class=menu-item href=/posts/> Posts </a><a class=menu-item href=/tags/> Tags </a><a class=menu-item href=/about/> About </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+Cancel
+</a>
+</div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><article class="page single"><h1 class="single-title animated flipInX">Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-02>2021-08-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;664 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
+</div><div class=content id=content><p>CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。</p>
+<p>Google 也依照了CNB 的規範開源了 Google 版的 Google Cloud Buildpacks，也在 2019 Google Cloud Next 上宣布 Cloud Run (Cloud Run Button), GKE, Anthos, App Engine, Cloud functions 等服務支援使用 Google Cloud Buildpacks。</p>
+<p>本場次會介紹 CNB 的發展歷史及 Google 開源的 Google Cloud Buildpacks 剖析與實踐</p>
+<iframe style=width:100%;height:500px frameborder=0 marginwidth=0 marginheight=0 scrolling=no src="http://www.slideshare.net/slideshow/embed_code/249900447?rel=0" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+<br><br>
+<div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
+<iframe src=https://www.youtube-nocookie.com/embed/BgdirjYjKWc style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe>
+</div>
+<p>之前分享跟 Buildpack 相關的主題</p>
+<ul>
+<li><a href=https://kaichu.io/posts/buildpack-tips-and-tricks/ target=_blank rel="noopener noreffer">Buildpack Tips and Tricks - KaiChu</a></li>
+<li><a href=https://kaichu.io/posts/build-your-buildpack/ target=_blank rel="noopener noreffer">Build Your Buildpack - KaiChu</a></li>
+<li><a href=https://kaichu.io/posts/github-assets-cnb/ target=_blank rel="noopener noreffer">Github Assets Cnb - KaiChu</a></li>
+<li><a href=https://kaichu.io/posts/pack-solved-invalid-cross-device-link-at-google-cloud-build/ target=_blank rel="noopener noreffer">Pack 0.19.0 Solved Invalid Cross Device Link at Google Cloud Build - KaiChu</a></li>
+</ul>
+<p>總的來說</p>
+<ol>
+<li>Buildpack 的出現，提供了一個從 Source to container image 的方式，讓開發人員可以從 <code>Dockerfile</code> 中解放，專注在商業邏輯的部份，將 container image 的安全性、每一層怎麼堆疊等部份交給 Buildpack 所規範的方式去作。<code>Dockerfile</code> 在某些場景還是很好用，在適合的場景時機引入 Buildpack 則可以讓工作流程簡化</li>
+<li><a href=https://github.com/GoogleCloudPlatform/buildpacks target=_blank rel="noopener noreffer">Google Cloud Buildpacks</a> 是一個 100% 相容 <a href=https://buildpacks.io/ target=_blank rel="noopener noreffer">Cloud Native Buildpacks</a> 的一個實作。類似有實作的還有 Paketo 及 Heroku 所提供的版本，當然各家實作出來的 Builder 除了相容規範之外還會加上自家獨有的東西，如 Google Cloud Buildpacks 就增加了 Google Cloud Platfrom 中特有的 Cloud Function</li>
+<li>入級: 每一個 Builder 的參數不盡相同，使用前需參考使用說明。Google Cloud Buildpacks 已經支持 Cloud Run, GKE, Anthos, App Engine, Cloud Function。言話部份也有 Go, Node.js, Python, Java, Net Core 等，在開發工具鍊中也有 skaffold, pack, tekton, kpack 也可以搭配 gcloud 及 Google Cloud Build 一起使用。</li>
+<li>初級: 依照 <a href=https://buildpacks.io/ target=_blank rel="noopener noreffer">Cloud Native Buildpacks</a> 的規範實作自己的 Buildpack (shell 版本)</li>
+<li>中級: 使用第三方工具來建構 Buildpack, 如 <a href=https://github.com/paketo-buildpacks/packit target=_blank rel="noopener noreffer">paketo-buildpacks/packit</a>。在閱讀 <a href=https://github.com/GoogleCloudPlatform/buildpacks target=_blank rel="noopener noreffer">Google Cloud Buildpacks</a> 的開收源始碼後，你會發現這個專案也是使用同樣的方式來建構出 Google 版的 Builpack，不過用的是 Google 自己寫 Library，最終透過 Bazel 打包成相容 Cloud Native Buildpacks 的格式。</li>
+</ol></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>Updated on 2021-08-02&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/92eb5c8a1236e376090752d0dea6b5a76282ba4e target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 92eb5c8a1236e376090752d0dea6b5a76282ba4e: add Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
+<i class="fas fa-hashtag fa-fw"></i>92eb5c8</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/index.md target=_blank>Read Markdown</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/ data-title="Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks" data-via=CageChung data-hashtags=pack,buildpacks,google,coscup><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/ data-hashtag=pack><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/pack/>pack</a>,&nbsp;<a href=/tags/buildpacks/>buildpacks</a>,&nbsp;<a href=/tags/google/>google</a>,&nbsp;<a href=/tags/coscup/>coscup</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/posts/nats-quick-expose-for-local-test/ class=prev rel=prev title="NATS quick expose for local test"><i class="fas fa-angle-left fa-fw"></i>NATS quick expose for local test</a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.86.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments">
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>
