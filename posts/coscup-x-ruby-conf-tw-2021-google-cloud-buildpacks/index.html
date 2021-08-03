@@ -5,19 +5,27 @@
 <meta name=robots content="noodp">
 <meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
 <title>Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks - KaiChu</title><meta name=Description content="Life is unique by how you shape it"><meta property="og:title" content="Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
-<meta property="og:description" content="CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。">
+<meta property="og:description" content="TR409-1 Google 技術 x 公共參與 x 開源
+
+Google Cloud Buildpacks 剖析與實踐 - COSCUP 2021 | Conference for Open Source Coders, Users, and Promoters
+
+CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/"><meta property="og:image" content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.webp"><meta property="article:section" content="posts">
+<meta property="og:url" content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/"><meta property="og:image" content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-08-02T01:57:32+00:00">
-<meta property="article:modified_time" content="2021-08-02T03:26:12+00:00">
+<meta property="article:modified_time" content="2021-08-03T07:58:49+00:00">
 <meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.webp">
+<meta name=twitter:image content="https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png">
 <meta name=twitter:title content="Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
-<meta name=twitter:description content="CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。">
+<meta name=twitter:description content="TR409-1 Google 技術 x 公共參與 x 開源
+
+Google Cloud Buildpacks 剖析與實踐 - COSCUP 2021 | Conference for Open Source Coders, Users, and Promoters
+
+CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。">
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><link rel=prev href=https://kaichu.io/posts/nats-quick-expose-for-local-test/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/img\/cover.webp","width":3e3,"height":1687}],"genre":"posts","keywords":"pack, buildpacks, google, coscup","wordcount":664,"url":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/","datePublished":"2021-08-02T01:57:32+00:00","dateModified":"2021-08-02T03:26:12+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":""}</script></head>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><link rel=prev href=https://kaichu.io/posts/nats-quick-expose-for-local-test/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/img\/cover.png","width":2528,"height":747}],"genre":"posts","keywords":"pack, buildpacks, google, coscup","wordcount":742,"url":"https:\/\/kaichu.io\/posts\/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks\/","datePublished":"2021-08-02T01:57:32+00:00","dateModified":"2021-08-03T07:58:49+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":""}</script></head>
 <body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
@@ -82,15 +90,27 @@ Cancel
 <main class=main>
 <div class=container><article class="page single"><h1 class="single-title animated flipInX">Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks</h1><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-02>2021-08-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;664 words&nbsp;
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-02>2021-08-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;742 words&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
-</div><div class=content id=content><p>CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。</p>
+</div><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png data-srcset="/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png, /posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png 1.5x, /posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png 2x" data-sizes=auto alt=/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png title=/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/img/cover.png></div><div class=content id=content><h3 id=tr409-1-google-技術-x-公共參與-x-開源>TR409-1 Google 技術 x 公共參與 x 開源</h3>
+<blockquote>
+<p><a href=https://coscup.org/2021/zh-TW/session/J3X8SE target=_blank rel="noopener noreffer">Google Cloud Buildpacks 剖析與實踐 - COSCUP 2021 | Conference for Open Source Coders, Users, and Promoters</a></p>
+</blockquote>
+<p>CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。</p>
 <p>Google 也依照了CNB 的規範開源了 Google 版的 Google Cloud Buildpacks，也在 2019 Google Cloud Next 上宣布 Cloud Run (Cloud Run Button), GKE, Anthos, App Engine, Cloud functions 等服務支援使用 Google Cloud Buildpacks。</p>
 <p>本場次會介紹 CNB 的發展歷史及 Google 開源的 Google Cloud Buildpacks 剖析與實踐</p>
 <iframe style=width:100%;height:500px frameborder=0 marginwidth=0 marginheight=0 scrolling=no src="http://www.slideshare.net/slideshow/embed_code/249900447?rel=0" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
 <br><br>
 <div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
 <iframe src=https://www.youtube-nocookie.com/embed/BgdirjYjKWc style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe>
+</div>
+<div class="details admonition question open">
+<div class="details-summary admonition-title">
+<i class="icon fas fa-question-circle fa-fw"></i>Q&A<i class="details-icon fas fa-angle-right fa-fw"></i>
+</div>
+<div class=details-content>
+<div class=admonition-content>buildpack 的 runtime image 是不可以被更改的是只在 local 需要 Reproducible 的限制，單純的使用者需要了解的是怎麼使用這個工具?</div>
+</div>
 </div>
 <p>之前分享跟 Buildpack 相關的主題</p>
 <ul>
@@ -101,7 +121,7 @@ Cancel
 </ul>
 <p>總的來說</p>
 <ol>
-<li>Buildpack 的出現，提供了一個從 Source to container image 的方式，讓開發人員可以從 <code>Dockerfile</code> 中解放，專注在商業邏輯的部份，將 container image 的安全性、每一層怎麼堆疊等部份交給 Buildpack 所規範的方式去作。<code>Dockerfile</code> 在某些場景還是很好用，在適合的場景時機引入 Buildpack 則可以讓工作流程簡化</li>
+<li>Buildpack 的出現，提供了一個從 Source to container image 的方式，讓開發人員可以從 <code>Dockerfile</code> 中解放，專注在商業邏輯的部份，將 container image 的安全性、每一層怎麼堆疊等部份交給 Buildpack 所規範的方式去作。<code>Dockerfile</code> 在某些場景還是很好用，在適合的場景時機引入 Buildpack 可以讓工作流程更為簡化</li>
 <li><a href=https://github.com/GoogleCloudPlatform/buildpacks target=_blank rel="noopener noreffer">Google Cloud Buildpacks</a> 是一個 100% 相容 <a href=https://buildpacks.io/ target=_blank rel="noopener noreffer">Cloud Native Buildpacks</a> 的一個實作。類似有實作的還有 Paketo 及 Heroku 所提供的版本，當然各家實作出來的 Builder 除了相容規範之外還會加上自家獨有的東西，如 Google Cloud Buildpacks 就增加了 Google Cloud Platfrom 中特有的 Cloud Function</li>
 <li>入級: 每一個 Builder 的參數不盡相同，使用前需參考使用說明。Google Cloud Buildpacks 已經支持 Cloud Run, GKE, Anthos, App Engine, Cloud Function。言話部份也有 Go, Node.js, Python, Java, Net Core 等，在開發工具鍊中也有 skaffold, pack, tekton, kpack 也可以搭配 gcloud 及 Google Cloud Build 一起使用。</li>
 <li>初級: 依照 <a href=https://buildpacks.io/ target=_blank rel="noopener noreffer">Cloud Native Buildpacks</a> 的規範實作自己的 Buildpack (shell 版本)</li>
@@ -110,8 +130,8 @@ Cancel
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>Updated on 2021-08-02&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/92eb5c8a1236e376090752d0dea6b5a76282ba4e target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 92eb5c8a1236e376090752d0dea6b5a76282ba4e: add Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
-<i class="fas fa-hashtag fa-fw"></i>92eb5c8</a></span>
+<span>Updated on 2021-08-03&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/34217d1f04a2f92e7a56ec5af3727d85e216aa03 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 34217d1f04a2f92e7a56ec5af3727d85e216aa03: update Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
+<i class="fas fa-hashtag fa-fw"></i>34217d1</a></span>
 </div>
 <div class=post-info-license></div>
 </div>

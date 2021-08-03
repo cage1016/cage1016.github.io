@@ -1,6 +1,9 @@
 # Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks
 
 
+### TR409-1 Google 技術 x 公共參與 x 開源
+> [Google Cloud Buildpacks 剖析與實踐 - COSCUP 2021 | Conference for Open Source Coders, Users, and Promoters](https://coscup.org/2021/zh-TW/session/J3X8SE)
+
 CNCF 的 Cloud Native Buildpacks 專案已經在 2020 已經從 Sandbox 項目變成成了 Incubation 項目。Cloud Native Buildpacks (CNB) 的出現定義了轉換程式碼至 OCI 的標準，可以讓開發人員專注在本身功能上面，將安全性及依賴套件打包相關的部份交由 CNB 負責。
 
 <!--more-->
@@ -13,6 +16,10 @@ Google 也依照了CNB 的規範開源了 Google 版的 Google Cloud Buildpacks�
 
 {{< youtube BgdirjYjKWc >}}
 
+{{< admonition question "Q&A" >}}
+buildpack 的 runtime image 是不可以被更改的是只在 local 需要 Reproducible 的限制，單純的使用者需要了解的是怎麼使用這個工具?
+{{< /admonition >}}
+
 之前分享跟 Buildpack 相關的主題
 - [Buildpack Tips and Tricks - KaiChu](https://kaichu.io/posts/buildpack-tips-and-tricks/)
 - [Build Your Buildpack - KaiChu](https://kaichu.io/posts/build-your-buildpack/)
@@ -21,7 +28,7 @@ Google 也依照了CNB 的規範開源了 Google 版的 Google Cloud Buildpacks�
 
 總的來說
 
-1. Buildpack 的出現，提供了一個從 Source to container image 的方式，讓開發人員可以從 `Dockerfile` 中解放，專注在商業邏輯的部份，將 container image 的安全性、每一層怎麼堆疊等部份交給 Buildpack 所規範的方式去作。`Dockerfile` 在某些場景還是很好用，在適合的場景時機引入 Buildpack 則可以讓工作流程簡化
+1. Buildpack 的出現，提供了一個從 Source to container image 的方式，讓開發人員可以從 `Dockerfile` 中解放，專注在商業邏輯的部份，將 container image 的安全性、每一層怎麼堆疊等部份交給 Buildpack 所規範的方式去作。`Dockerfile` 在某些場景還是很好用，在適合的場景時機引入 Buildpack 可以讓工作流程更為簡化
 1. [Google Cloud Buildpacks](https://github.com/GoogleCloudPlatform/buildpacks) 是一個 100% 相容 [Cloud Native Buildpacks](https://buildpacks.io/) 的一個實作。類似有實作的還有 Paketo 及 Heroku 所提供的版本，當然各家實作出來的 Builder 除了相容規範之外還會加上自家獨有的東西，如 Google Cloud Buildpacks 就增加了 Google Cloud Platfrom 中特有的 Cloud Function
 1. 入級: 每一個 Builder 的參數不盡相同，使用前需參考使用說明。Google Cloud Buildpacks 已經支持 Cloud Run, GKE, Anthos, App Engine, Cloud Function。言話部份也有 Go, Node.js, Python, Java, Net Core 等，在開發工具鍊中也有 skaffold, pack, tekton, kpack 也可以搭配 gcloud 及 Google Cloud Build 一起使用。
 1. 初級: 依照 [Cloud Native Buildpacks](https://buildpacks.io/) 的規範實作自己的 Buildpack (shell 版本)
