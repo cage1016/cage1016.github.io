@@ -9,7 +9,7 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/posts/docker-notebook-1/"><meta property="og:image" content="https://kaichu.io/posts/docker-notebook-1/img/docker_on_linux_macosx.jpg"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2015-10-04T21:51:59+08:00">
-<meta property="article:modified_time" content="2021-08-03T07:58:49+00:00">
+<meta property="article:modified_time" content="2021-08-11T08:00:32+00:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/posts/docker-notebook-1/img/docker_on_linux_macosx.jpg">
 <meta name=twitter:title content="[筆記] docker 1.8.2 rc">
@@ -17,7 +17,7 @@
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/docker-notebook-1/><link rel=prev href=https://kaichu.io/posts/managed-vms-lab/><link rel=next href=https://kaichu.io/posts/django-getting-started/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"[筆記] docker 1.8.2 rc","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/docker-notebook-1\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/docker-notebook-1\/img\/docker_on_linux_macosx.jpg","width":1164,"height":825}],"genre":"posts","keywords":"docker, docker-machine, boot2docker, nginx","wordcount":942,"url":"https:\/\/kaichu.io\/posts\/docker-notebook-1\/","datePublished":"2015-10-04T21:51:59+08:00","dateModified":"2021-08-03T07:58:49+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"docker 社群開發的速度非常的快速，而 docker 1.8 又有比較大的改變。boot2docker 的功能被 docker-machine 取代，此篇文章算是自己作一個記錄"}</script></head>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/docker-notebook-1/><link rel=prev href=https://kaichu.io/posts/managed-vms-lab/><link rel=next href=https://kaichu.io/posts/django-getting-started/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"[筆記] docker 1.8.2 rc","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/docker-notebook-1\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/docker-notebook-1\/img\/docker_on_linux_macosx.jpg","width":1164,"height":825}],"genre":"posts","keywords":"docker, docker-machine, boot2docker, nginx","wordcount":942,"url":"https:\/\/kaichu.io\/posts\/docker-notebook-1\/","datePublished":"2015-10-04T21:51:59+08:00","dateModified":"2021-08-11T08:00:32+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"docker 社群開發的速度非常的快速，而 docker 1.8 又有比較大的改變。boot2docker 的功能被 docker-machine 取代，此篇文章算是自己作一個記錄"}</script></head>
 <body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
@@ -333,8 +333,8 @@ Get http:///var/run/docker.sock/v1.20/info: dial unix /var/run/docker.sock: no s
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>Updated on 2021-08-03&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/34217d1f04a2f92e7a56ec5af3727d85e216aa03 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 34217d1f04a2f92e7a56ec5af3727d85e216aa03: update Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks">
-<i class="fas fa-hashtag fa-fw"></i>34217d1</a></span>
+<span>Updated on 2021-08-11&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/239598762f5a167a875f03ca42e21cc00d5c79f5 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 239598762f5a167a875f03ca42e21cc00d5c79f5: add K3s Nats tls">
+<i class="fas fa-hashtag fa-fw"></i>2395987</a></span>
 </div>
 <div class=post-info-license></div>
 </div>
@@ -360,7 +360,7 @@ Get http:///var/run/docker.sock/v1.20/info: dial unix /var/run/docker.sock: no s
 Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
 </noscript></div></article></div>
 </main><footer class=footer>
-<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.86.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.87.0">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
 </div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
 </div>
 </footer></div>
