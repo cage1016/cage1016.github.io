@@ -4,22 +4,22 @@
 <!--more-->
 
 
-1. 透過 `k3d` 建立本地 k3s cluster。因為 k3s 也是透過 docker 來摸擬 k8s cluster，所以透過 k3s 本身 port mapping 的配置來對外開放 `8080:80` 及 `4222:31400` 二個 port。 `8080:80` 給 Nginx 用。而 `4222:31400` 是對應 NATS nodeport 用
+1. 透過 `k3d` 建立本地 k3s cluster。因為 k3s 也是透過 docker 來摸擬 k8s cluster，所以透過 k3s 本身 port mapping 的配置來對外開放 `8080:80` 及 `4222:31400` 二個 port。 `8080:80` 給 `hashicorp/http-echo` 用。而 `4222:31400` 是對應 NATS nodeport 用
 
     ```sh
-    k3d cluster create dev -p 8080:80@loadbalancer -p "4222:31400@server[0]"
+    k3d cluster create dev -p 8080:80@loadbalancer -p 8443:443@loadbalancer -p "4222:31400@server[0]"
     ```
 
-1. 建立 Nginx。等待所有的 Pod 及服務就緒後，就可以透過 [http://localhost:8080](http://localhost:8080) 來儲存 Nginx
+2. 建立 `hashicorp/http-echo`。等待所有的 Pod 及服務就緒後，就可以透過 [http://localhost:8080](http://localhost:8080) 來讀取 `hashicorp/http-echo`
 
     ```sh
-    kubectl create deployment nginx --image=nginx
-    kubectl create service clusterip nginx --tcp=80:80
+    kubectl run --image hashicorp/http-echo --port 80 echo -- -listen=:80 --text="Hello from echo"
+    kubectl expose pod echo --port 80 --target-port 80 --type NodePort --name echo
     cat <<EOF | kubectl apply -f -
     apiVersion: extensions/v1beta1
     kind: Ingress
     metadata:
-      name: nginx-ingress
+      name: echo-ingress
       annotations:
         kubernetes.io/ingress.class: traefik
     spec:
@@ -29,14 +29,14 @@
           - path: /
             pathType: Prefix
             backend:
-              serviceName: nginx
+              serviceName: echo
               servicePort: 80
     EOF
     ```
 
-1. 下一個步驟就是建立 NATS。因為這一次我們要建立的是有啟用 TLS 的 NATS 服務器。而 TLS 的部份我們採用 self signed 的方式來建立，實際使用就看最終部署的情況來決定是誰來產出 cluster 有需的 TLS，而本 Demo 就方便的方式自建
+3. 下一個步驟就是建立 NATS。因為這一次我們要建立的是有啟用 TLS 的 NATS 服務器。而 TLS 的部份我們採用 self signed 的方式來建立，實際使用就看最終部署的情況來決定是誰來產出 cluster 有需的 TLS，而本 Demo 就方便的方式自建
 
-1. 首先建立所需的 `certificate.conf` 檔案。其中 `IP` 及 `DNS` 可以依照需求進行修改
+4. 首先建立所需的 `certificate.conf` 檔案。其中 `IP` 及 `DNS` 可以依照需求進行修改
 
     ```sh
     cat <<EOF >> certificate.conf
@@ -72,7 +72,7 @@
     EOF
     ```
 
-1. 產生 NATS 服務器有需的 TLS 檔，及之後提供給 Client 使用的 `client.crt` `client.key` `ca.crt`。這邊使用的方式是透過 `openssl`，有效日期也是 demo 方便先設為 1000 天
+5. 產生 NATS 服務器有需的 TLS 檔，及之後提供給 Client 使用的 `client.crt` `client.key` `ca.crt`。這邊使用的方式是透過 `openssl`，有效日期也是 demo 方便先設為 1000 天
 
     ```bash
     cat <<EOF >> gen.sh
@@ -105,7 +105,7 @@
     ./gen.sh
     ```
 
-1. 透過 `kubectl` 建立稍後 NATS 服務器所需 TLS 相關的 secret `nats-server-tls`
+6. 透過 `kubectl` 建立稍後 NATS 服務器所需 TLS 相關的 secret `nats-server-tls`
 
     ```sh
     kubectl create namespace nats
@@ -116,7 +116,7 @@
       --namespace nats
     ```
 
-1. 透過 `helm` 來安裝 NATS 服務器，並指定稍早建立相關的 secret `nats-server-tls`
+7. 透過 `helm` 來安裝 NATS 服務器，並指定稍早建立相關的 secret `nats-server-tls`
 
     ```sh
     helm install nats nats/nats \
@@ -127,7 +127,7 @@
         --namespace nats
     ```
 
-1. 基本上作完這一步，如果我們透過 `port-forward` 的方式來 forward `nats/nats-client` `4222` 已經可以讀取到 NATS 服務器。不過使用 `helm` 安裝的 `nats/nats` 預設沒有對外開放服務，又因為使用 k3s cluster 受限於 docker 的原因，我們需要額外指定 NodePort `31400` 對應 k3s `4222:31400` 的設定來給外部讀取
+8. 基本上作完這一步，如果我們透過 `port-forward` 的方式來 forward `nats/nats-client` `4222` 已經可以讀取到 NATS 服務器。不過使用 `helm` 安裝的 `nats/nats` 預設沒有對外開放服務，又因為使用 k3s cluster 受限於 docker 的原因，我們需要額外指定 NodePort `31400` 對應 k3s `4222:31400` 的設定來給外部讀取
 
     ```sh
     cat <<EOF >> nats-np.yaml
@@ -154,7 +154,7 @@
     kubectl apply -f nats-np.yaml
     ```
 
-1. 讀取 [nats://localhost:4222](nats://localhost:4222)
+9. 讀取 [nats://localhost:4222](nats://localhost:4222)
 
     ```sh
     nats -s localhost:4222 pub say hi

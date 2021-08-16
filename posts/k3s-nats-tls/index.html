@@ -9,7 +9,7 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/posts/k3s-nats-tls/"><meta property="og:image" content="https://kaichu.io/posts/k3s-nats-tls/img/cover.webp"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-08-11T06:01:13+00:00">
-<meta property="article:modified_time" content="2021-08-11T08:00:32+00:00">
+<meta property="article:modified_time" content="2021-08-16T09:05:25+00:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/posts/k3s-nats-tls/img/cover.webp">
 <meta name=twitter:title content="K3s Nats tls">
@@ -17,7 +17,7 @@
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/k3s-nats-tls/><link rel=prev href=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"K3s Nats tls","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/k3s-nats-tls\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls\/img\/cover.webp","width":2058,"height":976}],"genre":"posts","keywords":"k3s, tls, nats, k8s","wordcount":951,"url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls\/","datePublished":"2021-08-11T06:01:13+00:00","dateModified":"2021-08-11T08:00:32+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在開發 Kubernetes 應用程式時常使用 NATS 來作為內部 Pub/Sub 傳遞非同步訊息時使用，有時候也有對外開放的需求。而在本地機器開發時會採用輕量的 k8s cluster 解決方案，如 Kind, k3s, minikube 等來減輕本地開發資原的壓力，不過基於 container 的方式還是有一些限制，本篇文章以 k3s 為基礎來搭設開啟 TLS 的 NATS 服務器在本地的使用方式。"}</script></head>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/k3s-nats-tls/><link rel=prev href=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"K3s Nats tls","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/k3s-nats-tls\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls\/img\/cover.webp","width":2058,"height":976}],"genre":"posts","keywords":"k3s, tls, nats, k8s","wordcount":980,"url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls\/","datePublished":"2021-08-11T06:01:13+00:00","dateModified":"2021-08-16T09:05:25+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在開發 Kubernetes 應用程式時常使用 NATS 來作為內部 Pub/Sub 傳遞非同步訊息時使用，有時候也有對外開放的需求。而在本地機器開發時會採用輕量的 k8s cluster 解決方案，如 Kind, k3s, minikube 等來減輕本地開發資原的壓力，不過基於 container 的方式還是有一些限制，本篇文章以 k3s 為基礎來搭設開啟 TLS 的 NATS 服務器在本地的使用方式。"}</script></head>
 <body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
@@ -82,22 +82,22 @@ Cancel
 <main class=main>
 <div class=container><article class="page single"><h1 class="single-title animated flipInX">K3s Nats tls</h1><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=" author" class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-11>2021-08-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;951 words&nbsp;
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-11>2021-08-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;980 words&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div>
 </div><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=/posts/k3s-nats-tls/img/cover.webp data-srcset="/posts/k3s-nats-tls/img/cover.webp, /posts/k3s-nats-tls/img/cover.webp 1.5x, /posts/k3s-nats-tls/img/cover.webp 2x" data-sizes=auto alt=/posts/k3s-nats-tls/img/cover.webp title="在開發 Kubernetes 應用程式時常使用 NATS 來作為內部 Pub/Sub 傳遞非同步訊息時使用，有時候也有對外開放的需求。而在本地機器開發時會採用輕量的 k8s cluster 解決方案，如 Kind, k3s, minikube 等來減輕本地開發資原的壓力，不過基於 container 的方式還是有一些限制，本篇文章以 k3s 為基礎來搭設開啟 TLS 的 NATS 服務器在本地的使用方式。"></div><div class=content id=content><ol>
 <li>
-<p>透過 <code>k3d</code> 建立本地 k3s cluster。因為 k3s 也是透過 docker 來摸擬 k8s cluster，所以透過 k3s 本身 port mapping 的配置來對外開放 <code>8080:80</code> 及 <code>4222:31400</code> 二個 port。 <code>8080:80</code> 給 Nginx 用。而 <code>4222:31400</code> 是對應 NATS nodeport 用</p>
+<p>透過 <code>k3d</code> 建立本地 k3s cluster。因為 k3s 也是透過 docker 來摸擬 k8s cluster，所以透過 k3s 本身 port mapping 的配置來對外開放 <code>8080:80</code> 及 <code>4222:31400</code> 二個 port。 <code>8080:80</code> 給 <code>hashicorp/http-echo</code> 用。而 <code>4222:31400</code> 是對應 NATS nodeport 用</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>k3d cluster create dev -p 8080:80@loadbalancer -p <span class=s2>&#34;4222:31400@server[0]&#34;</span>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>k3d cluster create dev -p 8080:80@loadbalancer -p 8443:443@loadbalancer -p <span class=s2>&#34;4222:31400@server[0]&#34;</span>
 </code></pre></td></tr></table>
 </div>
 </div></li>
 <li>
-<p>建立 Nginx。等待所有的 Pod 及服務就緒後，就可以透過 <a href=http://localhost:8080 target=_blank rel="noopener noreffer">http://localhost:8080</a> 來儲存 Nginx</p>
+<p>建立 <code>hashicorp/http-echo</code>。等待所有的 Pod 及服務就緒後，就可以透過 <a href=http://localhost:8080 target=_blank rel="noopener noreffer">http://localhost:8080</a> 來讀取 <code>hashicorp/http-echo</code></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -121,13 +121,13 @@ Cancel
 </span><span class=lnt>19
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>kubectl create deployment nginx --image<span class=o>=</span>nginx
-kubectl create service clusterip nginx --tcp<span class=o>=</span>80:80
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>kubectl run --image hashicorp/http-echo --port <span class=m>80</span> <span class=nb>echo</span> -- -listen<span class=o>=</span>:80 --text<span class=o>=</span><span class=s2>&#34;Hello from echo&#34;</span>
+kubectl expose pod <span class=nb>echo</span> --port <span class=m>80</span> --target-port <span class=m>80</span> --type NodePort --name <span class=nb>echo</span>
 cat <span class=s>&lt;&lt;EOF | kubectl apply -f -
 </span><span class=s>apiVersion: extensions/v1beta1
 </span><span class=s>kind: Ingress
 </span><span class=s>metadata:
-</span><span class=s>  name: nginx-ingress
+</span><span class=s>  name: echo-ingress
 </span><span class=s>  annotations:
 </span><span class=s>    kubernetes.io/ingress.class: traefik
 </span><span class=s>spec:
@@ -137,7 +137,7 @@ cat <span class=s>&lt;&lt;EOF | kubectl apply -f -
 </span><span class=s>      - path: /
 </span><span class=s>        pathType: Prefix
 </span><span class=s>        backend:
-</span><span class=s>          serviceName: nginx
+</span><span class=s>          serviceName: echo
 </span><span class=s>          servicePort: 80
 </span><span class=s>EOF</span>
 </code></pre></td></tr></table>
@@ -412,8 +412,8 @@ kubectl apply -f nats-np.yaml
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>Updated on 2021-08-11&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/239598762f5a167a875f03ca42e21cc00d5c79f5 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 239598762f5a167a875f03ca42e21cc00d5c79f5: add K3s Nats tls">
-<i class="fas fa-hashtag fa-fw"></i>2395987</a></span>
+<span>Updated on 2021-08-16&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/49750d9760123229a8c61c60193597790898764e target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 49750d9760123229a8c61c60193597790898764e: update K3s Nats tls">
+<i class="fas fa-hashtag fa-fw"></i>49750d9</a></span>
 </div>
 <div class=post-info-license></div>
 </div>
