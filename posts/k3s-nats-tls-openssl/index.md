@@ -118,6 +118,11 @@
 
 7. 透過 `helm` 來安裝 NATS 服務器，並指定稍早建立相關的 secret `nats-server-tls`
 
+    > 記得先加入 nats helm chart repo
+    >
+    > helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+    > helm repo update
+    
     ```sh
     helm install nats nats/nats \
         --set nats.tls.secret.name=nats-server-tls \
