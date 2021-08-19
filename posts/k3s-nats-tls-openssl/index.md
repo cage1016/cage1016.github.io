@@ -72,7 +72,7 @@
     EOF
     ```
 
-5. 產生 NATS 服務器有需的 TLS 檔，及之後提供給 Client 使用的 `client.crt` `client.key` `ca.crt`。這邊使用的方式是透過 `openssl`，有效日期也是 demo 方便先設為 1000 天
+5. 產生 NATS 服務器有需的 TLS 檔，及之後提供給 Client 使用的 `client1.crt` `client1.key` `ca.crt`  `client2.crt` `client2.key` `ca.crt`。這邊使用的方式是透過 `openssl`，有效日期也是 demo 方便先設為 1000 天。另外我們將啟用 NATS tls verifyAndMap 的功能。所以我們在 `certificate.conf` 的 Subject Alternative Name (SAN)  會指定 email，當 NATS 有開啟 `verifyAndMap` 就會檢查 Subject Alternative Name (SAN)
 
     ```bash
     cat <<EOF >> gen.sh
@@ -93,19 +93,101 @@
         -CAcreateserial -out server.crt -days 1000 \
         -extensions v3_ext -extfile ../certificate.conf
 
-    # client
-    openssl genrsa -out client.key 2048
-    openssl req -new -key client.key -out client.csr -config ../certificate.conf
-    openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key \
-        -CAcreateserial -out client.crt -days 1000 \
-        -extensions v3_ext -extfile ../certificate.conf
+    # client1
+    openssl genrsa -out client1.key 2048
+    openssl req -new -key client1.key -out client1.csr -config ../certificate.conf
+    openssl x509 -req -in client1.csr -CA ca.crt -CAkey ca.key \
+        -CAcreateserial -out client1.crt -days 1000 \
+        -extensions v3_ext -extfile <(cat $(PWD)/certificate.conf | sed 's/IP.3 = 192.168.0.15/&\nemail.1 = client1@example.com/')
+
+    echo $(PWD)
+    # client2
+    openssl genrsa -out client2.key 2048
+    openssl req -new -key client2.key -out client2.csr -config ../certificate.conf
+    openssl x509 -req -in client2.csr -CA ca.crt -CAkey ca.key \
+        -CAcreateserial -out client2.crt -days 1000 \
+        -extensions v3_ext -extfile ../certificate.conf        
     EOF
 
     chmod +x ./gen.sh
     ./gen.sh
     ```
+1. 我們產生了二組 client tls keypair。我們在產生 client1 的 tls 檔案時加入額外的 Subject Alternative Name (SAN) 資訊 `email:client1@example.com`
 
-6. 透過 `kubectl` 建立稍後 NATS 服務器所需 TLS 相關的 secret `nats-server-tls`
+    > step: A zero trust swiss army knife for working with X509, OAuth, JWT, OATH OTP, etc. [step-cli | Automate Certificates & Common Cryptography Primitives](https://smallstep.com/cli/)
+
+    ```sh
+    step certificate inspect keys/client1.crt 
+    Certificate:
+        Data:
+            Version: 3 (0x2)
+            Serial Number: 11938605982689757523 (0xa5ae72e347938953)
+        Signature Algorithm: SHA1-RSA
+            Issuer: CN=localhost
+            Validity
+                Not Before: Aug 19 03:20:51 2021 UTC
+                Not After : May 15 03:20:51 2024 UTC
+            Subject: C=TW,ST=New Taipei City,O=Your organization,CN=localhost
+            Subject Public Key Info:
+                Public Key Algorithm: RSA
+                    Public-Key: (2048 bit)
+                    Modulus:
+                        ...
+                    Exponent: 65537 (0x10001)
+            X509v3 extensions:
+                X509v3 Authority Key Identifier:
+                    keyid
+                X509v3 Basic Constraints:
+                    CA:FALSE
+                X509v3 Key Usage:
+                    Key Encipherment, Data Encipherment
+                X509v3 Extended Key Usage:
+                    Server Authentication, Client Authentication
+                X509v3 Subject Alternative Name:
+                    DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:localhost
+                    email:client1@example.com
+                    IP Address:127.0.0.1, IP Address:172.17.34.52, IP Address:192.168.0.15
+        Signature Algorithm: SHA1-RSA
+            ...    
+    ```
+
+    ```sh
+    step certificate inspect keys/client2.crt 
+    Certificate:
+        Data:
+            Version: 3 (0x2)
+            Serial Number: 11938605982689757524 (0xa5ae72e347938954)
+        Signature Algorithm: SHA1-RSA
+            Issuer: CN=localhost
+            Validity
+                Not Before: Aug 19 03:20:51 2021 UTC
+                Not After : May 15 03:20:51 2024 UTC
+            Subject: C=TW,ST=New Taipei City,O=Your organization,CN=localhost
+            Subject Public Key Info:
+                Public Key Algorithm: RSA
+                    Public-Key: (2048 bit)
+                    Modulus:
+                        ...
+                    Exponent: 65537 (0x10001)
+            X509v3 extensions:
+                X509v3 Authority Key Identifier:
+                    keyid
+                X509v3 Basic Constraints:
+                    CA:FALSE
+                X509v3 Key Usage:
+                    Key Encipherment, Data Encipherment
+                X509v3 Extended Key Usage:
+                    Server Authentication, Client Authentication
+                X509v3 Subject Alternative Name:
+                    DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:localhost
+                    IP Address:127.0.0.1, IP Address:172.17.34.52, IP Address:192.168.0.15
+        Signature Algorithm: SHA1-RSA
+            ...
+    ```
+
+
+
+1. 透過 `kubectl` 建立稍後 NATS 服務器所需 TLS 相關的 secret `nats-server-tls`
 
     ```sh
     kubectl create namespace nats
@@ -120,8 +202,9 @@
 
     > 記得先加入 nats helm chart repo
     >
-    > helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-    > helm repo update
+    > $ `helm repo add nats https://nats-io.github.io/k8s/helm/charts/`
+    >
+    > $ `helm repo update`
     
     ```sh
     helm install nats nats/nats \
@@ -129,6 +212,9 @@
         --set nats.tls.ca=ca.crt \
         --set nats.tls.cert=tls.crt \
         --set nats.tls.key=tls.key \
+        --set nats.tls.verifyAndMap=true \
+        --set auth.enabled=true \
+        --set auth.basic.users[0].user=client1@example.com \
         --namespace nats
     ```
 
@@ -167,12 +253,24 @@
 
     > nats: error: x509: certificate signed by unknown authority, try --help
 
-    由於我們建立 NATS 服務器啟用 TLS，稍早也建立了一組 `client.crt` `client.key` `ca.crt`。再連接 NATS 服務器時代入相關的 tls 檔案即可正常操作
+    由於我們建立 NATS 服務器啟用 TLS，稍早也建立了一組 `client1.crt` `client1.key` `ca.crt`。再連接 NATS 服務器時代入相關的 tls 檔案即可正常操作
 
     ```sh
     nats -s localhost \
-        --tlscert=./keys/client.crt \
-        --tlskey=./keys/client.key \
+        --tlscert=./keys/client1.crt \
+        --tlskey=./keys/client1.key \
+        --tlsca=./keys/ca.crt \
+        pub say hi
+    ```
+
+    因為 NATS 啟用了 verifyAndMap，所以 `client2.crt` `client2.key` `ca.crt` 因為其 Subject Alternative Name (SAN) 沒有包含 email 資訊，所以就算擁有 tls keypair 也沒有權限讀取
+
+    > nats: error: nats: Authorization Violation, try --help
+
+    ```sh
+    nats -s localhost \
+        --tlscert=./keys/client2.crt \
+        --tlskey=./keys/client2.key \
         --tlsca=./keys/ca.crt \
         pub say hi
     ```
