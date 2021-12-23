@@ -1,7 +1,9 @@
 # Build Jmeter Docker With Plugins
 
 
-最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，所以剛好有機會使用一下。使用的情境很簡單，就是進行 靜態 website 的壓力測試
+<!--more-->
+
+最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容
 
 - static website: [cage1016/static-website-example: Static website to use with Cloud Academy labs](https://github.com/cage1016/static-website-example)
 - Nginx: `nginx:1.20.2-alpine`

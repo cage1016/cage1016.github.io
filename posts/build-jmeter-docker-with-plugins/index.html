@@ -4,20 +4,20 @@
 <meta name=viewport content="width=device-width,initial-scale=1">
 <meta name=robots content="noodp">
 <meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
-<title>Build Jmeter Docker With Plugins - KaiChu</title><meta name=Description content="TODO"><meta property="og:title" content="Build Jmeter Docker With Plugins">
-<meta property="og:description" content="TODO">
+<title>Build Jmeter Docker With Plugins - KaiChu</title><meta name=Description content="最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容"><meta property="og:title" content="Build Jmeter Docker With Plugins">
+<meta property="og:description" content="最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/posts/build-jmeter-docker-with-plugins/"><meta property="og:image" content="https://kaichu.io/posts/build-jmeter-docker-with-plugins/img/placeholder.jpg"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-12-23T09:03:20+00:00">
-<meta property="article:modified_time" content="2021-12-23T21:39:50+08:00">
+<meta property="article:modified_time" content="2021-12-23T21:49:53+08:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/posts/build-jmeter-docker-with-plugins/img/placeholder.jpg">
 <meta name=twitter:title content="Build Jmeter Docker With Plugins">
-<meta name=twitter:description content="TODO">
+<meta name=twitter:description content="最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容">
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/build-jmeter-docker-with-plugins/><link rel=prev href=https://kaichu.io/posts/alfred-change-case/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Build Jmeter Docker With Plugins","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/img\/placeholder.jpg","width":1800,"height":1125}],"genre":"posts","keywords":"jmeter, docker, s390x, ghcr.io","wordcount":1023,"url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/","datePublished":"2021-12-23T09:03:20+00:00","dateModified":"2021-12-23T21:39:50+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"TODO"}</script></head>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/build-jmeter-docker-with-plugins/><link rel=prev href=https://kaichu.io/posts/alfred-change-case/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Build Jmeter Docker With Plugins","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/img\/placeholder.jpg","width":1800,"height":1125}],"genre":"posts","keywords":"jmeter, docker, s390x, ghcr.io","wordcount":1033,"url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/","datePublished":"2021-12-23T09:03:20+00:00","dateModified":"2021-12-23T21:49:53+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容"}</script></head>
 <body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
@@ -85,7 +85,7 @@ Cancel
 <div class="toc-content always-active" id=toc-content-auto></div>
 </div><article class="page single"><h1 class="single-title animated flipInX">Build Jmeter Docker With Plugins</h1><div class=post-meta>
 <div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-12-23>2021-12-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1023 words&nbsp;
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-12-23>2021-12-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1033 words&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;3 minutes&nbsp;</div>
 </div><div class="details toc" id=toc-static kept>
 <div class="details-summary toc-title">
@@ -101,7 +101,7 @@ Cancel
 <li><a href=#jmeter-youtube-toturial>Jmeter Youtube toturial</a></li>
 </ul>
 </nav></div>
-</div><div class=content id=content><p>最近工作上有使用 <a href=https://jmeter.apache.org/ target=_blank rel="noopener noreffer">Apache JMeter</a> 的需求，所以剛好有機會使用一下。使用的情境很簡單，就是進行 靜態 website 的壓力測試</p>
+</div><div class=content id=content><p>最近工作上有使用 <a href=https://jmeter.apache.org/ target=_blank rel="noopener noreffer">Apache JMeter</a> 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容</p>
 <ul>
 <li>static website: <a href=https://github.com/cage1016/static-website-example target=_blank rel="noopener noreffer">cage1016/static-website-example: Static website to use with Cloud Academy labs</a></li>
 <li>Nginx: <code>nginx:1.20.2-alpine</code></li>
@@ -355,13 +355,12 @@ See Tar file in ./localhost-8080-1640265354.tar.gz
 <h2 id=jmeter-youtube-toturial>Jmeter Youtube toturial</h2>
 <div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
 <iframe src=https://www.youtube-nocookie.com/embed/SoW2pBak1_Q style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe>
-</div>
-</div><div class=post-footer id=post-footer>
+</div></div><div class=post-footer id=post-footer>
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>Updated on 2021-12-23&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/8977347fa5023cfad07bb32d776c0858e4f36e0c target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 8977347fa5023cfad07bb32d776c0858e4f36e0c: update archetypes">
-<i class="fas fa-hashtag fa-fw"></i>8977347</a></span>
+<span>Updated on 2021-12-23&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/e52e36878510f988c0a5c1519d585280f0d093c4 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) e52e36878510f988c0a5c1519d585280f0d093c4: add Build Jmeter Docker With Plugins description">
+<i class="fas fa-hashtag fa-fw"></i>e52e368</a></span>
 </div>
 <div class=post-info-license></div>
 </div>
