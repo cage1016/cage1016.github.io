@@ -44,7 +44,7 @@ docker build -t ghcr.io/cage1016/nginx-website-gz:0.1.0 .
 
 ## Jmeter
 
-在進行 Jmeter 部份時，考慮到測試環境以 command line 工具進行為主比較方便，所以選擇了 Jmeter 的 Docker 版本 [justb4/jmeter](https://hub.docker.com/r/justb4/jmeter/)，不過遇到這個版本不支援 IMB s390x 的架構。另外在 [azure devops - Using JMeter plugins with justb4/jmeter Docker image results in error - Stack Overflow](https://stackoverflow.com/questions/67911367/using-jmeter-plugins-with-justb4-jmeter-docker-image-results-in-error) 有看到 justb4/jmeter 使用 Plugin 報出一些問題，所以就自己包啦
+在進行 Jmeter 部份時，考慮到測試環境以 command line 工具進行為主比較方便，所以選擇了 Jmeter 的 Docker 版本 [justb4/jmeter](https://hub.docker.com/r/justb4/jmeter/)，不過遇到這個版本不支援 IBM s390x 的架構。另外在 [azure devops - Using JMeter plugins with justb4/jmeter Docker image results in error - Stack Overflow](https://stackoverflow.com/questions/67911367/using-jmeter-plugins-with-justb4-jmeter-docker-image-results-in-error) 有看到 justb4/jmeter 使用 Plugin 報出一些問題，所以就自己包啦
 
 - 找到相關的 Dockerfile
 - 下載 Jmeter 及額外所需的 Plugins

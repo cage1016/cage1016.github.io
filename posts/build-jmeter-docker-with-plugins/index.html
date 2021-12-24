@@ -9,7 +9,7 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/posts/build-jmeter-docker-with-plugins/"><meta property="og:image" content="https://kaichu.io/posts/build-jmeter-docker-with-plugins/img/placeholder.jpg"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-12-23T09:03:20+00:00">
-<meta property="article:modified_time" content="2021-12-23T21:49:53+08:00">
+<meta property="article:modified_time" content="2021-12-24T16:42:53+08:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/posts/build-jmeter-docker-with-plugins/img/placeholder.jpg">
 <meta name=twitter:title content="Build Jmeter Docker With Plugins">
@@ -17,7 +17,7 @@
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/build-jmeter-docker-with-plugins/><link rel=prev href=https://kaichu.io/posts/alfred-change-case/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Build Jmeter Docker With Plugins","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/img\/placeholder.jpg","width":1800,"height":1125}],"genre":"posts","keywords":"jmeter, docker, s390x, ghcr.io","wordcount":1033,"url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/","datePublished":"2021-12-23T09:03:20+00:00","dateModified":"2021-12-23T21:49:53+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容"}</script></head>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/build-jmeter-docker-with-plugins/><link rel=prev href=https://kaichu.io/posts/alfred-change-case/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Build Jmeter Docker With Plugins","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/img\/placeholder.jpg","width":1800,"height":1125}],"genre":"posts","keywords":"jmeter, docker, s390x, ghcr.io","wordcount":1033,"url":"https:\/\/kaichu.io\/posts\/build-jmeter-docker-with-plugins\/","datePublished":"2021-12-23T09:03:20+00:00","dateModified":"2021-12-24T16:42:53+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"最近工作上有使用 [Apache JMeter](https://jmeter.apache.org/) 的需求，使用的情境很簡單，在硬體有支援的情況下進行靜態 website 的壓力測試，所以記錄一下最近的工作內容"}</script></head>
 <body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
@@ -156,7 +156,7 @@ COPY index.html /usr/share/nginx/html
 <li><a href=https://github.com/cage1016/static-website-example/pkgs/container/nginx-website-gz-s390x target=_blank rel="noopener noreffer">ghcr.io/cage1016/nginx-website-gz-s390x:0.1.0</a></li>
 </ul>
 <h2 id=jmeter>Jmeter</h2>
-<p>在進行 Jmeter 部份時，考慮到測試環境以 command line 工具進行為主比較方便，所以選擇了 Jmeter 的 Docker 版本 <a href=https://hub.docker.com/r/justb4/jmeter/ target=_blank rel="noopener noreffer">justb4/jmeter</a>，不過遇到這個版本不支援 IMB s390x 的架構。另外在 <a href=https://stackoverflow.com/questions/67911367/using-jmeter-plugins-with-justb4-jmeter-docker-image-results-in-error target=_blank rel="noopener noreffer">azure devops - Using JMeter plugins with justb4/jmeter Docker image results in error - Stack Overflow</a> 有看到 justb4/jmeter 使用 Plugin 報出一些問題，所以就自己包啦</p>
+<p>在進行 Jmeter 部份時，考慮到測試環境以 command line 工具進行為主比較方便，所以選擇了 Jmeter 的 Docker 版本 <a href=https://hub.docker.com/r/justb4/jmeter/ target=_blank rel="noopener noreffer">justb4/jmeter</a>，不過遇到這個版本不支援 IBM s390x 的架構。另外在 <a href=https://stackoverflow.com/questions/67911367/using-jmeter-plugins-with-justb4-jmeter-docker-image-results-in-error target=_blank rel="noopener noreffer">azure devops - Using JMeter plugins with justb4/jmeter Docker image results in error - Stack Overflow</a> 有看到 justb4/jmeter 使用 Plugin 報出一些問題，所以就自己包啦</p>
 <ul>
 <li>找到相關的 Dockerfile</li>
 <li>下載 Jmeter 及額外所需的 Plugins</li>
@@ -359,8 +359,8 @@ See Tar file in ./localhost-8080-1640265354.tar.gz
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>Updated on 2021-12-23&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/e52e36878510f988c0a5c1519d585280f0d093c4 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) e52e36878510f988c0a5c1519d585280f0d093c4: add Build Jmeter Docker With Plugins description">
-<i class="fas fa-hashtag fa-fw"></i>e52e368</a></span>
+<span>Updated on 2021-12-24&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/c575596ec406fba6656542fed0f93675159414e3 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) c575596ec406fba6656542fed0f93675159414e3: fix typo error">
+<i class="fas fa-hashtag fa-fw"></i>c575596</a></span>
 </div>
 <div class=post-info-license></div>
 </div>
