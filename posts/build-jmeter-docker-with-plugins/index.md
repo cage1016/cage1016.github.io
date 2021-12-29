@@ -107,65 +107,80 @@ Jmeter 中也提供了 Test Script Recorder 的工具，可以搭配 Jmeter Prox
 
 在準備好 Test Plan 之後就可以透過 Docker 版本的 Jmeter 直接執行
 
-1. Clone repo
-  
-    ```sh
-    $ git clone https://github.com/cage1016/docker-jmeter-s390x.git
-    ```
-
-1. Docker pull `ghcr.io/cage1016/jmeter:5.4.1`
-    
-    ```sh
-    $ docker pull ghcr.io/cage1016/jmeter:5.4.1
+1. Pull Docker image for x86 or x390x
+    ```bash
+    # x86
     $ docker pull ghcr.io/cage1016/nginx-website-gz:0.1.0
+    $ docker pull ghcr.io/cage1016/nginx-website:0.1.0
+    $ docker pull ghcr.io/cage1016/jmeter:5.4.1
+    
+    # s390x
+    $ docker pull ghcr.io/cage1016/nginx-website-s390x:0.1.0
+    $ docker pull ghcr.io/cage1016/nginx-website-gz-s390x:0.1.0
+    $ docker pull ghcr.io/cage1016/jmeter-s390x:5.4.1
     ```
 
-1. 執行 nginx
-   
-    ```sh
+1. Dowonload `jmeter.sh` and test jmx `ap.jmx`
+
+    ```bash
+    $ wget https://raw.githubusercontent.com/cage1016/docker-jmeter-s390x/master/jmeter.sh && chmod +x jmeter.sh
+    $ wget https://raw.githubusercontent.com/cage1016/docker-jmeter-s390x/master/ap.jmx
+    ```
+
+1. Start Nginx
+    ```bash
+    # x86
     $ docker run --rm -d -p 8080:80 ghcr.io/cage1016/nginx-website-gz:0.1.0
+
+    # x390s
+    $ docker run --rm -d -p 8080:80 ghcr.io/cage1016/nginx-website-gz-x390s:0.1.0
     ```
 
-1. 執行 Jmeter
-
+1. Run Jmeter with Docker
     ```sh
-    $ make run-x86
-    Running x86 jmeter test
-    TARGET_HOST=localhost \
-            TARGET_PORT=8080 \
-            THREADS=20 \
-            RAMD_UP=10 \
-            DURATION=60 \
-            JMETER=ghcr.io/cage1016/jmeter \
-            JMETER_VERSION=5.4.1 \
-            JMX=ap.jmx \
-            ./run.sh
+    $ ./jmeter.sh
+    Error: Please specify JMX using -f.
+    Usage: jmeter.sh [-d <deamon>] [-i <jmeter_docker_image>] [-f <jmx_file>] [-t <test_folder>] [-z <enable_tar_html>]     [-l <jmeterVariablesList>]
+     -d : Deamon, docker/podman (default: docker)
+     -t : Test directory (default: ./tmp)
+     -i : Jmeter docker image
+     -f : Specify JMX file
+     -l : Specify env list of Jmeter in following format: prop01=XXX,bbb=YYY,ccc=ZZZ
+     -z : Enable tar html report (default: false)
+
+      Example1: jmeter.sh -f ap.jmx
+      Example2: jmeter.sh -i ghcr.io/cage1016/jmeter:5.4.1 -f ap.jmx
+      Example3: jmeter.sh -i ghcr.io/cage1016/jmeter:5.4.1 -f ap.jmx -l prop01=XXX,prop02=YYY
+    ```
+1. Run test `ap.jmx`
+    ```bash
+    $ ./jmeter.sh -i ghcr.io/cage1016/jmeter:5.4.1 -f ap.jmx -t ap -z true -l TARGET_HOST=localhost,TARGET_PORT=8080,THREADS=1,RAMD_UP=1,DURATION=10
+    
+    docker run --rm --name jmeter --network host -i -v ${PWD}:${PWD} -w ${PWD} ghcr.io/cage1016/jmeter:5.4.1 ap.jmx -l ap/jmeter.jtl -j ap/jmeter.log   -JTARGET_HOST=localhost -JTARGET_PORT=8080 -JTHREADS=1 -JRAMD_UP=1 -JDURATION=10 -o ap/report -e
+    
     Creating summariser <summary>
-    Created the tree successfully using ./ap.jmx
-    Starting standalone test @ Thu Dec 23 13:14:40 GMT 2021 (1640265280909)
+    Created the tree successfully using ap.jmx
+    Starting standalone test @ Wed Dec 29 08:39:40 GMT 2021 (1640767180391)
     Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
     Warning: Nashorn engine is planned to be removed from a future JDK release
-    summary +  30884 in 00:00:18 = 1670.2/s Avg:     8 Min:     0 Max:   101 Err:     0 (0.00%) Active: 20 Started: 20     Finished: 0
-    summary +  67371 in 00:00:30 = 2245.8/s Avg:     8 Min:     0 Max:    85 Err:     0 (0.00%) Active: 20 Started: 20     Finished: 0
-    summary =  98255 in 00:00:48 = 2026.3/s Avg:     8 Min:     0 Max:   101 Err:     0 (0.00%)
-    summary +  24341 in 00:00:12 = 2091.9/s Avg:     9 Min:     0 Max:    90 Err:     0 (0.00%) Active: 0 Started: 20     Finished: 20
-    summary = 122596 in 00:01:00 = 2038.8/s Avg:     8 Min:     0 Max:   101 Err:     0 (0.00%)
-    Tidying up ...    @ Thu Dec 23 13:15:41 GMT 2021 (1640265341642)
+    summary =   8157 in 00:00:10 =  812.8/s Avg:     1 Min:     0 Max:    36 Err:     0 (0.00%)
+    Tidying up ...    @ Wed Dec 29 08:39:50 GMT 2021 (1640767190744)
     ... end of run
-    ==== ap-jmeter.log ====
-    See jmeter log in ./ap-jmeter.log
+    
+    ==== jmeter.log ====
+    See jmeter log in ap/jmeter.log
     ==== Raw Test Report ====
-    See Raw test report in ./ap.jtl
+    See Raw test report in ap/ap.jmx.jtl
     ==== HTML Test Report ====
-    See HTML test report in ./report/index.html
+    See HTML test report in ap/report/index.html
     ==== Tar report ====
-    See Tar file in ./localhost-8080-1640265354.tar.gz
+    See Tar file in ap/1640767193.tar.gz
     ```
 
 1. 檢視產出
-   - ./ap-jmeter.log: Jmeter 執行的 Log 檔案
-   - ./ap.jtl: Jmeter UI Linstern 載入資料
-   - ./report/index.html: HTLM 報表
+   - ./ap/jmeter.log: Jmeter 執行的 Log 檔案
+   - ./ap/jmeter.jtl: Jmeter UI Linstern 載入資料
+   - ./ap/report/index.html: HTLM 報表
 
 ## Jmeter Youtube toturial
 
