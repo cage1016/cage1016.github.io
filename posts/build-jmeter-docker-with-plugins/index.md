@@ -7,7 +7,7 @@
 
 - static website: [cage1016/static-website-example: Static website to use with Cloud Academy labs](https://github.com/cage1016/static-website-example)
 - Nginx: `nginx:1.20.2-alpine`
-- Jmeter with Plugins: [cage1016/docker-jmeter-s390x](https://github.com/cage1016/docker-jmeter-s390x)
+- Jmeter with Plugins: [cage1016/docker-jmeter](https://github.com/cage1016/docker-jmeter)
 - Jmeter Test Plan
 - Usage
 
@@ -37,10 +37,8 @@ docker build -t ghcr.io/cage1016/nginx-website-gz:0.1.0 .
 
 **Container images**
 
-- [ghcr.io/cage1016/nginx-website:0.1.0](https://github.com/cage1016/static-website-example/pkgs/container/nginx-website)
-- [ghcr.io/cage1016/nginx-website-gz:0.1.0](https://github.com/cage1016/static-website-example/pkgs/container/nginx-website-gz)
-- [ghcr.io/cage1016/nginx-website-s390x:0.1.0](https://github.com/cage1016/static-website-example/pkgs/container/nginx-website-s390x)
-- [ghcr.io/cage1016/nginx-website-gz-s390x:0.1.0](https://github.com/cage1016/static-website-example/pkgs/container/nginx-website-gz-s390x)
+- [ghcr.io/cage1016/nginx-website:0.1.0](https://github.com/users/cage1016/packages/container/package/nginx-website)
+- [ghcr.io/cage1016/nginx-website-gz:0.1.0](https://github.com/users/cage1016/packages/container/package/nginx-website-gz)
 
 ## Jmeter
 
@@ -83,13 +81,12 @@ RUN wget ${JMETER_PLUGINS_DOWNLOAD_URL}/jmeter-plugins-manager/${JMETER_PLUGINS_
 ```
 
 **Dockerfile**
-- [docker-jmeter-s390x/Dockerfile](https://github.com/cage1016/docker-jmeter-s390x/blob/master/Dockerfile)
-- [docker-jmeter-s390x/Dockerfile.s390x](https://github.com/cage1016/docker-jmeter-s390x/blob/master/Dockerfile.s390x)
+- [docker-jmeter/Dockerfile](https://github.com/cage1016/docker-jmeter/blob/master/Dockerfile)
+- [docker-jmeter/Dockerfile.s390x](https://github.com/cage1016/docker-jmeter/blob/master/Dockerfile.s390x)
 
 **Container images**
 
-- [ghcr.io/cage1016/jmeter:5.4.1](https://github.com/cage1016/docker-jmeter-s390x/pkgs/container/jmeter)
-- [ghcr.io/cage1016/jmeter-s390x:5.4.1](https://github.com/cage1016/docker-jmeter-s390x/pkgs/container/jmeter-s390x)
+- [ghcr.io/cage1016/jmeter:5.4.1](https://github.com/cage1016/docker-jmeter/pkgs/container/jmeter)
 
 ## Jmeter Test Plan
 
@@ -107,33 +104,26 @@ Jmeter 中也提供了 Test Script Recorder 的工具，可以搭配 Jmeter Prox
 
 在準備好 Test Plan 之後就可以透過 Docker 版本的 Jmeter 直接執行
 
-1. Pull Docker image for x86 or x390x
+1. Pull Docker image for `x86` or `x390x`
     ```bash
-    # x86
     $ docker pull ghcr.io/cage1016/nginx-website-gz:0.1.0
     $ docker pull ghcr.io/cage1016/nginx-website:0.1.0
     $ docker pull ghcr.io/cage1016/jmeter:5.4.1
-    
-    # s390x
-    $ docker pull ghcr.io/cage1016/nginx-website-s390x:0.1.0
-    $ docker pull ghcr.io/cage1016/nginx-website-gz-s390x:0.1.0
-    $ docker pull ghcr.io/cage1016/jmeter-s390x:5.4.1
     ```
 
 1. Dowonload `jmeter.sh` and test jmx `ap.jmx`
-
     ```bash
-    $ wget https://raw.githubusercontent.com/cage1016/docker-jmeter-s390x/master/jmeter.sh && chmod +x jmeter.sh
-    $ wget https://raw.githubusercontent.com/cage1016/docker-jmeter-s390x/master/ap.jmx
+    $ wget https://raw.githubusercontent.com/cage1016/docker-jmeter/master/jmeter.sh && chmod +x jmeter.sh
+    $ wget https://raw.githubusercontent.com/cage1016/docker-jmeter/master/ap.jmx
     ```
 
-1. Start Nginx
+1. Start Nginx with gz
     ```bash
-    # x86
     $ docker run --rm -d -p 8080:80 ghcr.io/cage1016/nginx-website-gz:0.1.0
-
-    # x390s
-    $ docker run --rm -d -p 8080:80 ghcr.io/cage1016/nginx-website-gz-x390s:0.1.0
+    
+    #or
+    
+    $ podman run --rm -d -p 8080:80 ghcr.io/cage1016/nginx-website-gz:0.1.0
     ```
 
 1. Run Jmeter with Docker
