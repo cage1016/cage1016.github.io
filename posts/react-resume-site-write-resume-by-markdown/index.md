@@ -44,7 +44,7 @@ Cons:
 身為一個一直推薦大家使用 [Cloud Native Buildpacks](https://buildpacks.io/) 的人，本次打包 Container Image 當然也要用一下。React resume site 是一個 Node.js 的應用程式。現在大家常用前後端架構分離的條件下，前端自己的 CI/CD Pipeline 最終產物是一堆 HTML + CSS + JS 等等的靜態檔案，上 Container Image 時就可以搭配 Nginx 使用。相較專案本身使用的 `Dockerfile` 單純把整個專案直接放在 Container 上執行的作法是比較少用的
 
 1. 前置作業就是透過 `npm run build` 產出最後的靜態檔案
-1. 使用 `gcr.io/paketo-buildpacks/nginx` buildapck 來 Serving 這些靜態檔案
+1. 使用 `gcr.io/paketo-buildpacks/nginx` buildpack 來 Serving 這些靜態檔案
 1. Builder 的部份配合 `gcr.io/paketo-buildpacks/nginx`，使用 `paketobuildpacks/builder:base`
 1. 準備 [react-resume-site/nginx.conf](https://github.com/cage1016/react-resume-site/blob/develop/nginx.conf) Nginx Config
 1. 準備 [react-resume-site/mime.types](https://github.com/cage1016/react-resume-site/blob/develop/mime.types) mime.types
