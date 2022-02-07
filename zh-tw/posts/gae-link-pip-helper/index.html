@@ -1,0 +1,332 @@
+<!doctype html><html lang=zh-tw>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>gae link pip helper - KaiChu</title><meta name=Description content="如何利用 virtualenv, virtualenvwrapper, requirements.txt, linkenv, link_pip 快速建置 Google App Engine - Python 開發環境"><meta property="og:title" content="gae link pip helper">
+<meta property="og:description" content="如何利用 virtualenv, virtualenvwrapper, requirements.txt, linkenv, link_pip 快速建置 Google App Engine - Python 開發環境">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/zh-tw/posts/gae-link-pip-helper/"><meta property="og:image" content="https://kaichu.io/logo.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2016-03-28T10:23:59+08:00">
+<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/logo.png">
+<meta name=twitter:title content="gae link pip helper">
+<meta name=twitter:description content="如何利用 virtualenv, virtualenvwrapper, requirements.txt, linkenv, link_pip 快速建置 Google App Engine - Python 開發環境">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/gae-link-pip-helper/><link rel=prev href=https://kaichu.io/zh-tw/posts/gae-appcfg-update-403/><link rel=next href=https://kaichu.io/zh-tw/posts/django-oscar-i18n/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"gae link pip helper","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/gae-link-pip-helper\/"},"image":["https:\/\/kaichu.io\/images\/Apple-Devices-Preview.png"],"genre":"posts","keywords":"Shell, Python, GAE, pip, virtualenv","wordcount":936,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/gae-link-pip-helper\/","datePublished":"2016-03-28T10:23:59+08:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"如何利用 virtualenv, virtualenvwrapper, requirements.txt, linkenv, link_pip 快速建置 Google App Engine - Python 開發環境"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/gae-link-pip-helper/>English</option><option value=/zh-tw/posts/gae-link-pip-helper/ selected>繁體中文</option></select>
+</a><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+取消
+</a>
+</div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select onchange="location=this.value"><option value=/posts/gae-link-pip-helper/>English</option><option value=/zh-tw/posts/gae-link-pip-helper/ selected>繁體中文</option></select>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>目錄</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">gae link pip helper</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2016-03-28>2016-03-28</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 936 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 2 分鐘&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>目錄</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#virtualenv>virtualenv</a></li>
+<li><a href=#virtualenvwrapper>virtualenvwrapper</a></li>
+<li><a href=#gae>GAE</a></li>
+<li><a href=#how-to-use-google-app-engine-with-virtualenv--vita-smid--zephyrus--mathematics-philosophy-code-travel-and-everything-in-betweenhttpzephyrusappengine-virtualenv><a href=http://ze.phyr.us/appengine-virtualenv/>How to use Google App Engine with virtualenv | Vita Smid ~ Zephyrus | Mathematics, philosophy, code, travel and everything in between.</a></a></li>
+<li><a href=#link-pip-helper-shell>link pip helper Shell</a></li>
+<li><a href=#quick-tutorial>Quick tutorial</a></li>
+</ul>
+</nav></div>
+</div><div class=content id=content><p>Python 的社群非常活躍有非常多好用的套件可以使用，也有 <code>pip</code> 的套件管理程式來讓開發者管理套件升級、版控等問題</p>
+<h2 id=virtualenv>virtualenv</h2>
+<p>一般在發者 Python 相關的專案會引入 <code>virtualenv</code> 的概念來區隔多專案發開套件的相依問題。如果沒有導入 virtualenv 時 <code>pip install</code> 會直接把套件安裝在全域環境，專案也許也引用某些套件特定的版次，此種方式會造成開發上的擾困。基本上都會建議使用 <code>virtualenv</code></p>
+<h2 id=virtualenvwrapper>virtualenvwrapper</h2>
+<p><code>virtualenvwrapper</code> 是 <code>virtualenv</code> 的加強版。它會把套件安裝的目錄統一收到 <code>${HOME}/.virtualenvs</code> 下集中管理，也提供更方便建立、移除、切換 virtualenv 的指令</p>
+<h2 id=gae>GAE</h2>
+<p>在開發 Google App Engine - Python 的時候，在做用第三方套件的時候會有一些限制 (<a href=https://goo.gl/GV1oxu target=_blank rel="noopener noreffer">Libraries in Python 2.7 - Python — Google Cloud Platform</a>)，Google App Engine 的執行環境中有支援了一些第三方套件，引用的方式是直接在專案的 <code>app.yaml</code> 中指定即可</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>libraries:
+- name: PIL
+  version: <span class=s2>&#34;1.1.7&#34;</span>
+- name: webob
+  version: <span class=s2>&#34;1.1.1&#34;</span>
+- name: jinja2
+  version: latest  
+</code></pre></td></tr></table>
+</div>
+</div><p>而 Google App Engine 的執行環境中沒有支援的第三方套件則需要將引用到的第三方套件程式源始碼以<code>檔案</code>方式一同上傳到 Google App Engine 平台才可以正常執行。一般進行 <code>pip</code> 套件安裝時會裝在當前的 <code>virtualenv</code> 或 全域的環境變數中，但是搭配 GAE 指則需要使用 <code>pip install -r requirements.txt -t lib</code> 套件裝在當然目錄 <code>lib</code> 並在 <code>appengine_config.py</code> 中將 <code>lib</code> 目錄加到 <code>sys</code> path 中</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>import</span> <span class=nn>os</span><span class=o>,</span> <span class=nn>sys</span>
+<span class=n>sys</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>insert</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>dirname</span><span class=p>(</span><span class=vm>__file__</span><span class=p>),</span> <span class=s1>&#39;lib&#39;</span><span class=p>))</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=how-to-use-google-app-engine-with-virtualenv--vita-smid--zephyrus--mathematics-philosophy-code-travel-and-everything-in-betweenhttpzephyrusappengine-virtualenv><a href=http://ze.phyr.us/appengine-virtualenv/ target=_blank rel="noopener noreffer">How to use Google App Engine with virtualenv | Vita Smid ~ Zephyrus | Mathematics, philosophy, code, travel and everything in between.</a></h2>
+<p>文章作者開發了一個 <code>linkenv</code> 的套件可以利用指令快速用 symbol link 建立 <code>virtualenv</code> 到本地的資料夾。</p>
+<h2 id=link-pip-helper-shell>link pip helper Shell</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ virtualenv env
+$ <span class=nb>source</span> bin/env/activate
+<span class=o>(</span>env<span class=o>)</span>$ pip install djangoappengine six ...
+<span class=o>(</span>env<span class=o>)</span>$ pip install -r requirements.txt ...
+</code></pre></td></tr></table>
+</div>
+</div><p>因為 <a href=http://ze.phyr.us/appengine-virtualenv/ target=_blank rel="noopener noreffer">How to use Google App Engine with virtualenv | Vita Smid ~ Zephyrus | Mathematics, philosophy, code, travel and everything in between.</a> 文章提及的方式只有使用到 <code>virtualenv</code> 並沒有使用 <code>virtualenvwrapper</code>，所以每次新專案步驟重置就會花比較多的時間。</p>
+<p><strong>link pip.sh</strong></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=cp>#!/usr/bin/env bash
+</span><span class=cp></span><span class=c1># [How to use Google App Engine with virtualenv | Vita Smid ~ Zephyrus |</span>
+<span class=c1>#   Mathematics, philosophy, code, travel and everything in between.](http://ze.phyr.us/appengine-virtualenv/)</span>
+<span class=c1># virtualenv pip package link helper</span>
+<span class=c1># rm -rf gaenv</span>
+<span class=c1># linkenv $VIRTUAL_ENV/lib/python2.7/site-packages gaenv</span>
+
+<span class=c1># Default linker foler</span>
+<span class=nv>DEFAULT_LINK_FOLDER</span><span class=o>=</span>gaenv
+
+<span class=k>if</span> <span class=o>[[</span> <span class=nv>$#</span> -eq <span class=m>0</span> <span class=o>]]</span>
+<span class=k>then</span>
+  <span class=nv>LIB</span><span class=o>=</span><span class=nv>$DEFAULT_LINK_FOLDER</span>
+<span class=k>else</span>
+  <span class=nv>LIB</span><span class=o>=</span><span class=nv>$1</span>
+<span class=k>fi</span>
+
+<span class=c1># relink</span>
+rm -rf <span class=nv>$DEFAULT_LINK_FOLDER</span>
+rm -rf <span class=nv>$LIB</span>
+linkenv <span class=nv>$VIRTUAL_ENV</span>/lib/python2.7/site-packages <span class=nv>$LIB</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>為了減少 Google App Engine 專案建立的時間，將上述的 shell 加入 <code>.bash_profile</code> 搭配 <code>virtualenv</code> <code>virtualenvwrapper</code> <code>requirements.txt</code> 就可以簡易的建置開發環.</p>
+<h2 id=quick-tutorial>Quick tutorial</h2>
+<p>Github repo: <a href=https://github.com/cage1016/link-pip-helper target=_blank rel="noopener noreffer">cage1016/link-pip-helper</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># git clone repo</span>
+$ git clone git@github.com:cage1016/link-pip-helper.git
+Cloning into <span class=s1>&#39;link-pip-helper&#39;</span>...
+remote: Counting objects: 7, <span class=k>done</span>.
+remote: Compressing objects: 100% <span class=o>(</span>5/5<span class=o>)</span>, <span class=k>done</span>.
+remote: Total <span class=m>7</span> <span class=o>(</span>delta 0<span class=o>)</span>, reused <span class=m>7</span> <span class=o>(</span>delta 0<span class=o>)</span>, pack-reused <span class=m>0</span>
+Receiving objects: 100% <span class=o>(</span>7/7<span class=o>)</span>, <span class=k>done</span>.
+Checking connectivity... <span class=k>done</span>.
+
+<span class=c1># switch to link-pip-helper</span>
+$ <span class=nb>cd</span> link-pip-helper/
+
+<span class=c1># 利用 virtualenvwrapper 建立 virtualenv</span>
+$ mkvirtualenv link-pip-helper-tutorial
+New python executable in /Users/<span class=o>{</span>HOME<span class=o>}</span>/.virtualenvs/link-pip-helper-tutorial/bin/python2.7
+Also creating executable in /Users/<span class=o>{</span>HOME<span class=o>}</span>/.virtualenvs/link-pip-helper-tutorial/bin/python
+Please make sure you remove any previous custom paths from your /Users/<span class=o>{</span>HOME<span class=o>}</span>/.pydistutils.cfg file.
+Installing setuptools, pip, wheel...done.
+virtualenvwrapper.user_scripts creating /Users/<span class=o>{</span>HOME<span class=o>}</span>/.virtualenvs/link-pip-helper-tutorial/bin/predeactivate
+virtualenvwrapper.user_scripts creating /Users/<span class=o>{</span>HOME<span class=o>}</span>/.virtualenvs/link-pip-helper-tutorial/bin/postdeactivate
+virtualenvwrapper.user_scripts creating /Users/<span class=o>{</span>HOME<span class=o>}</span>/.virtualenvs/link-pip-helper-tutorial/bin/preactivate
+virtualenvwrapper.user_scripts creating /Users/<span class=o>{</span>HOME<span class=o>}</span>/.virtualenvs/link-pip-helper-tutorial/bin/postactivate
+virtualenvwrapper.user_scripts creating /Users/<span class=o>{</span>HOME<span class=o>}</span>/.virtualenvs/link-pip-helper-tutorial/bin/get_env_details
+
+<span class=c1># pip 安裝相依套件</span>
+$ pip install -r requirements.txt
+Collecting google-api-python-client<span class=o>==</span>1.4.0 <span class=o>(</span>from -r requirements.txt <span class=o>(</span>line 1<span class=o>))</span>
+....
+
+<span class=c1># 執行 shell (你可以將 link pip.sh 內容 export 成任何 function 名)</span>
+$ link_pip lib
+
+<span class=c1># 本地執行 Google App Engine</span>
+$ dev_appserver.py .
+</code></pre></td></tr></table>
+</div>
+</div></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>更新於 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/zh-tw/posts/gae-link-pip-helper/index.md target=_blank>檢視原始程式碼</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/gae-link-pip-helper/ data-title="gae link pip helper" data-via=CageChung data-hashtags=Shell,Python,GAE,pip,virtualenv><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/gae-link-pip-helper/ data-hashtag=Shell><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/gae-link-pip-helper/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/shell/>Shell</a>,&nbsp;<a href=/zh-tw/tags/python/>Python</a>,&nbsp;<a href=/zh-tw/tags/gae/>GAE</a>,&nbsp;<a href=/zh-tw/tags/pip/>pip</a>,&nbsp;<a href=/zh-tw/tags/virtualenv/>virtualenv</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/zh-tw/posts/gae-appcfg-update-403/ class=prev rel=prev title="gae appcfg update 403"><i class="fas fa-angle-left fa-fw"></i>gae appcfg update 403</a>
+<a href=/zh-tw/posts/django-oscar-i18n/ class=next rel=next title="筆記 - django oscar i18n">筆記 - django oscar i18n<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看評論>
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>

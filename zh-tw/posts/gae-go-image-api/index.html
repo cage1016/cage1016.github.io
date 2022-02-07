@@ -1,0 +1,437 @@
+<!doctype html><html lang=zh-tw>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>GAE go Image API for GCS - KaiChu</title><meta name=Description content="Simple example to demo how to serve GCS image via GAE Image API"><meta property="og:title" content="GAE go Image API for GCS">
+<meta property="og:description" content="Simple example to demo how to serve GCS image via GAE Image API">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/zh-tw/posts/gae-go-image-api/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/gae-go-image-api/gae-go-image-api.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2016-10-31T21:55:10+00:00">
+<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/zh-tw/posts/gae-go-image-api/gae-go-image-api.png">
+<meta name=twitter:title content="GAE go Image API for GCS">
+<meta name=twitter:description content="Simple example to demo how to serve GCS image via GAE Image API">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/gae-go-image-api/><link rel=prev href=https://kaichu.io/zh-tw/posts/gvm-install-go1-4/><link rel=next href=https://kaichu.io/zh-tw/posts/golang-regex/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"GAE go Image API for GCS","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/gae-go-image-api\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/gae-go-image-api\/gae-go-image-api.png","width":2735,"height":2028}],"genre":"posts","keywords":"GAE, Golang, echo, pongor","wordcount":874,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/gae-go-image-api\/","datePublished":"2016-10-31T21:55:10+00:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"Simple example to demo how to serve GCS image via GAE Image API"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/gae-go-image-api/>English</option><option value=/zh-tw/posts/gae-go-image-api/ selected>繁體中文</option></select>
+</a><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+取消
+</a>
+</div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select onchange="location=this.value"><option value=/posts/gae-go-image-api/>English</option><option value=/zh-tw/posts/gae-go-image-api/ selected>繁體中文</option></select>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>目錄</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">GAE go Image API for GCS</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2016-10-31>2016-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 874 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 2 分鐘&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>目錄</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#imgserve>imgServe</a>
+<ul>
+<li><a href=#gae-go-image-serve-gcs-image>GAE Go Image serve GCS image</a></li>
+<li><a href=#demo-code>demo code</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
+</div><div class=content id=content><blockquote>
+<p><a href=https://go-gae-image-api-example-dot-gae-lab-001.appspot.com/ target=_blank rel="noopener noreffer">LIVE DEMO</a></p>
+</blockquote>
+<p>在開發 GAE 應用程式時，難免會遇到應用程式需要處理圖片的問題。GAE 的應用程用可以直接存取靜態的資源檔案，這塊直接在 <code>app.yaml</code> 檔案中設定就可以了，不過也因為 GAE 應用程式的特性，需要將所有的資源上傳一份到 GAE 正式環境中，所以會發現上傳專案的容量大小會爆增(如果你將所有需要的圖檔階直接放在程式內)。</p>
+<p>專案檔案太大會影響 GAE 在自動擴展的效能，所以盡可能的將不必要的東西移多專案外(圖檔等)</p>
+<p><em>app.yaml</em></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nn>...</span><span class=w>
+</span><span class=w>
+</span><span class=w>
+</span><span class=w></span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>/favicon.jpg</span><span class=w>
+</span><span class=w>  </span><span class=nt>mime_type</span><span class=p>:</span><span class=w> </span><span class=l>image/x-icon</span><span class=w>
+</span><span class=w>  </span><span class=nt>static_files</span><span class=p>:</span><span class=w> </span><span class=l>public/images/favicon.jpg</span><span class=w>
+</span><span class=w>  </span><span class=nt>upload</span><span class=p>:</span><span class=w> </span><span class=l>public/images/favicon.jpg</span><span class=w>
+</span><span class=w> 
+</span><span class=w></span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>/js/*</span><span class=w>
+</span><span class=w>  </span><span class=nt>mime_type</span><span class=p>:</span><span class=w> </span><span class=l>text/javascript</span><span class=w>
+</span><span class=w>  </span><span class=nt>static_dir</span><span class=p>:</span><span class=w> </span><span class=l>public/js</span><span class=w>
+</span><span class=w>  </span><span class=nt>secure</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span><span class=w> 
+</span><span class=w></span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>/css/*</span><span class=w>
+</span><span class=w>  </span><span class=nt>mime_type</span><span class=p>:</span><span class=w> </span><span class=l>text/css</span><span class=w>
+</span><span class=w>  </span><span class=nt>static_dir</span><span class=p>:</span><span class=w> </span><span class=l>public/css</span><span class=w>
+</span><span class=w>  </span><span class=nt>secure</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span><span class=w>  </span><span class=nt>http_headers</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>Access-Control-Allow-Origin</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*&#34;</span><span class=w>
+</span><span class=w> 
+</span><span class=w></span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>/images/*</span><span class=w>
+</span><span class=w>  </span><span class=nt>static_dir</span><span class=p>:</span><span class=w> </span><span class=l>public/images</span><span class=w>
+</span><span class=w>  </span><span class=nt>secure</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>每一個 GCP 的專案可以有 <code>5G</code> 免費的 Google Cloud Storage 空間，所以將 GAE 上大檔案的靜態資源放到 GCS 是一個很好的決定，在 GAE 程式中可以使用 <code>google-api-go-client</code> 來存取 GCS 上相關的資源。如果是圖片檔的話，更可以直接用 Image API 的方式來直接讀取圖片資源</p>
+<p><a href=https://cloud.google.com/appengine/docs/go/images/ target=_blank rel="noopener noreffer">Images Go API</a> 讓我們使用 <code>Blobstore</code> 的方式來讀取/裁切圖檔，當我們透過 Blobstore 拿到靜態圖檔時可以直接透過 url 的方式對目標圖片進行調整圖檔的大小或進行裁切</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback># 將目標圖片重新縮放至 32 像素(等比例 - 長邊)
+http://lhx.ggpht.com/randomStringImageId=s32
+ 
+# 將照片裁切至 32 像素
+http://lhx.ggpht.com/randomStringImageId=s32-c
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=imgserve>imgServe</h2>
+<p>因些我們就可以設計一個動態的路由來對應至 GCS 上特定路徑的圖片</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>/img?f=dress/banner.png --&gt; GCS:Bucket/dress/banner.png
+/img?f=dress/color/banner.png --&gt; GCS:Bucket/dress/color/banner.png
+/img?f=dress/color/banner.png&amp;s=200 --&gt; GCS:Bucket/dress/color/banner.png 等比縮放至 200 像素
+/img?f=dress/color/banner.png&amp;s=200-c --&gt; GCS:Bucket/dress/color/banner.png 等比縮放至 200 像素且進行 1:1 的裁切
+</code></pre></td></tr></table>
+</div>
+</div><p>如此一來前端面頁如果需要引用照片，可以直接使用 <code>&lt;img src="/img?f=dress/banner.png" alt=""></code>，如果目標圖片不存在則直接輸入一開始就準備好的 image 404 圖片進行代替</p>
+<p><em>main.go</em></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kn>package</span> <span class=nx>main</span>
+ 
+<span class=kn>import</span> <span class=p>(</span>
+	<span class=s>&#34;fmt&#34;</span>
+	<span class=s>&#34;golang.org/x/net/context&#34;</span>
+	<span class=s>&#34;net/http&#34;</span>
+ 
+	<span class=s>&#34;github.com/labstack/echo&#34;</span>
+	<span class=s>&#34;github.com/labstack/echo/engine/standard&#34;</span>
+ 
+	<span class=s>&#34;google.golang.org/appengine&#34;</span>
+	<span class=s>&#34;google.golang.org/appengine/blobstore&#34;</span>
+	<span class=s>&#34;google.golang.org/appengine/image&#34;</span>
+<span class=p>)</span>
+ 
+<span class=kd>const</span> <span class=p>(</span>
+	<span class=nx>Bucket</span>           <span class=p>=</span> <span class=s>&#34;&lt;your-gae-default-bucket&gt;&#34;</span>
+	<span class=nx>NotFoundImageURL</span> <span class=p>=</span> <span class=s>&#34;img-api-example/img404.jpg&#34;</span>
+<span class=p>)</span>
+ 
+<span class=cm>/**
+</span><span class=cm> * index page
+</span><span class=cm> */</span>
+<span class=kd>func</span> <span class=nf>indexGET</span><span class=p>(</span><span class=nx>c</span> <span class=nx>echo</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span> <span class=kt>error</span> <span class=p>{</span>
+	<span class=nx>c</span><span class=p>.</span><span class=nf>Render</span><span class=p>(</span><span class=mi>200</span><span class=p>,</span> <span class=s>&#34;index.tpl&#34;</span><span class=p>,</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kd>interface</span><span class=p>{}{</span>
+		<span class=s>&#34;title&#34;</span><span class=p>:</span> <span class=s>&#34;go gae image API example&#34;</span><span class=p>,</span>
+		<span class=s>&#34;images&#34;</span><span class=p>:</span> <span class=p>[]</span><span class=kt>string</span><span class=p>{</span>
+			<span class=s>&#34;img?f=img-api-example/1.png&#34;</span><span class=p>,</span>
+			<span class=s>&#34;img?f=img-api-example/1.png&amp;s=200&#34;</span><span class=p>,</span>
+			<span class=s>&#34;img?f=img-api-example/1.png&amp;s=200-c&#34;</span><span class=p>,</span>
+			<span class=s>&#34;img?f=img-api-example/2.jpg&#34;</span><span class=p>,</span>
+		<span class=p>},</span>
+	<span class=p>})</span>
+	<span class=k>return</span> <span class=kc>nil</span>
+<span class=p>}</span>
+ 
+<span class=cm>/**
+</span><span class=cm> * get not foound image default image, img404.jpg
+</span><span class=cm> */</span>
+<span class=kd>func</span> <span class=nf>getNotFoundImage</span><span class=p>(</span><span class=nx>ctx</span> <span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span> <span class=p>(</span><span class=nx>urlString</span> <span class=kt>string</span><span class=p>,</span> <span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+	<span class=nx>blobPath</span> <span class=o>:=</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>&#34;/gs/%s/%s&#34;</span><span class=p>,</span> <span class=nx>Bucket</span><span class=p>,</span> <span class=nx>NotFoundImageURL</span><span class=p>)</span>
+	<span class=nx>blobKey</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>blobstore</span><span class=p>.</span><span class=nf>BlobKeyForFile</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span> <span class=nx>blobPath</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+	<span class=nx>opts</span> <span class=o>:=</span> <span class=nx>image</span><span class=p>.</span><span class=nx>ServingURLOptions</span><span class=p>{</span><span class=nx>Secure</span><span class=p>:</span> <span class=kc>false</span><span class=p>,</span> <span class=nx>Crop</span><span class=p>:</span> <span class=kc>true</span><span class=p>}</span>
+	<span class=nx>url</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>image</span><span class=p>.</span><span class=nf>ServingURL</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span> <span class=nx>blobKey</span><span class=p>,</span> <span class=o>&amp;</span><span class=nx>opts</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+	<span class=nx>urlString</span> <span class=p>=</span> <span class=nx>url</span><span class=p>.</span><span class=nf>String</span><span class=p>()</span>
+	<span class=k>return</span>
+<span class=p>}</span>
+ 
+<span class=cm>/**
+</span><span class=cm> * image serve handler
+</span><span class=cm> */</span>
+<span class=kd>func</span> <span class=nf>imgServe</span><span class=p>(</span><span class=nx>c</span> <span class=nx>echo</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span> <span class=kt>error</span> <span class=p>{</span>
+	<span class=nx>ctx</span> <span class=o>:=</span> <span class=nx>appengine</span><span class=p>.</span><span class=nf>NewContext</span><span class=p>(</span><span class=nx>c</span><span class=p>.</span><span class=nf>Request</span><span class=p>().(</span><span class=o>*</span><span class=nx>standard</span><span class=p>.</span><span class=nx>Request</span><span class=p>).</span><span class=nx>Request</span><span class=p>)</span>
+ 
+	<span class=nx>filePath</span> <span class=o>:=</span> <span class=nx>c</span><span class=p>.</span><span class=nf>QueryParam</span><span class=p>(</span><span class=s>&#34;f&#34;</span><span class=p>)</span>
+	<span class=nx>size</span> <span class=o>:=</span> <span class=nx>c</span><span class=p>.</span><span class=nf>QueryParam</span><span class=p>(</span><span class=s>&#34;s&#34;</span><span class=p>)</span>
+ 
+	<span class=nx>blobPath</span> <span class=o>:=</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>&#34;/gs/%s/%s&#34;</span><span class=p>,</span> <span class=nx>Bucket</span><span class=p>,</span> <span class=nx>filePath</span><span class=p>)</span>
+	<span class=nx>blobKey</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>blobstore</span><span class=p>.</span><span class=nf>BlobKeyForFile</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span> <span class=nx>blobPath</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>c</span><span class=p>.</span><span class=nf>String</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusExpectationFailed</span><span class=p>,</span> <span class=nx>err</span><span class=p>.</span><span class=nf>Error</span><span class=p>())</span>
+	<span class=p>}</span>
+ 
+	<span class=nx>opts</span> <span class=o>:=</span> <span class=nx>image</span><span class=p>.</span><span class=nx>ServingURLOptions</span><span class=p>{</span><span class=nx>Secure</span><span class=p>:</span> <span class=kc>false</span><span class=p>,</span> <span class=nx>Crop</span><span class=p>:</span> <span class=kc>true</span><span class=p>}</span>
+	<span class=k>if</span> <span class=nx>url</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>image</span><span class=p>.</span><span class=nf>ServingURL</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span> <span class=nx>blobKey</span><span class=p>,</span> <span class=o>&amp;</span><span class=nx>opts</span><span class=p>);</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=k>if</span> <span class=nx>n</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>getNotFoundImage</span><span class=p>(</span><span class=nx>ctx</span><span class=p>);</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+			<span class=k>return</span> <span class=nx>err</span>
+		<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+			<span class=nx>c</span><span class=p>.</span><span class=nf>Redirect</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusTemporaryRedirect</span><span class=p>,</span> <span class=nx>n</span><span class=p>)</span>
+		<span class=p>}</span>
+	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+		<span class=k>if</span> <span class=nx>size</span> <span class=o>!=</span> <span class=s>&#34;&#34;</span> <span class=p>{</span>
+			<span class=nx>c</span><span class=p>.</span><span class=nf>Redirect</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusTemporaryRedirect</span><span class=p>,</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>&#34;%s=s%s&#34;</span><span class=p>,</span> <span class=nx>url</span><span class=p>.</span><span class=nf>String</span><span class=p>(),</span> <span class=nx>size</span><span class=p>))</span>
+		<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+			<span class=nx>c</span><span class=p>.</span><span class=nf>Redirect</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusTemporaryRedirect</span><span class=p>,</span> <span class=nx>url</span><span class=p>.</span><span class=nf>String</span><span class=p>())</span>
+		<span class=p>}</span>
+	<span class=p>}</span>
+ 
+	<span class=k>return</span> <span class=kc>nil</span>
+<span class=p>}</span>
+ 
+<span class=kd>func</span> <span class=nf>init</span><span class=p>()</span> <span class=p>{</span>
+	<span class=nx>e</span><span class=p>.</span><span class=nf>GET</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span> <span class=nx>indexGET</span><span class=p>)</span>
+	<span class=nx>e</span><span class=p>.</span><span class=nf>GET</span><span class=p>(</span><span class=s>&#34;/img&#34;</span><span class=p>,</span> <span class=nx>imgServe</span><span class=p>)</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=gae-go-image-serve-gcs-image>GAE Go Image serve GCS image</h3>
+<a class=lightgallery href=gae-go-image-api.png title=gae-go-image-api.png data-thumbnail=gae-go-image-api.png>
+<img class=lazyload src=/svg/loading.min.svg data-src=gae-go-image-api.png data-srcset="gae-go-image-api.png, gae-go-image-api.png 1.5x, gae-go-image-api.png 2x" data-sizes=auto alt=gae-go-image-api.png>
+</a>
+<h3 id=demo-code>demo code</h3>
+<p><a href=https://github.com/cage1016/gae-go-image-example target=_blank rel="noopener noreffer">cage1016/gae-go-image-example: GAE go image API example</a></p></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>更新於 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/zh-tw/posts/gae-go-image-api/index.md target=_blank>檢視原始程式碼</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/gae-go-image-api/ data-title="GAE go Image API for GCS" data-via=CageChung data-hashtags=GAE,Golang,echo,pongor><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/gae-go-image-api/ data-hashtag=GAE><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/gae-go-image-api/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/gae/>GAE</a>,&nbsp;<a href=/zh-tw/tags/golang/>golang</a>,&nbsp;<a href=/zh-tw/tags/echo/>echo</a>,&nbsp;<a href=/zh-tw/tags/pongor/>pongor</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/zh-tw/posts/gvm-install-go1-4/ class=prev rel=prev title="解決 gvm install go1.4 安裝錯誤 [筆記]"><i class="fas fa-angle-left fa-fw"></i>解決 gvm install go1.4 安裝錯誤 [筆記]</a>
+<a href=/zh-tw/posts/golang-regex/ class=next rel=next title="Golang regEx parse Facebook Live rtmp">Golang regEx parse Facebook Live rtmp<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看評論>
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>

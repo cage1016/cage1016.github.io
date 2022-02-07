@@ -1,0 +1,507 @@
+<!doctype html><html lang=zh-tw>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>weddingcnp via GCP - 3. endpointAPI 設計實作 - KaiChu</title><meta name=Description content="wedding endpoint Service 負責整個專案最重要的資料收集部份，此篇建立簡單的範例來說明 endpoint API 的使用方式"><meta property="og:title" content="weddingcnp via GCP - 3. endpointAPI 設計實作">
+<meta property="og:description" content="wedding endpoint Service 負責整個專案最重要的資料收集部份，此篇建立簡單的範例來說明 endpoint API 的使用方式">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_3.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2017-07-12T22:51:05+00:00">
+<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_3.png">
+<meta name=twitter:title content="weddingcnp via GCP - 3. endpointAPI 設計實作">
+<meta name=twitter:description content="wedding endpoint Service 負責整個專案最重要的資料收集部份，此篇建立簡單的範例來說明 endpoint API 的使用方式">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/><link rel=prev href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/><link rel=next href=https://kaichu.io/zh-tw/posts/cloudfunctions-google-maps-services/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"weddingcnp via GCP - 3. endpointAPI 設計實作","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-3\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-3\/img\/weddingcnp-via-gpc-3_3.png","width":2769,"height":1754}],"genre":"posts","keywords":"GAE, GCE, Datastore, EndpointAPI, sendgrid, API","wordcount":1329,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-3\/","datePublished":"2017-07-12T22:51:05+00:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"wedding endpoint Service 負責整個專案最重要的資料收集部份，此篇建立簡單的範例來說明 endpoint API 的使用方式"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/weddingcnp-via-gcp-3/>English</option><option value=/zh-tw/posts/weddingcnp-via-gcp-3/ selected>繁體中文</option></select>
+</a><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+取消
+</a>
+</div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select onchange="location=this.value"><option value=/posts/weddingcnp-via-gcp-3/>English</option><option value=/zh-tw/posts/weddingcnp-via-gcp-3/ selected>繁體中文</option></select>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>目錄</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">weddingcnp via GCP - 3. endpointAPI 設計實作</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2017-07-12>2017-07-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 1329 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 3 分鐘&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>目錄</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href=#weddingcnp-系例傳送門>weddingcnp 系例傳送門</a></li>
+<li><a href=#endpointapi-設計實作>endpointAPI 設計實作</a></li>
+</ul>
+</li>
+<li><a href=#endpoint-api-demo-project>endpoint API demo project</a>
+<ul>
+<li><a href=#專案架構>專案架構</a></li>
+</ul>
+</li>
+<li><a href=#curl>curl</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
+</div><div class=content id=content><p>此篇就對 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> 中實作專案中最為重要的 backend API (endpoint API) 部份進行簡單的說明，每一個 Google App Engine Service 實作的細節會在後序的篇幅中介紹</p>
+<h4 id=weddingcnp-系例傳送門>weddingcnp 系例傳送門</h4>
+<ol>
+<li><a href=https://kaichu.io/2017/06/08/weddingcnp-via-gcp/ target=_blank rel="noopener noreffer">weddingcnp via GCP 簡介</a></li>
+<li><a href=https://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 1. 專案架構切分</a></li>
+<li><a href=https://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 2. 前端頁面設計實作</a></li>
+<li><a href=https://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 3. endpointAPI 設計實作</a></li>
+<li>weddingcnp 前端 vue.js 設計實作</li>
+<li>weddingcnp edm 寄送 sendgrid</li>
+</ol>
+<h4 id=endpointapi-設計實作>endpointAPI 設計實作</h4>
+<a class=lightgallery href=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_1.png title=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_1.png data-thumbnail=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_1.png>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gpc-3_1.png data-srcset="/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_1.png, img/weddingcnp-via-gpc-3_1.png 1.5x, /zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_1.png 2x" data-sizes=auto alt=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_1.png>
+</a>
+<a class=lightgallery href=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_2.png title=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_2.png data-thumbnail=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_2.png>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gpc-3_2.png data-srcset="/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_2.png, img/weddingcnp-via-gpc-3_2.png 1.5x, /zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_2.png 2x" data-sizes=auto alt=/zh-tw/posts/weddingcnp-via-gcp-3/img/weddingcnp-via-gpc-3_2.png>
+</a>
+<p><a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> 的網站大至上可以區分為靜態頁面(frontend Service, Golang) 及負責資料收集的 API (endpoints Service, Python). Google <a href=https://cloud.google.com/endpoints/docs/frameworks/legacy/v1/python/create_api target=_blank rel="noopener noreffer">Endpoints API</a><sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> 是架構在 GAE 上的一個 RPC (remote procedure call) 服務。由於 endpoints API 是基於 <a href=https://cloud.google.com/appengine/docs/standard/python/tools/protorpc/ target=_blank rel="noopener noreffer">ProtoRPC remote.Service</a> 實作出來的，所以在實作我們的方法時也是依照 protorpc 的方式來定義，小弟在寫 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> 這一個網站的時候 Endpoints API 還是 1.0，所以這篇文章還是以 Endpoints API 1.0 來說明</p>
+<h3 id=endpoint-api-demo-project>endpoint API demo project</h3>
+<p>小弟我建立一個比較簡單的範例來說明</p>
+<p><a href=https://github.com/cage1016/endpoint-api-demo target=_blank rel="noopener noreffer">https://github.com/cage1016/endpoint-api-demo</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># git clone repo</span>
+$ git clone git@github.com:cage1016/endpoint-api-demo.git
+
+<span class=c1># install GAE python requirement packages</span>
+$ pip install -r requirements.txt -t lib
+Collecting <span class=nv>arrow</span><span class=o>==</span>0.8.0 <span class=o>(</span>from -r requirements.txt <span class=o>(</span>line 1<span class=o>))</span>
+Collecting python-dateutil <span class=o>(</span>from <span class=nv>arrow</span><span class=o>==</span>0.8.0-&gt;-r requirements.txt <span class=o>(</span>line 1<span class=o>))</span>
+  Downloading python_dateutil-2.6.1-py2.py3-none-any.whl <span class=o>(</span>194kB<span class=o>)</span>
+    100% <span class=p>|</span>████████████████████████████████<span class=p>|</span> 194kB 1.2MB/s
+Collecting six&gt;<span class=o>=</span>1.5 <span class=o>(</span>from python-dateutil-&gt;arrow<span class=o>==</span>0.8.0-&gt;-r requirements.txt <span class=o>(</span>line 1<span class=o>))</span>
+  Using cached six-1.10.0-py2.py3-none-any.whl
+Installing collected packages: six, python-dateutil, arrow
+Successfully installed arrow python-dateutil-2.2 six-1.10.0
+...
+
+<span class=c1># run GAE python locally</span>
+$ dev_appserver.py app.yaml
+INFO     2017-07-12 13:30:19,063 devappserver2.py:116<span class=o>]</span> Skipping SDK update check.
+INFO     2017-07-12 13:30:19,706 api_server.py:312<span class=o>]</span> Starting API server at: http://localhost:51100
+INFO     2017-07-12 13:30:19,710 dispatcher.py:226<span class=o>]</span> Starting module <span class=s2>&#34;default&#34;</span> running at: http://localhost:8080
+INFO     2017-07-12 13:30:19,711 admin_server.py:116<span class=o>]</span> Starting admin server at: http://localhost:8000
+
+<span class=c1># visit http://localhost:8080</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>完全上述步驟後透過瀏覽器訪問 <code>http://localhost:8080/_ah/api/explorer</code> 就可以得到圖一中類似 <a href=https://developers.google.com/apis-explorer/#p/ target=_blank rel="noopener noreffer">Google API explorer</a> 風格的本地測試頁面, 這是一個非常方便的工具，可以讓自己在本地透過瀏覽器直接操作自己定義的 endpointAPI</p>
+<a class=lightgallery href=img/weddingcnp-via-gpc-3_3.png title=img/weddingcnp-via-gpc-3_3.png data-thumbnail=img/weddingcnp-via-gpc-3_3.png>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gpc-3_3.png data-srcset="img/weddingcnp-via-gpc-3_3.png, img/weddingcnp-via-gpc-3_3.png 1.5x, img/weddingcnp-via-gpc-3_3.png 2x" data-sizes=auto alt=img/weddingcnp-via-gpc-3_3.png>
+</a>
+<h4 id=專案架構>專案架構</h4>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>.
+├── apis                   // endpoint api packages
+│   ├── __init__.py
+│   └── books.py
+├── lib
+├── app.py                 // 主程式進入點
+├── app.yaml               // GAE 配置檔
+├── appengine_config.py    // lib 載入配置
+├── models.py              // GAE Datastore 檔
+├── requirements.txt       // GAE python 引用資源庫
+├── settings.py            // 專案設定檔
+└── utils.py               // helpers function
+</code></pre></td></tr></table>
+</div>
+</div><p>一個 GAE endpoint API Service 大至上進行簡單的配置可以執行了</p>
+<p><strong>app.yaml</strong></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>runtime</span><span class=p>:</span><span class=w> </span><span class=l>python27</span><span class=w>
+</span><span class=w></span><span class=nt>api_version</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span><span class=w></span><span class=nt>threadsafe</span><span class=p>:</span><span class=w> </span><span class=kc>yes</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>handlers</span><span class=p>:</span><span class=w>
+</span><span class=w></span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>/_ah/spi/.*</span><span class=w>
+</span><span class=w>  </span><span class=nt>script</span><span class=p>:</span><span class=w> </span><span class=l>app.API</span><span class=w>
+</span><span class=w>  </span><span class=nt>secure</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>libraries</span><span class=p>:</span><span class=w>
+</span><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>endpoints</span><span class=w>
+</span><span class=w>  </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=l>latest</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><strong>app.yaml</strong> 配置上的重點為在 handlers 區塊加入 <code>/_ah/spi/.*</code> 這一個 route 並將 route 導至 endpoints API server</p>
+<p><strong>app.py</strong></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>import</span> <span class=nn>endpoints</span>
+
+<span class=kn>from</span> <span class=nn>apis</span> <span class=kn>import</span> <span class=n>books</span>
+
+<span class=n>API</span> <span class=o>=</span> <span class=n>endpoints</span><span class=o>.</span><span class=n>api_server</span><span class=p>([</span>
+    <span class=n>books</span><span class=o>.</span><span class=n>BooksAPI</span>
+<span class=p>])</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>endpoints api server 由 <code>endpoints.api_server([])</code> 建立, 其中的參數是實作 <code>protorpc.remote.Service</code> 類別的 API, 目前我們只有實作一個 <code>books.BooksAPI</code> 所以只有填入一個</p>
+<p><strong>settings.py</strong></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=o>...</span>
+
+<span class=n>books_api</span> <span class=o>=</span> <span class=n>endpoints</span><span class=o>.</span><span class=n>api</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;dummy&#39;</span><span class=p>,</span>
+                         <span class=n>version</span><span class=o>=</span><span class=s1>&#39;v1&#39;</span><span class=p>,</span>
+                         <span class=n>description</span><span class=o>=</span><span class=s1>&#39;dummy API&#39;</span><span class=p>,</span>
+                         <span class=n>allowed_client_ids</span><span class=o>=</span><span class=p>[</span><span class=n>CLIENT_ID</span><span class=p>,</span>
+                                             <span class=n>endpoints</span><span class=o>.</span><span class=n>API_EXPLORER_CLIENT_ID</span><span class=p>],</span>
+                         <span class=n>scopes</span><span class=o>=</span><span class=p>[</span><span class=n>endpoints</span><span class=o>.</span><span class=n>EMAIL_SCOPE</span><span class=p>])</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在我們定義的 <code>protorpc.remote.Service</code> API 上加一個 Decorate<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup> 來描述我們的 API(API 名稱、版號、說明、允許呼叫的 GCP CLIENT_ID, scopes 等等)</p>
+<blockquote>
+<p>@util.positional(2)
+def api(name, version, description=None, hostname=None, audiences=None,
+scopes=None, allowed_client_ids=None, canonical_name=None,
+auth=None, owner_domain=None, owner_name=None, package_path=None,
+frontend_limits=None, title=None, documentation=None, auth_level=None):</p>
+</blockquote>
+<p><strong>api/books.py</strong></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=nd>@books_api</span><span class=o>.</span><span class=n>api_class</span><span class=p>(</span><span class=n>resource_name</span><span class=o>=</span><span class=s2>&#34;books&#34;</span><span class=p>)</span>
+<span class=k>class</span> <span class=nc>BooksAPI</span><span class=p>(</span><span class=n>remote</span><span class=o>.</span><span class=n>Service</span><span class=p>):</span>
+  <span class=s2>&#34;&#34;&#34;
+</span><span class=s2>  Books API
+</span><span class=s2>  &#34;&#34;&#34;</span>
+
+  <span class=nd>@endpoints</span><span class=o>.</span><span class=n>method</span><span class=p>(</span><span class=n>BOOKS_LIST_RESOURCE</span><span class=p>,</span> <span class=n>BookForms</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books&#34;</span><span class=p>,</span>
+                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;GET&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;list&#34;</span><span class=p>)</span>
+  <span class=k>def</span> <span class=nf>listBooks</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
+      <span class=s2>&#34;&#34;&#34;List books&#34;&#34;&#34;</span>
+      <span class=o>...</span>
+
+  <span class=nd>@endpoints</span><span class=o>.</span><span class=n>method</span><span class=p>(</span><span class=n>BOOKS_CREATE_RESOURCE</span><span class=p>,</span> <span class=n>BookForm</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books&#34;</span><span class=p>,</span>
+                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;POST&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;post&#34;</span><span class=p>)</span>
+  <span class=k>def</span> <span class=nf>addBook</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
+      <span class=s2>&#34;&#34;&#34;Add books&#34;&#34;&#34;</span>
+      <span class=o>...</span>
+
+  <span class=nd>@endpoints</span><span class=o>.</span><span class=n>method</span><span class=p>(</span><span class=n>BOOKS_DELETE_RESOURCE</span><span class=p>,</span> <span class=n>BooleanMessage</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books/</span><span class=si>{websafeKey}</span><span class=s2>&#34;</span><span class=p>,</span>
+                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;DELETE&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;delete&#34;</span><span class=p>)</span>
+  <span class=k>def</span> <span class=nf>deleteBook</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
+      <span class=s2>&#34;&#34;&#34;Delete book&#34;&#34;&#34;</span>
+      <span class=o>...</span>
+
+  <span class=nd>@endpoints</span><span class=o>.</span><span class=n>method</span><span class=p>(</span><span class=n>BOOKS_UPDATE_RESOURCE</span><span class=p>,</span> <span class=n>BookForm</span><span class=p>,</span> <span class=n>path</span><span class=o>=</span><span class=s2>&#34;books/</span><span class=si>{websafeKey}</span><span class=s2>&#34;</span><span class=p>,</span>
+                    <span class=n>http_method</span><span class=o>=</span><span class=s2>&#34;PUT&#34;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s2>&#34;put&#34;</span><span class=p>)</span>
+  <span class=k>def</span> <span class=nf>updateBook</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>request</span><span class=p>):</span>
+      <span class=s2>&#34;&#34;&#34;Update book&#34;&#34;&#34;</span>
+      <span class=o>...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在定義 resource 下的方法時依然使用 Decorate 的方式來對方法進行設置 (method name, path, http method,
+cache control, scopes, audiences, client ids and auth_level 等)</p>
+<blockquote>
+<p>@util.positional(2)
+def method(request_message=message_types.VoidMessage,
+response_message=message_types.VoidMessage,
+name=None,
+path=None,
+http_method=&lsquo;POST&rsquo;,
+cache_control=None,
+scopes=None,
+audiences=None,
+allowed_client_ids=None,
+auth_level=None):</p>
+</blockquote>
+<p>設置完 endpointAPI 的基本架構，剩下的部份就是 GAE Python<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup> 的基本操作，定義 Datastore module、對 Datastore 進行 CRUD 的操作。有興趣的朋友可以把專案 clone 下來玩看看，並試著自己俢改修改會更有感覺。</p>
+<p>endpointAPI 其他的功能還有很多，可以搭配 gRPC<sup id=fnref:4><a href=#fn:4 class=footnote-ref role=doc-noteref>4</a></sup>一起使用、建立 Android/iOS 的 frameworks<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup> 等，詳細的說明可以見官方的文件 <a href=https://cloud.google.com/endpoints/docs/how-to target=_blank rel="noopener noreffer">How-to Guides</a></p>
+<h3 id=curl>curl</h3>
+<p>透過瀏覽器操作過後，透過 curl 操作的結果也是一樣的</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>$ curl http://localhost:8080/_ah/api/dummy/v1/books
+{
+ &#34;items&#34;: [
+  {
+   &#34;name&#34;: &#34;Shel Silverstein&#34;,
+   &#34;title&#34;: &#34;The Giving Tree&#34;,
+   &#34;websafeKey&#34;: &#34;aghkZXZ-Tm9uZXIZCxIEQm9vayIPVGhlIEdpdmluZyBUcmVlDA&#34;
+  },
+  {
+   &#34;name&#34;: &#34;Harper Lee&#34;,
+   &#34;title&#34;: &#34;To Kill a Mockingbird&#34;,
+   &#34;websafeKey&#34;: &#34;aghkZXZ-Tm9uZXIfCxIEQm9vayIVVG8gS2lsbCBhIE1vY2tpbmdiaXJkDA&#34;
+  },
+  {
+   &#34;name&#34;: &#34;dfad&#34;,
+   &#34;title&#34;: &#34;fdafd&#34;,
+   &#34;websafeKey&#34;: &#34;aghkZXZ-Tm9uZXIPCxIEQm9vayIFZmRhZmQM&#34;
+  }
+ ]
+}
+</code></pre></td></tr></table>
+</div>
+</div><section class=footnotes role=doc-endnotes>
+<hr>
+<ol>
+<li id=fn:1 role=doc-endnote>
+<p>Endpoints API 2.0 的版本已經出來了，相較於 1.0 改變滿大的，原先像 Google API explorer 的部份由 swagger 取代，詳細的說明請見官網&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p>
+</li>
+<li id=fn:2 role=doc-endnote>
+<p>在定義 API 說明時有二種方式。這邊採用的是 <code>@books_api.api_class</code>，在 <code>books_api</code> 下允許定義多組 RESTful resource&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p>
+</li>
+<li id=fn:3 role=doc-endnote>
+<p><a href=https://github.com/GoogleCloudPlatform/go-endpoints target=_blank rel="noopener noreffer">go-endpoints</a> 其實 go 版的寫法更為簡潔一點&#160;<a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p>
+</li>
+<li id=fn:4 role=doc-endnote>
+<p><a href=https://cloud.google.com/endpoints/docs/grpc-service-config target=_blank rel="noopener noreffer">gRPC API Service</a>&#160;<a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p>
+</li>
+<li id=fn:5 role=doc-endnote>
+<p><a href=https://cloud.google.com/endpoints/docs/frameworks/java/about-cloud-endpoints-frameworks target=_blank rel="noopener noreffer">Cloud Endpoints Frameworks for App Engine</a>&#160;<a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p>
+</li>
+</ol>
+</section></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>更新於 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/zh-tw/posts/weddingcnp-via-gcp-3/index.md target=_blank>檢視原始程式碼</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/ data-title="weddingcnp via GCP - 3. endpointAPI 設計實作" data-via=CageChung data-hashtags=GAE,GCE,Datastore,EndpointAPI,sendgrid,API><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/ data-hashtag=GAE><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/gae/>GAE</a>,&nbsp;<a href=/zh-tw/tags/gce/>GCE</a>,&nbsp;<a href=/zh-tw/tags/datastore/>Datastore</a>,&nbsp;<a href=/zh-tw/tags/endpointapi/>EndpointAPI</a>,&nbsp;<a href=/zh-tw/tags/sendgrid/>sendgrid</a>,&nbsp;<a href=/zh-tw/tags/api/>API</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/zh-tw/posts/weddingcnp-via-gcp-2/ class=prev rel=prev title="weddingcnp via GCP - 2. 前端頁面設計實作"><i class="fas fa-angle-left fa-fw"></i>weddingcnp via GCP - 2. 前端頁面設計實作</a>
+<a href=/zh-tw/posts/cloudfunctions-google-maps-services/ class=next rel=next title="CloudFunctions Google maps service">CloudFunctions Google maps service<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看評論>
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>

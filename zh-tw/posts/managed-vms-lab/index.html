@@ -1,0 +1,483 @@
+<!doctype html><html lang=zh-tw>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>Managed VMs lab - KaiChu</title><meta name=Description content="開發 App Engine，開發者雖然只要專注於 Data 及 Application 即可，但是也因為為享有諸多的服務而有所限制(目前只有支援 4 種程式語言 Golang, Python, Java, PHP、在 sandbox 中無法寫入檔案等限制)，而 Managed VMs 中引進了 docker 的元素讓 App Engine 有了更多的彈性。如: 可以進行檔案讀寫、自定 Runtime。"><meta property="og:title" content="Managed VMs lab">
+<meta property="og:description" content="開發 App Engine，開發者雖然只要專注於 Data 及 Application 即可，但是也因為為享有諸多的服務而有所限制(目前只有支援 4 種程式語言 Golang, Python, Java, PHP、在 sandbox 中無法寫入檔案等限制)，而 Managed VMs 中引進了 docker 的元素讓 App Engine 有了更多的彈性。如: 可以進行檔案讀寫、自定 Runtime。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/zh-tw/posts/managed-vms-lab/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/managed-vms-lab/img/demo-managed-vms-architecture.jpg"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2015-09-30T14:58:58+08:00">
+<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/zh-tw/posts/managed-vms-lab/img/demo-managed-vms-architecture.jpg">
+<meta name=twitter:title content="Managed VMs lab">
+<meta name=twitter:description content="開發 App Engine，開發者雖然只要專注於 Data 及 Application 即可，但是也因為為享有諸多的服務而有所限制(目前只有支援 4 種程式語言 Golang, Python, Java, PHP、在 sandbox 中無法寫入檔案等限制)，而 Managed VMs 中引進了 docker 的元素讓 App Engine 有了更多的彈性。如: 可以進行檔案讀寫、自定 Runtime。">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/managed-vms-lab/><link rel=prev href=https://kaichu.io/zh-tw/posts/copy-2-clipboard-with-ease/><link rel=next href=https://kaichu.io/zh-tw/posts/docker-notebook-1/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Managed VMs lab","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/managed-vms-lab\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/managed-vms-lab\/img\/demo-managed-vms-architecture.jpg","width":2192,"height":1584}],"genre":"posts","keywords":"Golang, GAE, Python, Managed-VMs","wordcount":1991,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/managed-vms-lab\/","datePublished":"2015-09-30T14:58:58+08:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"開發 App Engine，開發者雖然只要專注於 Data 及 Application 即可，但是也因為為享有諸多的服務而有所限制(目前只有支援 4 種程式語言 Golang, Python, Java, PHP、在 sandbox 中無法寫入檔案等限制)，而 Managed VMs 中引進了 docker 的元素讓 App Engine 有了更多的彈性。如: 可以進行檔案讀寫、自定 Runtime。"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/managed-vms-lab/>English</option><option value=/zh-tw/posts/managed-vms-lab/ selected>繁體中文</option></select>
+</a><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+取消
+</a>
+</div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select onchange="location=this.value"><option value=/posts/managed-vms-lab/>English</option><option value=/zh-tw/posts/managed-vms-lab/ selected>繁體中文</option></select>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>目錄</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">Managed VMs lab</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2015-09-30>2015-09-30</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 1991 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 4 分鐘&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>目錄</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#gae-overview>GAE Overview</a>
+<ul>
+<li><a href=#docker-overview>Docker Overview</a></li>
+</ul>
+</li>
+<li><a href=#managed-vms>Managed VMs</a></li>
+<li><a href=#demo>Demo</a></li>
+<li><a href=#run-locally>Run locally</a></li>
+<li><a href=#deploy-to-gae>Deploy to GAE</a></li>
+<li><a href=#apache-ab-test>Apache ab test</a></li>
+<li><a href=#reference>Reference</a></li>
+</ul>
+</nav></div>
+</div><div class=content id=content><p><strong>Presentation</strong>:</p>
+<ul>
+<li>slide: <a href=https://goo.gl/SwuEvR target=_blank rel="noopener noreffer">GAE Managed VM Introduction - Google Slides</a></li>
+<li>source code: <a href=https://github.com/cage1016/managed-vms-lab target=_blank rel="noopener noreffer">cage1016/managed-vms-lab</a></li>
+</ul>
+<h2 id=gae-overview>GAE Overview</h2>
+<p><a href=https://cloud.google.com/appengine/docs target=_blank rel="noopener noreffer">Google App Engine</a> 是 <a href=https://cloud.google.com/ target=_blank rel="noopener noreffer">Google Cloud Platform</a> 中一個 PasS (Platform as a service) 的服務. 在 Pass 的 GAE 中，開發者只需要專注於 <strong>Application</strong> 及 <strong>Data</strong>，
+其於的 <strong>Runtime</strong>、<strong>Middleware</strong>、<strong>OS</strong>、<strong>Virtualization</strong>、<strong>Servers</strong>、<strong>Storage</strong>、<strong>Networking</strong> 則完全被 Google 控制管理。</p>
+<p><em>GAE Architecture</em>
+<a class=lightgallery href=/zh-tw/posts/managed-vms-lab/img/01_WebApp_ArchDiagram.png title=/zh-tw/posts/managed-vms-lab/img/01_WebApp_ArchDiagram.png data-thumbnail=/zh-tw/posts/managed-vms-lab/img/01_WebApp_ArchDiagram.png>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/01_WebApp_ArchDiagram.png data-srcset="/zh-tw/posts/managed-vms-lab/img/01_WebApp_ArchDiagram.png, img/01_WebApp_ArchDiagram.png 1.5x, /zh-tw/posts/managed-vms-lab/img/01_WebApp_ArchDiagram.png 2x" data-sizes=auto alt=/zh-tw/posts/managed-vms-lab/img/01_WebApp_ArchDiagram.png>
+</a>
+picture: <a href=https://cloud.google.com/solutions/architecture/webapp target=_blank rel="noopener noreffer">https://cloud.google.com/solutions/architecture/webapp</a></p>
+<p>App Engine 目前提供的執行環境有 <code>Python</code>、<code>Golang</code>、<code>Java</code>及<code>PHP</code> 4 種程式語言。支援多版本應用程式實例(multiple version)，
+且可以直接在 Console 介面中進行版本的切換，也支援流量分流來方便進行 A/B 測試。</p>
+<p>App Engine 也整合了 Memcache 及 Tasks Queue 的服務。Memcache 是一種記憶體快取並可以共享在 App Engine 的實例中，
+它可以有效的提高資料存取的速度(如帳號資料從 Datastore 讀取後放至 Memcache 一份)。</p>
+<p>Tasks Queues 則提供了一種處理長時間請求的方式(600s)。而 App Engine 也內建了 load balancer。</p>
+<h3 id=docker-overview>Docker Overview</h3>
+<p>Docker 是一種輕量的 container 技術，不同於 VM (Virtual Machine) 的地方是 Container 是在作業系統層面上實作虛擬化，直接使用本地主機的作業系統，
+而傳統方式則是在硬體層面實作。</p>
+<p><figure><a class=lightgallery href=/zh-tw/posts/managed-vms-lab/img/virtualization.png title=/zh-tw/posts/managed-vms-lab/img/virtualization.png data-thumbnail=/zh-tw/posts/managed-vms-lab/img/virtualization.png data-sub-html="<h2>Virtualization</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/virtualization.png data-srcset="/zh-tw/posts/managed-vms-lab/img/virtualization.png, img/virtualization.png 1.5x, /zh-tw/posts/managed-vms-lab/img/virtualization.png 2x" data-sizes=auto alt=/zh-tw/posts/managed-vms-lab/img/virtualization.png>
+</a><figcaption class=image-caption>Virtualization</figcaption>
+</figure>
+vs.
+<figure><a class=lightgallery href=/zh-tw/posts/managed-vms-lab/img/docker.png title=/zh-tw/posts/managed-vms-lab/img/docker.png data-thumbnail=/zh-tw/posts/managed-vms-lab/img/docker.png data-sub-html="<h2>Docker</h2>">
+<img class=lazyload src=/svg/loading.min.svg data-src=img/docker.png data-srcset="/zh-tw/posts/managed-vms-lab/img/docker.png, img/docker.png 1.5x, /zh-tw/posts/managed-vms-lab/img/docker.png 2x" data-sizes=auto alt=/zh-tw/posts/managed-vms-lab/img/docker.png>
+</a><figcaption class=image-caption>Docker</figcaption>
+</figure>
+picture: <a href=https://philipzheng.gitbooks.io/docker_practice/content/introduction/what.html target=_blank rel="noopener noreffer">https://philipzheng.gitbooks.io/docker_practice/content/introduction/what.html</a></p>
+<p><strong>Why Docker?</strong></p>
+<blockquote>
+<p>作為一種新興的虛擬化方式，Docker 跟傳統的虛擬化方式相比具有眾多的優勢。</p>
+</blockquote>
+<blockquote>
+<p>首先，Docker 容器的啟動可以在秒級實作，這相比傳統的虛擬機方式要快得多。 其次，Docker 對系統資源的使用率很高，一台主機上可以同時執行數千個 Docker 容器。</p>
+</blockquote>
+<blockquote>
+<p>容器除了執行其中應用外，基本不消耗額外的系統資源，使得應用的效能很高，同時系統資源消耗更少。傳統虛擬機方式執行 10 個不同的應用就要啟動 10 個虛擬機，而 Docker 只需要啟動 10 個隔離的應用即可。</p>
+</blockquote>
+<blockquote>
+<p>具體說來，Docker 在以下幾個方面具有較大的優勢。</p>
+</blockquote>
+<blockquote>
+<p><strong>更快速的交付和部署</strong></p>
+</blockquote>
+<blockquote>
+<p>對開發和維運（DevOps）人員來說，最希望的就是一次建立或設定，可以在任意地方正常執行。</p>
+</blockquote>
+<blockquote>
+<p>開發者可以使用一個標準的映像檔來建立一套開發容器，開發完成之後，維運人員可以直接使用這個容器來部署程式碼。 Docker 可以快速建立容器，快速迭代應用程式，並讓整個過程全程可見，使團隊中的其他成員更容易理解應用程式是如何建立和工作的。 Docker 容器很輕很快！容器的啟動時間是秒級的，大量地節約開發、測試、部署的時間。</p>
+</blockquote>
+<blockquote>
+<p><strong>更有效率的虛擬化</strong></p>
+</blockquote>
+<blockquote>
+<p>Docker 容器的執行不需要額外的虛擬化支援，它是核心層級的虛擬化，因此可以實作更高的效能和效率。</p>
+</blockquote>
+<blockquote>
+<p><strong>更輕鬆的遷移和擴展</strong></p>
+</blockquote>
+<blockquote>
+<p>Docker 容器幾乎可以在任意的平台上執行，包括實體機器、虛擬機、公有雲、私有雲、個人電腦、伺服器等。 這種兼容性可以讓使用者把一個應用程式從一個平台直接遷移到另外一個。</p>
+</blockquote>
+<blockquote>
+<p><strong>更簡單的管理</strong></p>
+</blockquote>
+<blockquote>
+<p>使用 Docker，只需要小小的修改，就可以替代以往大量的更新工作。所有的修改都以增量的方式被分發和更新，從而實作自動化並且有效率的管理。</p>
+</blockquote>
+<blockquote>
+<p>擷錄於 <a href=https://philipzheng.gitbooks.io/docker_practice/content/introduction/why.html target=_blank rel="noopener noreffer">為什麼要用 Docker | 《Docker —— 從入門到實踐 》正體中文版</a></p>
+</blockquote>
+<h2 id=managed-vms>Managed VMs</h2>
+<blockquote>
+<p>App Engine + Docker = Managed VMs</p>
+</blockquote>
+<p>App Engine 是 Google 一個 PasS 的服務，完全受 Google 管理及控制，開發者只需要專注於 <strong>Data</strong> 及 <strong>Application</strong> 的發開。</p>
+<p>Docker 則是一個新興的 container 技術，讓發開者可以更快速的交付和部署、更有效率的虛擬化、更輕鬆的遷移和擴展、更簡單的管理。</p>
+<p><strong>Why Managed VMs?</strong></p>
+<p>開發 App Engine，開發者雖然只要專注於 <strong>Data</strong> 及 <strong>Application</strong> 即可，但是也因為為享有諸多的服務而有所限制(目前只有支援 4 種程式語言 Golang, Python, Java, PHP、在 sandbox 中無法寫入檔案等限制)
+，而 Managed VMs 中引進了 docker 的元素讓 App Engine 有了更多的彈性。如: <strong>可以進行檔案讀寫</strong>、<strong>自定 Runtime</strong>。</p>
+<a class=lightgallery href=/zh-tw/posts/managed-vms-lab/img/Managed-VMs.jpg title=/zh-tw/posts/managed-vms-lab/img/Managed-VMs.jpg data-thumbnail=/zh-tw/posts/managed-vms-lab/img/Managed-VMs.jpg>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/Managed-VMs.jpg data-srcset="/zh-tw/posts/managed-vms-lab/img/Managed-VMs.jpg, img/Managed-VMs.jpg 1.5x, /zh-tw/posts/managed-vms-lab/img/Managed-VMs.jpg 2x" data-sizes=auto alt=/zh-tw/posts/managed-vms-lab/img/Managed-VMs.jpg>
+</a>
+<p>在使用 Managed VMs 時與一般的 App Engine 應用程式無異，差異的部份是在 <code>app.yaml</code> 中多設置了 <code>vm:true</code> 的配置</p>
+<p><em>golang, app.yaml</em></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=c1># make sure to replace &#34;projectid&#34; below with the project ID configured in the Google Developer Console</span>
+runtime: go
+api_version: go1
+<span class=c1># The vm setting is what determines if we are using a sandbox or MVM</span>
+vm: <span class=nb>true</span>
+module: module1
+
+automatic_scaling:
+  min_num_instances: <span class=m>1</span>
+  max_num_instances: <span class=m>5</span>
+  cool_down_period_sec: <span class=m>60</span>
+  cpu_utilization:
+    target_utilization: 0.2
+
+resources:
+  cpu: .5
+  memory_gb: 1.3
+
+handlers:
+- url: /.*
+  script: _go_app
+</code></pre></td></tr></table>
+</div>
+</div><p>上述 <code>app.yaml</code> 除了啟用了 Managed VMs 也配置了自動擴展配置及給予特定的資源(cpu, memory)</p>
+<h2 id=demo>Demo</h2>
+<p>source code: <a href=https://github.com/cage1016/managed-vms-lab target=_blank rel="noopener noreffer">cage1016/managed-vms-lab</a></p>
+<p><em>Demo Architecture</em></p>
+<a class=lightgallery href=img/demo-managed-vms-architecture.jpg title=img/demo-managed-vms-architecture.jpg data-thumbnail=img/demo-managed-vms-architecture.jpg>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/demo-managed-vms-architecture.jpg data-srcset="img/demo-managed-vms-architecture.jpg, img/demo-managed-vms-architecture.jpg 1.5x, img/demo-managed-vms-architecture.jpg 2x" data-sizes=auto alt=img/demo-managed-vms-architecture.jpg>
+</a>
+<p><em>dispatch.yaml</em></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>dispatch</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/favicon.ico&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span><span class=c># appengine sandbox</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;your-project-id.appspot.com/&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span><span class=c># managed vms</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/module1/*&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>module1</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/*&#34;</span><span class=w>
+</span><span class=w>    </span><span class=nt>module</span><span class=p>:</span><span class=w> </span><span class=l>default</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>本次 demo lab 的架構為一個 sandbox runtime(default module) + managed VMs(module1) with automatic scaling. Route request 可以透過 <code>dispatch.yaml</code> 的設定進行重導[1]</p>
+<p><em>golang, file structure (same as python)</em></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>├── create_ab_test_instances.sh     <span class=c1># ab test instances create shell</span>
+├── default                         <span class=c1># default module</span>
+│   ├── app.yaml                    <span class=c1># default moduel app.yaml</span>
+│   ├── dispatch.yaml               <span class=c1># dispatch.yaml</span>
+│   └── sandbox.go                  <span class=c1># default module web app code</span>
+├── local_run.sh                    <span class=c1># local run shell</span>
+├── module1                         <span class=c1># module 1 module</span>
+│   ├── Dockerfile                  <span class=c1># auto-gen by gcloud command</span>
+│   ├── app.yaml                    <span class=c1># module1 module app.yaml</span>
+│   └── module1.go                  <span class=c1># module1 module web app code</span>
+├── update_all.sh                   <span class=c1># app upload shell (default, module1)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=run-locally>Run locally</h2>
+<blockquote>
+<p>本次 Demo 使用 Google Cloud SDK 0.9.79</p>
+</blockquote>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=c1># install Google cloud SDK</span>
+$ curl https://sdk.cloud.google.com <span class=p>|</span> bash
+
+<span class=c1># update components</span>
+$ gcloud components update
+
+<span class=c1># clone repo</span>
+$ git clone https://github.com/cage1016/managed-vms-lab
+</code></pre></td></tr></table>
+</div>
+</div><p>重新命名 *.yaml.exist &ndash;> *.yaml</p>
+<ul>
+<li>*/default/<code>dispatch.yaml.exist</code> &ndash;> */default/<code>dispatch.yaml</code></li>
+<li>*/default/<code>update_all.sh.exist</code> &ndash;> */defalt/<code>update_all.sh</code></li>
+<li>*default/<code>create_ab_test_instances.sh.exist</code> &ndash;> */default/<code>create_ab_test_instances.sh</code></li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=c1># run locally</span>
+$ <span class=nb>cd</span> golang <span class=o>(</span>or <span class=nb>cd</span> python<span class=o>)</span>
+
+<span class=c1># execute run bash</span>
+$ sh local_run.sh
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=deploy-to-gae>Deploy to GAE</h2>
+<p>在發佈 demo 應用程式至 App Engine 時，需要先配置一些參數. Golang/Python 的配置方式都一樣。</p>
+<ol>
+<li>在發佈應用程式至 App Engine 之前，確認你有先在 <a href=https://goo.gl/JkWVb9 target=_blank rel="noopener noreffer">Google Developers Console</a> 建立專案</li>
+<li>設置專案 <code>PROJECT_ID</code></li>
+</ol>
+<ul>
+<li>*/default/dispatch.yaml</li>
+<li>*/default/update_all.sh</li>
+<li>*/create_ab_test_instances.sh</li>
+</ul>
+<ol start=3>
+<li><code>$ sh update_all.sh</code> 就會依序發佈 App Engine sandbox 及 Managed VMs 至 App Engine</li>
+<li>訪問</li>
+</ol>
+<ul>
+<li>default module: <a href=https://your-project-id.appspot.com/ target=_blank rel="noopener noreffer">https://your-project-id.appspot.com/</a></li>
+<li>module1: <a href=https://your-project-id.appspot.com/module1/ target=_blank rel="noopener noreffer">https://your-project-id.appspot.com/module1/</a></li>
+<li>module1 route: <a href=https://your-project-id.appspot.com/module1/sayhi target=_blank rel="noopener noreffer">https://your-project-id.appspot.com/module1/sayhi</a></li>
+</ul>
+<h2 id=apache-ab-test>Apache ab test</h2>
+<p>在 module1 的 Managed VMs 中有設定 automatic scaling, 且在 cpu > <strong>0.2</strong> 下會自動進行 scaling</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=c1># cd folder</span>
+$ <span class=nb>cd</span> golang <span class=o>(</span>or <span class=nb>cd</span> python<span class=o>)</span>
+
+<span class=c1># create test instances</span>
+$ sh create_ab_test_instances.sh
+
+<span class=c1># ssh 至 gce instances</span>
+$ gcloud compute ssh your-project-id --zone<span class=o>=</span>project-zone-name
+
+<span class=c1># gce instances setup</span>
+$ sudo yum -y upgrade
+
+<span class=c1># install Apache ab tset</span>
+$ yum provides /usr/bin/ab
+$ sudo yum install httpd-tools
+
+<span class=c1># test</span>
+$ ab -n <span class=m>10000</span> http://your-project-id.appspot.com/module1/
+</code></pre></td></tr></table>
+</div>
+</div><p>在 Apache ab test 壓測 module1 的模組，就可以透過 <code>$gcloud compute instances list --project=your-project-id</code> 會自動 scale out</p>
+<h2 id=reference>Reference</h2>
+<ol>
+<li>App Engine Module:</li>
+</ol>
+<ul>
+<li><a href=https://goo.gl/p3nl48 target=_blank rel="noopener noreffer">App Engine Modules in Python</a></li>
+<li><a href=https://goo.gl/KpdKpF target=_blank rel="noopener noreffer">App Engine Modules in Go</a></li>
+</ul></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>更新於 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/zh-tw/posts/managed-vms-lab/index.md target=_blank>檢視原始程式碼</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/managed-vms-lab/ data-title="Managed VMs lab" data-via=CageChung data-hashtags=Golang,GAE,Python,Managed-VMs><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/managed-vms-lab/ data-hashtag=Golang><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/managed-vms-lab/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/golang/>golang</a>,&nbsp;<a href=/zh-tw/tags/gae/>GAE</a>,&nbsp;<a href=/zh-tw/tags/python/>Python</a>,&nbsp;<a href=/zh-tw/tags/managed-vms/>Managed-VMs</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/zh-tw/posts/copy-2-clipboard-with-ease/ class=prev rel=prev title="copy 2 clipboard with ease"><i class="fas fa-angle-left fa-fw"></i>copy 2 clipboard with ease</a>
+<a href=/zh-tw/posts/docker-notebook-1/ class=next rel=next title="[筆記] docker 1.8.2 rc">[筆記] docker 1.8.2 rc<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看評論>
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>

@@ -1,0 +1,272 @@
+<!doctype html><html lang=zh-tw>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=robots content="noodp">
+<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
+<title>Skaffold debug goland - KaiChu</title><meta name=Description content="skaffold v38.0 開始支持 Go container debugging support，非常大程度解決先前 remote debug golang 的痛苦"><meta property="og:title" content="Skaffold debug goland">
+<meta property="og:description" content="skaffold v38.0 開始支持 Go container debugging support，非常大程度解決先前 remote debug golang 的痛苦">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaichu.io/zh-tw/posts/skaffold-debug-goland/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-4.png"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2019-10-04T01:03:16+00:00">
+<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://kaichu.io/zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-4.png">
+<meta name=twitter:title content="Skaffold debug goland">
+<meta name=twitter:description content="skaffold v38.0 開始支持 Go container debugging support，非常大程度解決先前 remote debug golang 的痛苦">
+<meta name=application-name content="KaiChu">
+<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/skaffold-debug-goland/><link rel=prev href=https://kaichu.io/zh-tw/posts/gdg-summit-2018-and-google-io-2018/><link rel=next href=https://kaichu.io/zh-tw/posts/devfest19-build-go-kit-microservices-at-kubernetes-with-ease/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Skaffold debug goland","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/skaffold-debug-goland\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/skaffold-debug-goland\/img\/skaffold-go-debug-image-4.png","width":1966,"height":1124}],"genre":"posts","keywords":"kubernetes, skaffold, debug, golang, vscode, GoLand","wordcount":867,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/skaffold-debug-goland\/","datePublished":"2019-10-04T01:03:16+00:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"skaffold v38.0 開始支持 Go container debugging support，非常大程度解決先前 remote debug golang 的痛苦"}</script></head>
+<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu>
+<div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/skaffold-debug-goland/>English</option><option value=/zh-tw/posts/skaffold-debug-goland/ selected>繁體中文</option></select>
+</a><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-desktop>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a>
+</div>
+</div>
+</div>
+</header><header class=mobile id=header-mobile>
+<div class=header-container>
+<div class=header-wrapper>
+<div class=header-title>
+<a href=/zh-tw/ title=KaiChu>KaiChu</a>
+</div>
+<div class=menu-toggle id=menu-toggle-mobile>
+<span></span><span></span><span></span>
+</div>
+</div>
+<div class=menu id=menu-mobile><div class=search-wrapper>
+<div class="search mobile" id=search-mobile>
+<input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
+<i class="fas fa-search fa-fw"></i>
+</a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清除>
+<i class="fas fa-times-circle fa-fw"></i>
+</a>
+<span class="search-button search-loading" id=search-loading-mobile>
+<i class="fas fa-spinner fa-fw fa-spin"></i>
+</span>
+</div>
+<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+取消
+</a>
+</div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+<i class="fas fa-adjust fa-fw"></i>
+</a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select onchange="location=this.value"><option value=/posts/skaffold-debug-goland/>English</option><option value=/zh-tw/posts/skaffold-debug-goland/ selected>繁體中文</option></select>
+</a></div>
+</div>
+</header>
+<div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div>
+</div>
+<div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div>
+</div>
+<main class=main>
+<div class=container><div class=toc id=toc-auto>
+<h2 class=toc-title>目錄</h2>
+<div class="toc-content always-active" id=toc-content-auto></div>
+</div><article class="page single"><h1 class="single-title animated flipInX">Skaffold debug goland</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
+<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-10-04>2019-10-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 867 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 2 分鐘&nbsp;</div>
+</div><div class="details toc" id=toc-static kept>
+<div class="details-summary toc-title">
+<span>目錄</span>
+<span><i class="details-icon fas fa-angle-right"></i></span>
+</div>
+<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+<ul>
+<li><a href=#cloud-code--debug>Cloud Code & debug</a></li>
+<li><a href=#golang-debug--skaffold>Golang debug & skaffold</a></li>
+</ul>
+</nav></div>
+</div><div class=content id=content><p>今年的 <a href=https://inthecloud.withgoogle.com/summit-tpe-19/agenda.html target=_blank rel="noopener noreffer">Google Cloud Summit 台北場</a> 於 9/24 在內湖萬豪酒店舉行，在主題演講中再次聽到 <a href=https://cloud.google.com/code target=_blank rel="noopener noreffer">Cloud Code</a> 的部份也看到比較有感覺的 Live demo</p>
+<blockquote>
+<p>Cloud Code 隨附的工具能協助您以輕鬆快速的方式編寫、部署及偵錯雲端原生的應用程式。這項產品提供 Visual Studio Code 和 IntelliJ 等 IDE 的擴充功能，方便您在 Kubernetes 上針對程式碼快速進行疊代、偵錯及部署等作業。
+ 
+Cloud Code 是基於 <a href=https://github.com/GoogleContainerTools/skaffold target=_blank rel="noopener noreffer">GoogleContainerTools/skaffold: Easy and Repeatable Kubernetes Development</a> 為基礎上再整合 Visual Studio Code 和 IntelliJ IDE, 讓開發者可以直接在 IDE 上就可以快速開發 Kubernetes 上的應用程式</p>
+</blockquote>
+<p>基本上來說 Cloud Code 給 Visual Studio Code 和 IntelliJ IDE 的 plugin 就是基於 skaffold 打造的(如下圖)，當你在 Visual Studio Code 執行(cmd+shift+p) <code>Cloud Code: Continues Deploy</code> 的 log 就會知道</p>
+<a class=lightgallery href=img/skaffold-go-debug-image-4.png title=img/skaffold-go-debug-image-4.png data-thumbnail=img/skaffold-go-debug-image-4.png>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/skaffold-go-debug-image-4.png data-srcset="img/skaffold-go-debug-image-4.png, img/skaffold-go-debug-image-4.png 1.5x, img/skaffold-go-debug-image-4.png 2x" data-sizes=auto alt=img/skaffold-go-debug-image-4.png>
+</a>
+<h2 id=cloud-code--debug>Cloud Code & debug</h2>
+<p>在談談 Skaffold debug k8s golang 的程式前，先來看看目前 Cloud Code debug 的部份支援幾種程式語言</p>
+<p><em>Visual Studio Code 中 Cloud code 可以新增的專案範本</em></p>
+<a class=lightgallery href=/zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-5.png title=/zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-5.png data-thumbnail=/zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-5.png>
+<img class=lazyload src=/svg/loading.min.svg data-src=img/skaffold-go-debug-image-5.png data-srcset="/zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-5.png, img/skaffold-go-debug-image-5.png 1.5x, /zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-5.png 2x" data-sizes=auto alt=/zh-tw/posts/skaffold-debug-goland/img/skaffold-go-debug-image-5.png>
+</a>
+<blockquote>
+<p>依照官方文件，現在 Cloud Code 有整合 debug 的部份有 <code>Node.js</code>、 <code>Python</code>、<code>Java</code>。 <code>Go</code> 目前不支援, 不過在 skaffold v38.0 的時候終於加進了. (Add Go container debugging support <a href=https://github.com/GoogleContainerTools/skaffold/pull/2306 target=_blank rel="noopener noreffer">#2306</a>)，所以就有了這一篇文章。至於本來 Cloud Code 就有整合的語言就依照官方的操作流程應該就可以正常運作，所以這邊就不在說明了</p>
+</blockquote>
+<h2 id=golang-debug--skaffold>Golang debug & skaffold</h2>
+<p>當我們開發 kubernetes 應用程式(golang)會有 remote debug 的需求，在 skaffold v38.0 版之前 remote debug golang 是需要比較複雜的方式(docker-compose or kubernetes))</p>
+<p><strong>之前我們怎麼進行 remote debug golang</strong></p>
+<ol>
+<li>編譯 binary 時需要加入 <code>github.com/derekparker/delve/cmd/dlv</code></li>
+<li>執行 binary 時需要帶入 <code>CMD ["/go/bin/dlv", "--listen=:2345", "--headless=true", "--api-version=2", "exec", "/exe"]</code></li>
+<li>docker-compose & kubernetes YAML 檔都需要加入額外的聲明(完整的 yaml 範例可以看 <a href=https://github.com/cage1016/gokitconsul/blob/master/deployments/docker/docker-compose-debug.yaml#L57-L85 target=_blank rel="noopener noreffer">這</a>)
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nn>...</span><span class=w>
+</span><span class=w></span><span class=nt>security_opt</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=l>apparmor:unconfined</span><span class=w>
+</span><span class=w></span><span class=nt>cap_add</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=l>SYS_PTRACE</span><span class=w>
+</span><span class=w></span><span class=nn>...</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>需要 port forwarding dlv debug port 到本機</li>
+<li>透過 localhost port forwarding 就可以 attach 到 remote 的 golang</li>
+</ol>
+<p>步驟有一點麻煩</p>
+<p><strong>當 skaffold v38.0 開始支援 container debugging support，事情就變簡單了</strong></p>
+<ol>
+<li>remote debug 還是需要 <code>dlv</code>，不過 skaffold 透過 kubernetes 中的 initContainers 的方式來幫我們載入(Mount)相關的套件(dlv/dbg)，且會自動識別 runtime 來決定載入的套件，需 golang 的部份就在 <code>gcr.io/gcp-dev-tools/duct-tape/go</code>，(其他的 runtime 可由 <a href=https://github.com/GoogleContainerTools/container-debug-support/ target=_blank rel="noopener noreffer">https://github.com/GoogleContainerTools/container-debug-support/</a> 查詢)，並且會在 metadata 的 anootation 中加上 <code>debug.cloud.google.com/config: {"addsvc":{"dlv":56268,"runtime":"go"}}</code></li>
+<li>remote debug 還是需要 <code>dlv</code> 相關的啟動參數，skaffold 會自動幫我載入
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>Containers</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>addsvc</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>Container ID</span><span class=p>:</span><span class=w>  </span><span class=l>docker://493a405f1dc0ee462f4e5f269ae2fdb352e8468c186cbb26905c42e0bf5675cf</span><span class=w>
+</span><span class=w>        </span><span class=nt>Image</span><span class=p>:</span><span class=w>         </span><span class=l>cage1016/skaffold-debug-go-demo-addsvc:88f846061af2d34e8347a6325dcf48bb638f6baa50fd4599240fa5280054048e</span><span class=w>
+</span><span class=w>        </span><span class=nt>Image ID</span><span class=p>:</span><span class=w>      </span><span class=l>docker://sha256:88f846061af2d34e8347a6325dcf48bb638f6baa50fd4599240fa5280054048e</span><span class=w>
+</span><span class=w>        </span><span class=nt>Ports</span><span class=p>:</span><span class=w>         </span><span class=m>8020</span><span class=l>/TCP, 8021/TCP, 56268/TCP</span><span class=w>
+</span><span class=w>        </span><span class=nt>Host Ports</span><span class=p>:</span><span class=w>    </span><span class=m>0</span><span class=l>/TCP, 0/TCP, 0/TCP</span><span class=w>
+</span><span class=w>        </span><span class=nt>Command</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=l>/dbg/go/bin/dlv</span><span class=w>
+</span><span class=w>            </span><span class=l>exec</span><span class=w>
+</span><span class=w>            </span>--<span class=l>headless</span><span class=w>
+</span><span class=w>            </span>--<span class=l>continue</span><span class=w>
+</span><span class=w>            </span>--<span class=l>accept-multiclient</span><span class=w>
+</span><span class=w>            </span>--<span class=l>listen=localhost:56268</span><span class=w>
+</span><span class=w>            </span>--<span class=l>api-version=2</span><span class=w>
+</span><span class=w>            </span><span class=l>/exe</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>docker-compose & kubernetes YAML <code>不</code>需要再加註其他的聲明</li>
+<li>Cloud Code 上跑 skaffold debug 會自動幫我們建立 port forwarding</li>
+<li>Cloud Code 上進行 deubg 的設定，
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-json data-lang=json>        <span class=p>{</span>
+        <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;cloudcode&#34;</span><span class=p>,</span>
+        <span class=nt>&#34;language&#34;</span><span class=p>:</span> <span class=s2>&#34;Go&#34;</span><span class=p>,</span>
+        <span class=nt>&#34;request&#34;</span><span class=p>:</span> <span class=s2>&#34;attach&#34;</span><span class=p>,</span>
+        <span class=nt>&#34;debugPort&#34;</span><span class=p>:</span> <span class=mi>56268</span><span class=p>,</span>
+        <span class=nt>&#34;localRoot&#34;</span><span class=p>:</span> <span class=s2>&#34;${workspaceFolder}/go&#34;</span><span class=p>,</span>
+        <span class=nt>&#34;remoteRoot&#34;</span><span class=p>:</span> <span class=s2>&#34;/go/&#34;</span><span class=p>,</span>
+        <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;skaffold-debug-go-demo&#34;</span><span class=p>,</span>
+        <span class=nt>&#34;podSelector&#34;</span><span class=p>:</span> <span class=p>{</span>
+            <span class=nt>&#34;app&#34;</span><span class=p>:</span> <span class=s2>&#34;addsvc&#34;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol></div><div class=post-footer id=post-footer>
+<div class=post-info>
+<div class=post-info-line>
+<div class=post-info-mod>
+<span>更新於 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
+<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
+</div>
+<div class=post-info-license></div>
+</div>
+<div class=post-info-line>
+<div class=post-info-md><span>
+<a class=link-to-markdown href=/zh-tw/posts/skaffold-debug-goland/index.md target=_blank>檢視原始程式碼</a>
+</span></div>
+<div class=post-info-share>
+<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/skaffold-debug-goland/ data-title="Skaffold debug goland" data-via=CageChung data-hashtags=kubernetes,skaffold,debug,golang,vscode,GoLand><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/skaffold-debug-goland/ data-hashtag=kubernetes><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/skaffold-debug-goland/><i class="fab fa-linkedin fa-fw"></i></a></span>
+</div>
+</div>
+</div>
+<div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/kubernetes/>kubernetes</a>,&nbsp;<a href=/zh-tw/tags/skaffold/>skaffold</a>,&nbsp;<a href=/zh-tw/tags/debug/>debug</a>,&nbsp;<a href=/zh-tw/tags/golang/>golang</a>,&nbsp;<a href=/zh-tw/tags/vscode/>vscode</a>,&nbsp;<a href=/zh-tw/tags/goland/>GoLand</a></section>
+<section>
+<span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
+</section>
+</div>
+<div class=post-nav><a href=/zh-tw/posts/gdg-summit-2018-and-google-io-2018/ class=prev rel=prev title="Global GDG Leaders Summit 2018 and Google I/O 2018 經驗分享"><i class="fas fa-angle-left fa-fw"></i>Global GDG Leaders Summit 2018 and Google I/O 2018 經驗分享</a>
+<a href=/zh-tw/posts/devfest19-build-go-kit-microservices-at-kubernetes-with-ease/ class=next rel=next title="Devfest19 Build Go Kit Microservices at Kubernetes With Ease">Devfest19 Build Go Kit Microservices at Kubernetes With Ease<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id=comments><div id=utterances></div><noscript>
+Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
+</noscript></div></article></div>
+</main><footer class=footer>
+<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
+</div>
+</footer></div>
+<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
+<i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看評論>
+<i class="fas fa-comment fa-fw"></i>
+</a>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
+</html>
