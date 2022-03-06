@@ -9,7 +9,7 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/"><meta property="og:image" content="https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/img/pod-loap.webp"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-05-13T06:37:40+00:00">
-<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta property="article:modified_time" content="2022-03-06T07:11:52+00:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/img/pod-loap.webp">
 <meta name=twitter:title content="Build Kuberntes GRPC Health Probe with Pack">
@@ -17,14 +17,12 @@
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/><link rel=prev href=https://kaichu.io/posts/github-script-repos-and-collaborators-list-sync/><link rel=next href=https://kaichu.io/posts/devcontainer-zx-pack/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Build Kuberntes GRPC Health Probe with Pack","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/build-kubernetes-grpc-health-probe-with-pack\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/build-kubernetes-grpc-health-probe-with-pack\/img\/pod-loap.webp","width":1229,"height":1051}],"genre":"posts","keywords":"kubernetes, grpc, pack","wordcount":2355,"url":"https:\/\/kaichu.io\/posts\/build-kubernetes-grpc-health-probe-with-pack\/","datePublished":"2021-05-13T06:37:40+00:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在 Kubernetes Pod 的生命周期中我們可以使用 `livenessProbe` 及 `readinessProbe` 探針來檢查服務健康，本篇文章簡單介紹了如何為 GRPC Service / Client 對應 `grpc_health_probe` 的配置設定及服務健康的檢查，最後使用 buildpack 建構所需 container image 含動態下載 Github `grpc_health_probe` Assets"}</script></head>
-<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/><link rel=prev href=https://kaichu.io/posts/github-script-repos-and-collaborators-list-sync/><link rel=next href=https://kaichu.io/posts/devcontainer-zx-pack/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Build Kuberntes GRPC Health Probe with Pack","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/build-kubernetes-grpc-health-probe-with-pack\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/build-kubernetes-grpc-health-probe-with-pack\/img\/pod-loap.webp","width":1229,"height":1051}],"genre":"posts","keywords":"kubernetes, grpc, pack","wordcount":2355,"url":"https:\/\/kaichu.io\/posts\/build-kubernetes-grpc-health-probe-with-pack\/","datePublished":"2021-05-13T06:37:40+00:00","dateModified":"2022-03-06T07:11:52+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在 Kubernetes Pod 的生命周期中我們可以使用 `livenessProbe` 及 `readinessProbe` 探針來檢查服務健康，本篇文章簡單介紹了如何為 GRPC Service / Client 對應 `grpc_health_probe` 的配置設定及服務健康的檢查，最後使用 buildpack 建構所需 container image 含動態下載 Github `grpc_health_probe` Assets"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu>
+</div><div class=menu>
 <div class=menu-inner><a class=menu-item href=/ title=Home> Home </a><a class=menu-item href=/posts/> Posts </a><a class=menu-item href=/tags/> Tags </a><a class=menu-item href=/about/> About </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/build-kubernetes-grpc-health-probe-with-pack/ selected>English</option><option value=/zh-tw/posts/build-kubernetes-grpc-health-probe-with-pack/>繁體中文</option></select>
 </a><span class="menu-item search" id=search-desktop>
@@ -41,20 +39,14 @@
 </span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
 <i class="fas fa-adjust fa-fw"></i>
 </a>
-</div>
-</div>
-</div>
-</header><header class=mobile id=header-mobile>
+</div></div></div></header><header class=mobile id=header-mobile>
 <div class=header-container>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu-toggle id=menu-toggle-mobile>
+</div><div class=menu-toggle id=menu-toggle-mobile>
 <span></span><span></span><span></span>
-</div>
-</div>
-<div class=menu id=menu-mobile><div class=search-wrapper>
+</div></div><div class=menu id=menu-mobile><div class=search-wrapper>
 <div class="search mobile" id=search-mobile>
 <input type=text placeholder="Search titles or contents..." id=search-input-mobile>
 <a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search>
@@ -66,85 +58,38 @@
 <span class="search-button search-loading" id=search-loading-mobile>
 <i class="fas fa-spinner fa-fw fa-spin"></i>
 </span>
-</div>
-<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+</div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
 Cancel
 </a>
 </div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
 <i class="fas fa-adjust fa-fw"></i>
 </a><a href=javascript:void(0); class=menu-item title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select onchange="location=this.value"><option value=/posts/build-kubernetes-grpc-health-probe-with-pack/ selected>English</option><option value=/zh-tw/posts/build-kubernetes-grpc-health-probe-with-pack/>繁體中文</option></select>
-</a></div>
-</div>
-</header>
-<div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div>
-</div>
-<div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div>
-</div>
-<main class=main>
+</a></div></div></header><div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div></div><main class=main>
 <div class=container><div class=toc id=toc-auto>
-<h2 class=toc-title>Contents</h2>
-<div class="toc-content always-active" id=toc-content-auto></div>
-</div><article class="page single"><h1 class="single-title animated flipInX">Build Kuberntes GRPC Health Probe with Pack</h1><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-05-13>2021-05-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2355 words&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div>
-</div><div class="details toc" id=toc-static kept>
+<h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Build Kuberntes GRPC Health Probe with Pack</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-05-13>2021-05-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2355 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;5 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept>
 <div class="details-summary toc-title">
 <span>Contents</span>
 <span><i class="details-icon fas fa-angle-right"></i></span>
-</div>
-<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+</div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
 <ul>
 <li>
 <ul>
-<li><a href=#kubernetes-livenessprobe--readinessprobe>Kubernetes livenessProbe & readinessProbe</a></li>
-<li><a href=#health-checking-grpc-servers-on-kubernetes>Health checking gRPC servers on Kubernetes</a>
+<li><a href=#kubernetes-livenessprobe--readinessprobe>Kubernetes livenessProbe & readinessProbe</a></li><li><a href=#health-checking-grpc-servers-on-kubernetes>Health checking gRPC servers on Kubernetes</a>
 <ul>
-<li><a href=#gprc-server-健康檢查準備>GPRC Server 健康檢查準備</a></li>
-<li><a href=#gprc-client-健康檢查準備>GPRC client 健康檢查準備</a></li>
-<li><a href=#建構-container-image>建構 Container Image</a></li>
-<li><a href=#github-asset-buildpack>Github Asset Buildpack</a></li>
-</ul>
-</li>
-<li><a href=#心得>心得</a></li>
-</ul>
-</li>
-</ul>
-</nav></div>
-</div><div class=content id=content><p><figure><a class=lightgallery href=img/pod-loap.webp title="Kuberntes Pod 生命周期" data-thumbnail=img/pod-loap.webp data-sub-html="<h2>Kuberntes Pod 生命周期</h2><p>Kuberntes Pod 生命周期</p>">
+<li><a href=#gprc-server-健康檢查準備>GPRC Server 健康檢查準備</a></li><li><a href=#gprc-client-健康檢查準備>GPRC client 健康檢查準備</a></li><li><a href=#建構-container-image>建構 Container Image</a></li><li><a href=#github-asset-buildpack>Github Asset Buildpack</a></li></ul></li><li><a href=#心得>心得</a></li></ul></li></ul></nav></div></div><div class=content id=content><p><figure><a class=lightgallery href=img/pod-loap.webp title="Kuberntes Pod 生命周期" data-thumbnail=img/pod-loap.webp data-sub-html="<h2>Kuberntes Pod 生命周期</h2><p>Kuberntes Pod 生命周期</p>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/pod-loap.webp data-srcset="img/pod-loap.webp, img/pod-loap.webp 1.5x, img/pod-loap.webp 2x" data-sizes=auto alt=img/pod-loap.webp>
-</a><figcaption class=image-caption>Kuberntes Pod 生命周期</figcaption>
-</figure></p>
-<p>在 Kubernetes Pod 完整的生命周期包含了三個部份: <code>Iinit container</code> <code>Pod Hook</code> <code>健康檢查</code>。這三部都會影響到 Pod 的生命周期，而本篇文章說明如何使用 pack 打包 <a href=https://github.com/grpc-ecosystem/grpc-health-probe/ target=_blank rel="noopener noreffer">grpc-health-probe</a> 來支援 GRPC 健康檢查</p>
-<h3 id=kubernetes-livenessprobe--readinessprobe>Kubernetes livenessProbe & readinessProbe</h3>
-<p><a href=https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/ target=_blank rel="noopener noreffer">Configure Liveness, Readiness and Startup Probes | Kubernetes</a></p>
-<p>在 Kubernetes cluster 中我們可以通過配置 <code>livenessProbe</code> 及 <code>readinessProbe</code> 二個探針來影響容器的生命周期</p>
-<ul>
+</a><figcaption class=image-caption>Kuberntes Pod 生命周期</figcaption></figure></p><p>在 Kubernetes Pod 完整的生命周期包含了三個部份: <code>Iinit container</code> <code>Pod Hook</code> <code>健康檢查</code>。這三部都會影響到 Pod 的生命周期，而本篇文章說明如何使用 pack 打包 <a href=https://github.com/grpc-ecosystem/grpc-health-probe/ target=_blank rel="noopener noreffer">grpc-health-probe</a> 來支援 GRPC 健康檢查</p><h3 id=kubernetes-livenessprobe--readinessprobe>Kubernetes livenessProbe & readinessProbe</h3><p><a href=https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/ target=_blank rel="noopener noreffer">Configure Liveness, Readiness and Startup Probes | Kubernetes</a></p><p>在 Kubernetes cluster 中我們可以通過配置 <code>livenessProbe</code> 及 <code>readinessProbe</code> 二個探針來影響容器的生命周期</p><ul>
 <li>
-<p><code>livenessProbe</code>: 簡單的來說就是 Kubectl 通過 <code>livenessProbe</code> 來判斷容器是否存活 (Running)，如果 livenessProbe 探針偵測到容器不健康，Kubectl 就會刪除容器，並依據容器的重啟策略來處理，如果容器不包含 livenessProbe 探針，Kubectl 預設就會認定 livenessProbe 探針回傳值永遠為 Success</p>
-</li>
-<li>
-<p><code>readinessProbe</code>: 簡單的來說就是 Kubectl 通過 <code>livenessProbe</code> 來判斷容器的可用性 (Ready)，只有 Pod 下面所有容器的狀態都是就緒時，Kubectl 才會認定該 Pod 已經處於可工作狀態。如果該 Pod 執行過期中 Ready 狀態變成 False，系統會將其從 Service 的後端 Endpoints 列表中移除，等待 Pod Ready 狀態再度成為 True 時加為 Service Endpoints 列表，這樣可以確認流量不會被導至不可用的 Pod</p>
-</li>
-</ul>
-<p>在配置 <code>livenessProbe</code> 及 <code>readinessProbe</code> 都有三種指定方式</p>
-<ol>
-<li><code>ExecAction</code>: 在容器中執行指令，回傳值為 0 表示健康</li>
-<li><code>TCPSocketAction</code>: 透過容器的 IP 及 Port 進行檢查，如果可以建立 TCP 連線表示健康</li>
-<li><code>HTTPGetAction</code>: 透過容器的 IP 及 Port 進行 HTTP GET 檢查，如果回傳狀態碼介於 200 - 400 表示健康</li>
-</ol>
-<h3 id=health-checking-grpc-servers-on-kubernetes>Health checking gRPC servers on Kubernetes</h3>
-<p><figure><a class=lightgallery href=/posts/build-kubernetes-grpc-health-probe-with-pack/img/grpc_health_probe.png title=grpc_health_probe data-thumbnail=/posts/build-kubernetes-grpc-health-probe-with-pack/img/grpc_health_probe.png data-sub-html="<h2>grpc_health_probe</h2><p>grpc_health_probe</p>">
+<p><code>livenessProbe</code>: 簡單的來說就是 Kubectl 通過 <code>livenessProbe</code> 來判斷容器是否存活 (Running)，如果 livenessProbe 探針偵測到容器不健康，Kubectl 就會刪除容器，並依據容器的重啟策略來處理，如果容器不包含 livenessProbe 探針，Kubectl 預設就會認定 livenessProbe 探針回傳值永遠為 Success</p></li><li>
+<p><code>readinessProbe</code>: 簡單的來說就是 Kubectl 通過 <code>livenessProbe</code> 來判斷容器的可用性 (Ready)，只有 Pod 下面所有容器的狀態都是就緒時，Kubectl 才會認定該 Pod 已經處於可工作狀態。如果該 Pod 執行過期中 Ready 狀態變成 False，系統會將其從 Service 的後端 Endpoints 列表中移除，等待 Pod Ready 狀態再度成為 True 時加為 Service Endpoints 列表，這樣可以確認流量不會被導至不可用的 Pod</p></li></ul><p>在配置 <code>livenessProbe</code> 及 <code>readinessProbe</code> 都有三種指定方式</p><ol>
+<li><code>ExecAction</code>: 在容器中執行指令，回傳值為 0 表示健康</li><li><code>TCPSocketAction</code>: 透過容器的 IP 及 Port 進行檢查，如果可以建立 TCP 連線表示健康</li><li><code>HTTPGetAction</code>: 透過容器的 IP 及 Port 進行 HTTP GET 檢查，如果回傳狀態碼介於 200 - 400 表示健康</li></ol><h3 id=health-checking-grpc-servers-on-kubernetes>Health checking gRPC servers on Kubernetes</h3><p><figure><a class=lightgallery href=/posts/build-kubernetes-grpc-health-probe-with-pack/img/grpc_health_probe.png title=grpc_health_probe data-thumbnail=/posts/build-kubernetes-grpc-health-probe-with-pack/img/grpc_health_probe.png data-sub-html="<h2>grpc_health_probe</h2><p>grpc_health_probe</p>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/grpc_health_probe.png data-srcset="/posts/build-kubernetes-grpc-health-probe-with-pack/img/grpc_health_probe.png, img/grpc_health_probe.png 1.5x, /posts/build-kubernetes-grpc-health-probe-with-pack/img/grpc_health_probe.png 2x" data-sizes=auto alt=/posts/build-kubernetes-grpc-health-probe-with-pack/img/grpc_health_probe.png>
-</a><figcaption class=image-caption>grpc_health_probe</figcaption>
-</figure>
-(ref: <a href=https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/ target=_blank rel="noopener noreffer">https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/</a>)</p>
-<p>本篇文章因為要檢查 GRPC 服務是否健康，則屬於第一種 <code>ExecAction</code> 的範籌。<a href=https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/ target=_blank rel="noopener noreffer">Health checking gRPC servers on Kubernetes | Kubernetes</a> 文章也說明如何使用 <a href=https://github.com/grpc-ecosystem/grpc-health-probe/ target=_blank rel="noopener noreffer">grpc-health-probe</a> 工具來檢查 GRPC 是否健康</p>
-<p>在 Pod 中我們可以配置 <code>readinessProbe</code> 及 <code>livenessProbe</code></p>
-<div class=highlight><div class=chroma>
+</a><figcaption class=image-caption>grpc_health_probe</figcaption></figure>(ref: <a href=https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/ target=_blank rel="noopener noreffer">https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/</a>)</p><p>本篇文章因為要檢查 GRPC 服務是否健康，則屬於第一種 <code>ExecAction</code> 的範籌。<a href=https://kubernetes.io/blog/2018/10/01/health-checking-grpc-servers-on-kubernetes/ target=_blank rel="noopener noreffer">Health checking gRPC servers on Kubernetes | Kubernetes</a> 文章也說明如何使用 <a href=https://github.com/grpc-ecosystem/grpc-health-probe/ target=_blank rel="noopener noreffer">grpc-health-probe</a> 工具來檢查 GRPC 是否健康</p><p>在 Pod 中我們可以配置 <code>readinessProbe</code> 及 <code>livenessProbe</code></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -162,29 +107,24 @@ Cancel
 </span><span class=lnt>14
 </span><span class=lnt>15
 </span><span class=lnt>16
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>spec</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>server</span><span class=w>
-</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;[YOUR-DOCKER-IMAGE]&#34;</span><span class=w>
-</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
-</span><span class=w>      </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>10021</span><span class=w>
-</span><span class=w>    </span><span class=nt>readinessProbe</span><span class=p>:</span><span class=w>
-</span><span class=w>      </span><span class=nt>exec</span><span class=p>:</span><span class=w>
-</span><span class=w>        </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
-</span><span class=w>      </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>5</span><span class=w>
-</span><span class=w>      </span><span class=nt>periodSeconds</span><span class=p>:</span><span class=w> </span><span class=m>10</span><span class=w>
-</span><span class=w>    </span><span class=nt>livenessProbe</span><span class=p>:</span><span class=w>
-</span><span class=w>      </span><span class=nt>exec</span><span class=p>:</span><span class=w>
-</span><span class=w>        </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
-</span><span class=w>      </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>10</span><span class=w>
-</span><span class=w>      </span><span class=nt>periodSeconds</span><span class=p>:</span><span class=w> </span><span class=m>20</span><span class=w>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>在 exec ommand 中 <code>grpc_health_probe</code> 的執行檔是 <code>/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe</code> 而非 <a href=https://github.com/grpc-ecosystem/grpc-health-probe/ target=_blank rel="noopener noreffer">grpc-health-probe</a> 中看到的 <code>/bin/grpc_health_probe</code> 則是本篇的重點，我們慢慢說明</p>
-<h4 id=gprc-server-健康檢查準備>GPRC Server 健康檢查準備</h4>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>server</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;[YOUR-DOCKER-IMAGE]&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>10021</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>readinessProbe</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>5</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>periodSeconds</span><span class=p>:</span><span class=w> </span><span class=m>10</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>livenessProbe</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>10</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>periodSeconds</span><span class=p>:</span><span class=w> </span><span class=m>20</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>在 exec ommand 中 <code>grpc_health_probe</code> 的執行檔是 <code>/layers/cage1016_github-assets-cnb/github-assets/bin/grpc_health_probe</code> 而非 <a href=https://github.com/grpc-ecosystem/grpc-health-probe/ target=_blank rel="noopener noreffer">grpc-health-probe</a> 中看到的 <code>/bin/grpc_health_probe</code> 則是本篇的重點，我們慢慢說明</p><h4 id=gprc-server-健康檢查準備>GPRC Server 健康檢查準備</h4><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -208,34 +148,30 @@ Cancel
 </span><span class=lnt>20
 </span><span class=lnt>21
 </span><span class=lnt>22
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=c1>// HealthServer is the server API for Health service.
-</span><span class=c1></span><span class=kd>type</span> <span class=nx>HealthServer</span> <span class=kd>interface</span> <span class=p>{</span>
-	<span class=c1>// If the requested service is unknown, the call will fail with status
-</span><span class=c1></span>	<span class=c1>// NOT_FOUND.
-</span><span class=c1></span>	<span class=nf>Check</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=o>*</span><span class=nx>HealthCheckRequest</span><span class=p>)</span> <span class=p>(</span><span class=o>*</span><span class=nx>HealthCheckResponse</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span>
-	<span class=c1>// Performs a watch for the serving status of the requested service.
-</span><span class=c1></span>	<span class=c1>// The server will immediately send back a message indicating the current
-</span><span class=c1></span>	<span class=c1>// serving status.  It will then subsequently send a new message whenever
-</span><span class=c1></span>	<span class=c1>// the service&#39;s serving status changes.
-</span><span class=c1></span>	<span class=c1>//
-</span><span class=c1></span>	<span class=c1>// If the requested service is unknown when the call is received, the
-</span><span class=c1></span>	<span class=c1>// server will send a message setting the serving status to
-</span><span class=c1></span>	<span class=c1>// SERVICE_UNKNOWN but will *not* terminate the call.  If at some
-</span><span class=c1></span>	<span class=c1>// future point, the serving status of the service becomes known, the
-</span><span class=c1></span>	<span class=c1>// server will send a new message with the service&#39;s serving status.
-</span><span class=c1></span>	<span class=c1>//
-</span><span class=c1></span>	<span class=c1>// If the call terminates with status UNIMPLEMENTED, then clients
-</span><span class=c1></span>	<span class=c1>// should assume this method is not supported and should not retry the
-</span><span class=c1></span>	<span class=c1>// call.  If the call terminates with any other status (including OK),
-</span><span class=c1></span>	<span class=c1>// clients should retry the call with appropriate exponential backoff.
-</span><span class=c1></span>	<span class=nf>Watch</span><span class=p>(</span><span class=o>*</span><span class=nx>HealthCheckRequest</span><span class=p>,</span> <span class=nx>Health_WatchServer</span><span class=p>)</span> <span class=kt>error</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>在要使用 <code>grpc_health_probe</code> 來檢查 GRCP 狀態是否健康，在 Server 端也需要進行一些配合，實作二個方法 <code>Check</code> 及 <code>Watch</code></p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// HealthServer is the server API for Health service.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>HealthServer</span> <span class=kd>interface</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// If the requested service is unknown, the call will fail with status
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// NOT_FOUND.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nf>Check</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=o>*</span><span class=nx>HealthCheckRequest</span><span class=p>)</span> <span class=p>(</span><span class=o>*</span><span class=nx>HealthCheckResponse</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// Performs a watch for the serving status of the requested service.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// The server will immediately send back a message indicating the current
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// serving status.  It will then subsequently send a new message whenever
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// the service&#39;s serving status changes.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// If the requested service is unknown when the call is received, the
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// server will send a message setting the serving status to
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// SERVICE_UNKNOWN but will *not* terminate the call.  If at some
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// future point, the serving status of the service becomes known, the
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// server will send a new message with the service&#39;s serving status.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// If the call terminates with status UNIMPLEMENTED, then clients
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// should assume this method is not supported and should not retry the
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// call.  If the call terminates with any other status (including OK),
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// clients should retry the call with appropriate exponential backoff.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nf>Watch</span><span class=p>(</span><span class=o>*</span><span class=nx>HealthCheckRequest</span><span class=p>,</span> <span class=nx>Health_WatchServer</span><span class=p>)</span> <span class=kt>error</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>在要使用 <code>grpc_health_probe</code> 來檢查 GRCP 狀態是否健康，在 Server 端也需要進行一些配合，實作二個方法 <code>Check</code> 及 <code>Watch</code></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -248,43 +184,28 @@ Cancel
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go>  <span class=c1>// imports
-</span><span class=c1></span>  <span class=s>&#34;google.golang.org/grpc/health&#34;</span>
-	<span class=nx>healthgrpc</span> <span class=s>&#34;google.golang.org/grpc/health/grpc_health_v1&#34;</span>
-
-  <span class=c1>// health server
-</span><span class=c1></span>	<span class=nx>hs</span> <span class=o>:=</span> <span class=nx>health</span><span class=p>.</span><span class=nf>NewServer</span><span class=p>()</span>
-	<span class=nx>hs</span><span class=p>.</span><span class=nf>SetServingStatus</span><span class=p>(</span><span class=nx>cfg</span><span class=p>.</span><span class=nx>ServiceName</span><span class=p>,</span> <span class=nx>healthgrpc</span><span class=p>.</span><span class=nx>HealthCheckResponse_SERVING</span><span class=p>)</span>
-
-  <span class=c1>// register healdh grpc server
-</span><span class=c1></span>  <span class=nx>server</span> <span class=p>=</span> <span class=nx>grpc</span><span class=p>.</span><span class=nf>NewServer</span><span class=p>(</span><span class=nx>grpc</span><span class=p>.</span><span class=nf>UnaryInterceptor</span><span class=p>(</span><span class=nx>kitgrpc</span><span class=p>.</span><span class=nx>Interceptor</span><span class=p>))</span>
-  <span class=nx>healthgrpc</span><span class=p>.</span><span class=nf>RegisterHealthServer</span><span class=p>(</span><span class=nx>server</span><span class=p>,</span> <span class=nx>hs</span><span class=p>)</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>我們直接使用 <code>google.golang.org/grpc/health</code> 提供的方法進行配置就可以快速完成 GRPC Server 端的準備工具，詳細的程式碼可以至 <a href=https://github.com/cage1016/ms-demo/blob/22b2c38015ee85571d35d78f98979fe76ee9f07b/cmd/add/main.go#L76-L77 target=_blank rel="noopener noreffer">cage1016/ms-demo/cmd/add/main.go#L76-L77</a> 及 <a href=https://github.com/cage1016/ms-demo/blob/22b2c38015ee85571d35d78f98979fe76ee9f07b/cmd/add/main.go#L190-L192 target=_blank rel="noopener noreffer">cage1016/ms-demo/cmd/add/main.go#L190-L192</a></p>
-<h4 id=gprc-client-健康檢查準備>GPRC client 健康檢查準備</h4>
-<blockquote>
-<p><a href=https://github.com/grpc-ecosystem/grpc-health-probe target=_blank rel="noopener noreffer">grpc-ecosystem/grpc-health-probe: A command-line tool to perform health-checks for gRPC applications in Kubernetes etc.</a></p>
-</blockquote>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl>  <span class=c1>// imports
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=s>&#34;google.golang.org/grpc/health&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=nx>healthgrpc</span> <span class=s>&#34;google.golang.org/grpc/health/grpc_health_v1&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>// health server
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>hs</span> <span class=o>:=</span> <span class=nx>health</span><span class=p>.</span><span class=nf>NewServer</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>hs</span><span class=p>.</span><span class=nf>SetServingStatus</span><span class=p>(</span><span class=nx>cfg</span><span class=p>.</span><span class=nx>ServiceName</span><span class=p>,</span> <span class=nx>healthgrpc</span><span class=p>.</span><span class=nx>HealthCheckResponse_SERVING</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>// register healdh grpc server
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>server</span> <span class=p>=</span> <span class=nx>grpc</span><span class=p>.</span><span class=nf>NewServer</span><span class=p>(</span><span class=nx>grpc</span><span class=p>.</span><span class=nf>UnaryInterceptor</span><span class=p>(</span><span class=nx>kitgrpc</span><span class=p>.</span><span class=nx>Interceptor</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>  <span class=nx>healthgrpc</span><span class=p>.</span><span class=nf>RegisterHealthServer</span><span class=p>(</span><span class=nx>server</span><span class=p>,</span> <span class=nx>hs</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>我們直接使用 <code>google.golang.org/grpc/health</code> 提供的方法進行配置就可以快速完成 GRPC Server 端的準備工具，詳細的程式碼可以至 <a href=https://github.com/cage1016/ms-demo/blob/22b2c38015ee85571d35d78f98979fe76ee9f07b/cmd/add/main.go#L76-L77 target=_blank rel="noopener noreffer">cage1016/ms-demo/cmd/add/main.go#L76-L77</a> 及 <a href=https://github.com/cage1016/ms-demo/blob/22b2c38015ee85571d35d78f98979fe76ee9f07b/cmd/add/main.go#L190-L192 target=_blank rel="noopener noreffer">cage1016/ms-demo/cmd/add/main.go#L190-L192</a></p><h4 id=gprc-client-健康檢查準備>GPRC client 健康檢查準備</h4><blockquote>
+<p><a href=https://github.com/grpc-ecosystem/grpc-health-probe target=_blank rel="noopener noreffer">grpc-ecosystem/grpc-health-probe: A command-line tool to perform health-checks for gRPC applications in Kubernetes etc.</a></p></blockquote><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>grpc_health_probe -addr<span class=o>=</span>localhost:5000
-healthy: SERVING
-</code></pre></td></tr></table>
-</div>
-</div><p>在 local 的部份可以下載 grpc_health_probe 進行測試</p>
-<h4 id=建構-container-image>建構 Container Image</h4>
-<blockquote>
-<p>本篇文章的重點就是如何使用 <code>Pack</code> 來建構含有 <code>grpc_health_probe</code> 功能的 container image</p>
-</blockquote>
-<p>方法一 <code>Dockerfile</code></p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>grpc_health_probe -addr<span class=o>=</span>localhost:5000
+</span></span><span class=line><span class=cl>healthy: SERVING
+</span></span></code></pre></td></tr></table></div></div><p>在 local 的部份可以下載 grpc_health_probe 進行測試</p><h4 id=建構-container-image>建構 Container Image</h4><blockquote>
+<p>本篇文章的重點就是如何使用 <code>Pack</code> 來建構含有 <code>grpc_health_probe</code> 功能的 container image</p></blockquote><p>方法一 <code>Dockerfile</code></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -305,54 +226,32 @@ healthy: SERVING
 </span><span class=lnt>17
 </span><span class=lnt>18
 </span><span class=lnt>19
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=k>FROM</span><span class=s> gcr.io/gcp-runtimes/go1-builder:1.14 AS builder</span><span class=err>
-</span><span class=err></span><span class=k>WORKDIR</span><span class=s> /src</span><span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=c># restore dependencies</span><span class=err>
-</span><span class=err></span><span class=k>COPY</span> go.mod go.sum ./<span class=err>
-</span><span class=err></span><span class=k>RUN</span> go mod download<span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=k>COPY</span> . .<span class=err>
-</span><span class=err></span><span class=k>RUN</span> go build -gcflags<span class=o>=</span><span class=s1>&#39;-N -l&#39;</span> -o /exe cmd/add/main.go<span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=c># Adding the grpc_health_probe</span><span class=err>
-</span><span class=err></span><span class=k>RUN</span> <span class=nv>GRPC_HEALTH_PROBE_VERSION</span><span class=o>=</span>v0.3.2 <span class=o>&amp;&amp;</span> <span class=se>\
-</span><span class=se></span>    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/<span class=si>${</span><span class=nv>GRPC_HEALTH_PROBE_VERSION</span><span class=si>}</span>/grpc_health_probe-linux-amd64 <span class=o>&amp;&amp;</span> <span class=se>\
-</span><span class=se></span>    chmod +x /bin/grpc_health_probe<span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=k>FROM</span><span class=s> gcr.io/distroless/base:latest</span><span class=err>
-</span><span class=err></span><span class=k>COPY</span> --from<span class=o>=</span>builder /exe .<span class=err>
-</span><span class=err></span><span class=k>COPY</span> --from<span class=o>=</span>builder /bin/grpc_health_probe ./grpc_health_probe<span class=err>
-</span><span class=err></span><span class=k>ENTRYPOINT</span> <span class=p>[</span><span class=s2>&#34;/exe&#34;</span><span class=p>]</span><span class=err>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>在建構 Container image 時下載 <code>grpc_health_probe</code> 執行檔至 <code>/bin/grpc_health_probe</code>，所以在 Kubernetes Pod <code>livenessProbe</code> 及 <code>readinessProbe</code> 中的 command 才會是 <code> command: ["/grpc_health_probe", "-addr=:5000"]</code></p>
-<p>在之前的文章</p>
-<ul>
-<li><a href=https://kaichu.io/posts/github-assets-cnb/ target=_blank rel="noopener noreffer">Github Assets Cnb ｜ KaiChu</a></li>
-<li><a href=https://kaichu.io/posts/build-your-buildpack/ target=_blank rel="noopener noreffer">Build Your Buildpack ｜ KaiChu</a></li>
-<li><a href=https://kaichu.io/posts/buildpack-tips-and-tricks/ target=_blank rel="noopener noreffer">Buildpack Tips and Tricks ｜ KaiChu</a></li>
-</ul>
-<p>都有分享使用 <code>Pack</code> 來建構 container image。那我們如何使用 <code>Pack</code> 提供的方式在建構 container image 時如同寫 <code>Dockerfile</code> 去下載我們所需的 <code>grpc_health_probe</code> 檔案呢?</p>
-<h4 id=github-asset-buildpack>Github Asset Buildpack</h4>
-<blockquote>
-<p><a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb: A Cloud Native Buildpack that Download Github Assets</a></p>
-</blockquote>
-<p>buildpack <code>cage1016/github-assets-cnb@2.1.0</code> 提供了一個簡易的方式讓你透過 pack 建構 container image 時動態下載所需的 Github Assets，在這一次的使用情境也派上了用場</p>
-<ol>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=line><span class=cl><span class=k>FROM</span><span class=s> gcr.io/gcp-runtimes/go1-builder:1.14 AS builder</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>WORKDIR</span><span class=s> /src</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=c># restore dependencies</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>COPY</span> go.mod go.sum ./<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>RUN</span> go mod download<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>COPY</span> . .<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>RUN</span> go build -gcflags<span class=o>=</span><span class=s1>&#39;-N -l&#39;</span> -o /exe cmd/add/main.go<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=c># Adding the grpc_health_probe</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>RUN</span> <span class=nv>GRPC_HEALTH_PROBE_VERSION</span><span class=o>=</span>v0.3.2 <span class=o>&amp;&amp;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/<span class=si>${</span><span class=nv>GRPC_HEALTH_PROBE_VERSION</span><span class=si>}</span>/grpc_health_probe-linux-amd64 <span class=o>&amp;&amp;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    chmod +x /bin/grpc_health_probe<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>FROM</span><span class=s> gcr.io/distroless/base:latest</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>COPY</span> --from<span class=o>=</span>builder /exe .<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>COPY</span> --from<span class=o>=</span>builder /bin/grpc_health_probe ./grpc_health_probe<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>ENTRYPOINT</span> <span class=p>[</span><span class=s2>&#34;/exe&#34;</span><span class=p>]</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>在建構 Container image 時下載 <code>grpc_health_probe</code> 執行檔至 <code>/bin/grpc_health_probe</code>，所以在 Kubernetes Pod <code>livenessProbe</code> 及 <code>readinessProbe</code> 中的 command 才會是 <code> command: ["/grpc_health_probe", "-addr=:5000"]</code></p><p>在之前的文章</p><ul>
+<li><a href=https://kaichu.io/posts/github-assets-cnb/ target=_blank rel="noopener noreffer">Github Assets Cnb ｜ KaiChu</a></li><li><a href=https://kaichu.io/posts/build-your-buildpack/ target=_blank rel="noopener noreffer">Build Your Buildpack ｜ KaiChu</a></li><li><a href=https://kaichu.io/posts/buildpack-tips-and-tricks/ target=_blank rel="noopener noreffer">Buildpack Tips and Tricks ｜ KaiChu</a></li></ul><p>都有分享使用 <code>Pack</code> 來建構 container image。那我們如何使用 <code>Pack</code> 提供的方式在建構 container image 時如同寫 <code>Dockerfile</code> 去下載我們所需的 <code>grpc_health_probe</code> 檔案呢?</p><h4 id=github-asset-buildpack>Github Asset Buildpack</h4><blockquote>
+<p><a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb: A Cloud Native Buildpack that Download Github Assets</a></p></blockquote><p>buildpack <code>cage1016/github-assets-cnb@2.1.0</code> 提供了一個簡易的方式讓你透過 pack 建構 container image 時動態下載所需的 Github Assets，在這一次的使用情境也派上了用場</p><ol>
 <li>
-<p>建立一個 <code>project.toml</code> 並配置 buildpack <code>cage1016/github-assets-cnb</code> 所需的參數</p>
-<ul>
-<li><code>repo</code>: Github Repo</li>
-<li><code>asset</code>: Github Repo asset name</li>
-<li><code>tag</code>: Release tag name, default set to &ldquo;latest&rdquo;</li>
-<li><code>token_env</code>: (optional), Please assign ENV name for private repo</li>
-<li><code>destination</code>: download asset destination path to, <code>bin/&lt;your-asset></code> for <code>application/x-executable</code> asset</li>
-<li><code>strip_components</code>: <code>x-tar</code>, <code>gzip</code>, <code>x-zx</code> suuport StripComponents feature.</li>
-</ul>
-<div class=highlight><div class=chroma>
+<p>建立一個 <code>project.toml</code> 並配置 buildpack <code>cage1016/github-assets-cnb</code> 所需的參數</p><ul>
+<li><code>repo</code>: Github Repo</li><li><code>asset</code>: Github Repo asset name</li><li><code>tag</code>: Release tag name, default set to &ldquo;latest&rdquo;</li><li><code>token_env</code>: (optional), Please assign ENV name for private repo</li><li><code>destination</code>: download asset destination path to, <code>bin/&lt;your-asset></code> for <code>application/x-executable</code> asset</li><li><code>strip_components</code>: <code>x-tar</code>, <code>gzip</code>, <code>x-zx</code> suuport StripComponents feature.</li></ul><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -377,38 +276,32 @@ healthy: SERVING
 </span><span class=lnt>21
 </span><span class=lnt>22
 </span><span class=lnt>23
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
-</span><span class=s># assign token
-</span><span class=s>[[build.env]]
-</span><span class=s>name = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
-</span><span class=s>value = &#34;&lt;github-token&gt;&#34;
-</span><span class=s>
-</span><span class=s>[[metadata.githubassets]]
-</span><span class=s>repo = &#34;kkdai/youtube&#34;
-</span><span class=s>asset = &#34;youtubedr_2.7.0_linux_arm64.tar.gz&#34;
-</span><span class=s>destination = &#34;bin&#34;
-</span><span class=s>
-</span><span class=s>[[metadata.githubassets]]
-</span><span class=s>repo = &#34;qeek-dev/apitest-toolchain&#34;
-</span><span class=s>token_env = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
-</span><span class=s>asset = &#34;apitest-toolchain-linux-amd64&#34;
-</span><span class=s>destination = &#34;bin/apitest-toolchain&#34;
-</span><span class=s>tag = &#34;v0.1.0&#34;
-</span><span class=s>
-</span><span class=s>[[metadata.githubassets]]
-</span><span class=s>repo = &#34;stedolan/jq&#34;
-</span><span class=s>asset = &#34;jq-linux64&#34;
-</span><span class=s>destination = &#34;bin/jq&#34;
-</span><span class=s>EOF</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>明確的指定所需的 buildpack 給 <code>Pack</code> 指令。一般來說，Pack 會跟據 builder 中的配置自動偵測目標目錄下需要載入那幾個 buildpacks</p>
-<p><a href=https://github.com/GoogleCloudPlatform/buildpacks/blob/main/builders/gcp/base/builder.toml#L146-L170 target=_blank rel="noopener noreffer">buildpacks/builder.toml at main · GoogleCloudPlatform/buildpacks</a></p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
+</span></span></span><span class=line><span class=cl><span class=s># assign token
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;&lt;github-token&gt;&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[metadata.githubassets]]
+</span></span></span><span class=line><span class=cl><span class=s>repo = &#34;kkdai/youtube&#34;
+</span></span></span><span class=line><span class=cl><span class=s>asset = &#34;youtubedr_2.7.0_linux_arm64.tar.gz&#34;
+</span></span></span><span class=line><span class=cl><span class=s>destination = &#34;bin&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[metadata.githubassets]]
+</span></span></span><span class=line><span class=cl><span class=s>repo = &#34;qeek-dev/apitest-toolchain&#34;
+</span></span></span><span class=line><span class=cl><span class=s>token_env = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
+</span></span></span><span class=line><span class=cl><span class=s>asset = &#34;apitest-toolchain-linux-amd64&#34;
+</span></span></span><span class=line><span class=cl><span class=s>destination = &#34;bin/apitest-toolchain&#34;
+</span></span></span><span class=line><span class=cl><span class=s>tag = &#34;v0.1.0&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[metadata.githubassets]]
+</span></span></span><span class=line><span class=cl><span class=s>repo = &#34;stedolan/jq&#34;
+</span></span></span><span class=line><span class=cl><span class=s>asset = &#34;jq-linux64&#34;
+</span></span></span><span class=line><span class=cl><span class=s>destination = &#34;bin/jq&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>明確的指定所需的 buildpack 給 <code>Pack</code> 指令。一般來說，Pack 會跟據 builder 中的配置自動偵測目標目錄下需要載入那幾個 buildpacks</p><p><a href=https://github.com/GoogleCloudPlatform/buildpacks/blob/main/builders/gcp/base/builder.toml#L146-L170 target=_blank rel="noopener noreffer">buildpacks/builder.toml at main · GoogleCloudPlatform/buildpacks</a></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -435,37 +328,33 @@ healthy: SERVING
 </span><span class=lnt>23
 </span><span class=lnt>24
 </span><span class=lnt>25
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=c>######</span>
-<span class=c># Go #</span>
-<span class=c>######</span>
-
-<span class=p>[[</span><span class=nx>order</span><span class=p>]]</span>
-
-  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
-    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.runtime&#34;</span>
-
-  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
-    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.functions-framework&#34;</span>
-
-  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
-    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.build&#34;</span>
-
-  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
-    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.config.entrypoint&#34;</span>
-    <span class=nx>optional</span> <span class=p>=</span> <span class=kc>true</span>
-
-  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
-    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.clear_source&#34;</span>
-    <span class=nx>optional</span> <span class=p>=</span> <span class=kc>true</span>
-
-  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
-    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.utils.label&#34;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>以 GoogleCloudPlatform/buildpacks builder.toml 所定義的來說，針對 Golang 語言定義了 6 個 buildpack，而這些 buildpack 也會在 builder 動態偵測目標目錄所需，並不是 Golang 就一定是 6 個</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=line><span class=cl><span class=c>######</span>
+</span></span><span class=line><span class=cl><span class=c># Go #</span>
+</span></span><span class=line><span class=cl><span class=c>######</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>[[</span><span class=nx>order</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl>    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.runtime&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl>    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.functions-framework&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl>    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.build&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl>    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.config.entrypoint&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nx>optional</span> <span class=p>=</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl>    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.go.clear_source&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nx>optional</span> <span class=p>=</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=p>[[</span><span class=nx>order</span><span class=p>.</span><span class=nx>group</span><span class=p>]]</span>
+</span></span><span class=line><span class=cl>    <span class=nx>id</span> <span class=p>=</span> <span class=s2>&#34;google.utils.label&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>以 GoogleCloudPlatform/buildpacks builder.toml 所定義的來說，針對 Golang 語言定義了 6 個 buildpack，而這些 buildpack 也會在 builder 動態偵測目標目錄所需，並不是 Golang 就一定是 6 個</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -481,30 +370,23 @@ healthy: SERVING
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>...
-Status: Image is up to date <span class=k>for</span> gcr.io/buildpacks/gcp/run:v1
-<span class=o>===</span>&gt; DETECTING
-<span class=m>3</span> of <span class=m>6</span> buildpacks participating
-google.go.runtime  0.9.1
-google.go.build    0.9.0
-google.utils.label 0.0.1
-<span class=o>===</span>&gt; <span class=nv>ANALYZING</span>
-<span class=o>===</span>&gt; <span class=nv>RESTORING</span>
-<span class=o>===</span>&gt; <span class=nv>BUILDING</span>
-<span class=o>===</span> Go - Runtime <span class=o>(</span>google.go.runtime@0.9.1<span class=o>)</span> <span class=o>===</span>
-Using runtime version from go.mod: 1.14
-Installing Go v1.14
-...
-</code></pre></td></tr></table>
-</div>
-</div><p>我們可以看到使用 <code>gcr.io/buildpacks/builder:v1</code> 作為 builder 對 Golang 言語基本上就會載入 3 個 buildpack，<code>google.go.runtime</code> <code>google.go.build</code> <code>google.utils.label</code></p>
-<p>最後因為我們沒有客製自己的 builder，所以必需明確指定 buildpack，加上下載 Github Asset 用的 <code>cage1016/github-assets-cnb</code>，原來 <code>google.go.runtime</code> <code>google.go.build</code> <code>google.utils.label</code> 共記 4 個</p>
-</li>
-<li>
-<p>在 <code>project.toml</code> 增加明確指定所需要的 4 個 buildpack 及 Github Asset 相關的 metadata</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>...
+</span></span><span class=line><span class=cl>Status: Image is up to date <span class=k>for</span> gcr.io/buildpacks/gcp/run:v1
+</span></span><span class=line><span class=cl><span class=o>===</span>&gt; DETECTING
+</span></span><span class=line><span class=cl><span class=m>3</span> of <span class=m>6</span> buildpacks participating
+</span></span><span class=line><span class=cl>google.go.runtime  0.9.1
+</span></span><span class=line><span class=cl>google.go.build    0.9.0
+</span></span><span class=line><span class=cl>google.utils.label 0.0.1
+</span></span><span class=line><span class=cl><span class=o>===</span>&gt; <span class=nv>ANALYZING</span>
+</span></span><span class=line><span class=cl><span class=o>===</span>&gt; <span class=nv>RESTORING</span>
+</span></span><span class=line><span class=cl><span class=o>===</span>&gt; <span class=nv>BUILDING</span>
+</span></span><span class=line><span class=cl><span class=o>===</span> Go - Runtime <span class=o>(</span>google.go.runtime@0.9.1<span class=o>)</span> <span class=o>===</span>
+</span></span><span class=line><span class=cl>Using runtime version from go.mod: 1.14
+</span></span><span class=line><span class=cl>Installing Go v1.14
+</span></span><span class=line><span class=cl>...
+</span></span></code></pre></td></tr></table></div></div><p>我們可以看到使用 <code>gcr.io/buildpacks/builder:v1</code> 作為 builder 對 Golang 言語基本上就會載入 3 個 buildpack，<code>google.go.runtime</code> <code>google.go.build</code> <code>google.utils.label</code></p><p>最後因為我們沒有客製自己的 builder，所以必需明確指定 buildpack，加上下載 Github Asset 用的 <code>cage1016/github-assets-cnb</code>，原來 <code>google.go.runtime</code> <code>google.go.build</code> <code>google.utils.label</code> 共記 4 個</p></li><li>
+<p>在 <code>project.toml</code> 增加明確指定所需要的 4 個 buildpack 及 Github Asset 相關的 metadata</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -528,62 +410,44 @@ Installing Go v1.14
 </span><span class=lnt>20
 </span><span class=lnt>21
 </span><span class=lnt>22
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
-</span><span class=s>[[build.buildpacks]]
-</span><span class=s>id = &#34;google.go.runtime&#34;
-</span><span class=s>version = &#34;0.9.1&#34;
-</span><span class=s>
-</span><span class=s>[[build.buildpacks]]
-</span><span class=s>id = &#34;google.go.build&#34;
-</span><span class=s>version = &#34;0.9.0&#34;
-</span><span class=s>
-</span><span class=s>[[build.buildpacks]]
-</span><span class=s>id = &#34;google.utils.label&#34;
-</span><span class=s>version = &#34;0.0.1&#34;
-</span><span class=s>
-</span><span class=s>[[metadata.githubassets]]
-</span><span class=s>repo = &#34;grpc-ecosystem/grpc-health-probe&#34;
-</span><span class=s>asset = &#34;grpc_health_probe-linux-amd64&#34;
-</span><span class=s>destination = &#34;bin/grpc_health_probe&#34;
-</span><span class=s>
-</span><span class=s>[[build.buildpacks]]
-</span><span class=s>id = &#34;cage1016/github-assets-cnb&#34;
-</span><span class=s>version = &#34;2.1.1&#34;
-</span><span class=s>EOF</span>
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
+</span></span></span><span class=line><span class=cl><span class=s>[[build.buildpacks]]
+</span></span></span><span class=line><span class=cl><span class=s>id = &#34;google.go.runtime&#34;
+</span></span></span><span class=line><span class=cl><span class=s>version = &#34;0.9.1&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.buildpacks]]
+</span></span></span><span class=line><span class=cl><span class=s>id = &#34;google.go.build&#34;
+</span></span></span><span class=line><span class=cl><span class=s>version = &#34;0.9.0&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.buildpacks]]
+</span></span></span><span class=line><span class=cl><span class=s>id = &#34;google.utils.label&#34;
+</span></span></span><span class=line><span class=cl><span class=s>version = &#34;0.0.1&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[metadata.githubassets]]
+</span></span></span><span class=line><span class=cl><span class=s>repo = &#34;grpc-ecosystem/grpc-health-probe&#34;
+</span></span></span><span class=line><span class=cl><span class=s>asset = &#34;grpc_health_probe-linux-amd64&#34;
+</span></span></span><span class=line><span class=cl><span class=s>destination = &#34;bin/grpc_health_probe&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.buildpacks]]
+</span></span></span><span class=line><span class=cl><span class=s>id = &#34;cage1016/github-assets-cnb&#34;
+</span></span></span><span class=line><span class=cl><span class=s>version = &#34;2.1.1&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>pack build aa -B gcr.io/buildpacks/builder:v1 <span class=se>\
-</span><span class=se></span>              -d<span class=o>=</span>project.toml <span class=se>\
-</span><span class=se></span>              --env <span class=nv>GOOGLE_BUILDABLE</span><span class=o>=</span>cmd/add/main.go
-</code></pre></td></tr></table>
-</div>
-</div><p>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>pack build aa -B gcr.io/buildpacks/builder:v1 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>              -d<span class=o>=</span>project.toml <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>              --env <span class=nv>GOOGLE_BUILDABLE</span><span class=o>=</span>cmd/add/main.go
+</span></span></code></pre></td></tr></table></div></div><p>
 <asciinema-player src=tmpiz54xlrh-ascii.cast cols=640 rows=25 loop=true start-at=5 speed=1></asciinema-player>
-</p>
-<p>我們可以看到 <code>DETECTING</code> 的階段有正確偵測到我們明確指定的 4 個 buildpack，並在 <code>BUILDING</code> 階段也有正確下載 Github grpc-ecosystem/grpc-health-probe asset 至 container image 中</p>
-<p><figure><a class=lightgallery href=/posts/build-kubernetes-grpc-health-probe-with-pack/img/dive-0.png title="grpc-health-probe asset container image" data-thumbnail=/posts/build-kubernetes-grpc-health-probe-with-pack/img/dive-0.png data-sub-html="<h2>grpc-health-probe asset container image</h2><p>grpc-health-probe asset container image</p>">
+</p><p>我們可以看到 <code>DETECTING</code> 的階段有正確偵測到我們明確指定的 4 個 buildpack，並在 <code>BUILDING</code> 階段也有正確下載 Github grpc-ecosystem/grpc-health-probe asset 至 container image 中</p><p><figure><a class=lightgallery href=/posts/build-kubernetes-grpc-health-probe-with-pack/img/dive-0.png title="grpc-health-probe asset container image" data-thumbnail=/posts/build-kubernetes-grpc-health-probe-with-pack/img/dive-0.png data-sub-html="<h2>grpc-health-probe asset container image</h2><p>grpc-health-probe asset container image</p>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/dive-0.png data-srcset="/posts/build-kubernetes-grpc-health-probe-with-pack/img/dive-0.png, img/dive-0.png 1.5x, /posts/build-kubernetes-grpc-health-probe-with-pack/img/dive-0.png 2x" data-sizes=auto alt=/posts/build-kubernetes-grpc-health-probe-with-pack/img/dive-0.png>
-</a><figcaption class=image-caption>grpc-health-probe asset container image</figcaption>
-</figure></p>
-<p>而依照 <code>cage1016/github-assets-cnb</code> 中實作 buildpack sepc 所提供的目錄為 <code>/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe</code> 如圖所示，而這個路徑也是我們在 Kubernetes Pod 在 <code>livenessProbe</code> 及 <code>readinessProbe</code> 探針指令執行檔所在</p>
-</li>
-<li>
-<p>基本上二種方式的結果都是一樣的，就看你喜歡那一種</p>
-</li>
-</ol>
-<h3 id=心得>心得</h3>
-<p>在 <code>Dockerfile</code> 中使用 <code>wget</code> 動態去下載所需要的檔案算是一種常規的作法。反之在 buildapck 的架構之下要下載一個檔案卻有一點複雜，也是常常有需要下載 Github Assets 的剛性需求，特別寫了一個符合 Cloud Native Buildpack 的 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb</a> buildpack 來滿足這個需求，當這一個生態越來越豐富時，就會慢慢感覺像是在疊責木一樣</p>
-<p>如同 <a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo</a> 這個 gokit microserives demo 一樣，<code>Add</code> 及 <code>Tictac</code> 服務基本上都改用 pack 來建構 container image，為了在 Kubernetes Pod 新增 <code>livenessProbe</code> 及 <code>readinessProbe</code> 探針並使用 <code>grpc_health_probe</code> 來檢查 GRPC 服務的健康狀況，其實就是新增了 <code>project.toml</code></p>
-<div class=highlight><div class=chroma>
+</a><figcaption class=image-caption>grpc-health-probe asset container image</figcaption></figure></p><p>而依照 <code>cage1016/github-assets-cnb</code> 中實作 buildpack sepc 所提供的目錄為 <code>/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe</code> 如圖所示，而這個路徑也是我們在 Kubernetes Pod 在 <code>livenessProbe</code> 及 <code>readinessProbe</code> 探針指令執行檔所在</p></li><li>
+<p>基本上二種方式的結果都是一樣的，就看你喜歡那一種</p></li></ol><h3 id=心得>心得</h3><p>在 <code>Dockerfile</code> 中使用 <code>wget</code> 動態去下載所需要的檔案算是一種常規的作法。反之在 buildapck 的架構之下要下載一個檔案卻有一點複雜，也是常常有需要下載 Github Assets 的剛性需求，特別寫了一個符合 Cloud Native Buildpack 的 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb</a> buildpack 來滿足這個需求，當這一個生態越來越豐富時，就會慢慢感覺像是在疊責木一樣</p><p>如同 <a href=https://github.com/cage1016/ms-demo target=_blank rel="noopener noreffer">cage1016/ms-demo</a> 這個 gokit microserives demo 一樣，<code>Add</code> 及 <code>Tictac</code> 服務基本上都改用 pack 來建構 container image，為了在 Kubernetes Pod 新增 <code>livenessProbe</code> 及 <code>readinessProbe</code> 探針並使用 <code>grpc_health_probe</code> 來檢查 GRPC 服務的健康狀況，其實就是新增了 <code>project.toml</code></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -612,39 +476,35 @@ Installing Go v1.14
 </span><span class=lnt>25
 </span><span class=lnt>26
 </span><span class=lnt>27
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
-</span><span class=s># [[build.env]]
-</span><span class=s># optional, github token for private assets
-</span><span class=s># name = &#34;TOKEN&#34;
-</span><span class=s># value = &#34;&lt;github-token&gt;&#34;
-</span><span class=s>
-</span><span class=s># skaffold
-</span><span class=s>[[build.env]]
-</span><span class=s># required
-</span><span class=s>name = &#34;REPO&#34;
-</span><span class=s>value = &#34;grpc-ecosystem/grpc-health-probe&#34;
-</span><span class=s>
-</span><span class=s>[[build.env]]
-</span><span class=s># required
-</span><span class=s>name = &#34;FILE&#34;
-</span><span class=s>value = &#34;grpc_health_probe-linux-amd64&#34;
-</span><span class=s>
-</span><span class=s>[[build.env]]
-</span><span class=s># optional, default set to FILE value
-</span><span class=s>name = &#34;TARGET&#34;
-</span><span class=s>value = &#34;grpc_health_probe&#34;
-</span><span class=s>
-</span><span class=s># [[build.env]]
-</span><span class=s># # optional, default set to &#39;latest&#39;
-</span><span class=s># name = &#34;VERSION&#34;
-</span><span class=s># value = &#34;v1.22.0&#34;
-</span><span class=s>EOF</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>及</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
+</span></span></span><span class=line><span class=cl><span class=s># [[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># optional, github token for private assets
+</span></span></span><span class=line><span class=cl><span class=s># name = &#34;TOKEN&#34;
+</span></span></span><span class=line><span class=cl><span class=s># value = &#34;&lt;github-token&gt;&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s># skaffold
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># required
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;REPO&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;grpc-ecosystem/grpc-health-probe&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># required
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;FILE&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;grpc_health_probe-linux-amd64&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># optional, default set to FILE value
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;TARGET&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;grpc_health_probe&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s># [[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># # optional, default set to &#39;latest&#39;
+</span></span></span><span class=line><span class=cl><span class=s># name = &#34;VERSION&#34;
+</span></span></span><span class=line><span class=cl><span class=s># value = &#34;v1.22.0&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><p>及</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -658,61 +518,41 @@ Installing Go v1.14
 </span><span class=lnt>10
 </span><span class=lnt>11
 </span><span class=lnt>12
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nn>...</span><span class=w>
-</span><span class=w></span><span class=nt>ports</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>10021</span><span class=w>
-</span><span class=w></span><span class=nt>readinessProbe</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>exec</span><span class=p>:</span><span class=w>
-</span><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
-</span><span class=w>  </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>5</span><span class=w>
-</span><span class=w></span><span class=nt>livenessProbe</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>exec</span><span class=p>:</span><span class=w>
-</span><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
-</span><span class=w>  </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>10</span><span class=w>
-</span><span class=w></span><span class=nn>...</span><span class=w>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>剩下的都不用動，Pack 就會操作 builder 按照所載入的 buildpack 完成對應的動作。慢慢體會這種抽換的方便性</p></div><div class=post-footer id=post-footer>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nn>...</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>10021</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>readinessProbe</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>5</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>livenessProbe</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/layers/cage1016_github-assets-cnb/grpc-ecosystem_grpc-health-prob/bin/grpc_health_probe&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-addr=:10021&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>10</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nn>...</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>剩下的都不用動，Pack 就會操作 builder 按照所載入的 buildpack 完成對應的動作。慢慢體會這種抽換的方便性</p></div><div class=post-footer id=post-footer>
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>Updated on 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
-<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
-</div>
-<div class=post-info-license></div>
-</div>
-<div class=post-info-line>
+<span>Updated on 2022-03-06&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9f430b82ed63fd18dfc684e45a829b615d1b79c0 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9f430b82ed63fd18dfc684e45a829b615d1b79c0: add Wason Language Translator CLI">
+<i class="fas fa-hashtag fa-fw"></i>9f430b8</a></span>
+</div><div class=post-info-license></div></div><div class=post-info-line>
 <div class=post-info-md><span>
 <a class=link-to-markdown href=/posts/build-kubernetes-grpc-health-probe-with-pack/index.md target=_blank>Read Markdown</a>
-</span></div>
-<div class=post-info-share>
+</span></div><div class=post-info-share>
 <span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/ data-title="Build Kuberntes GRPC Health Probe with Pack" data-via=CageChung data-hashtags=kubernetes,grpc,pack><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/ data-hashtag=kubernetes><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/build-kubernetes-grpc-health-probe-with-pack/><i class="fab fa-linkedin fa-fw"></i></a></span>
-</div>
-</div>
-</div>
-<div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/kubernetes/>kubernetes</a>,&nbsp;<a href=/tags/grpc/>grpc</a>,&nbsp;<a href=/tags/pack/>pack</a></section>
-<section>
+</div></div></div><div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/kubernetes/>kubernetes</a>,&nbsp;<a href=/tags/grpc/>grpc</a>,&nbsp;<a href=/tags/pack/>pack</a></section><section>
 <span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span>
-</section>
-</div>
-<div class=post-nav><a href=/posts/github-script-repos-and-collaborators-list-sync/ class=prev rel=prev title="Github Script Repos and Collaborators List Sync"><i class="fas fa-angle-left fa-fw"></i>Github Script Repos and Collaborators List Sync</a>
-<a href=/posts/devcontainer-zx-pack/ class=next rel=next title="Devcontainer Zx Pack">Devcontainer Zx Pack<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-<div id=comments><div id=utterances></div><noscript>
+</section></div><div class=post-nav><a href=/posts/github-script-repos-and-collaborators-list-sync/ class=prev rel=prev title="Github Script Repos and Collaborators List Sync"><i class="fas fa-angle-left fa-fw"></i>Github Script Repos and Collaborators List Sync</a>
+<a href=/posts/devcontainer-zx-pack/ class=next rel=next title="Devcontainer Zx Pack">Devcontainer Zx Pack<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
-</noscript></div></article></div>
-</main><footer class=footer>
-<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
-</div>
-</footer></div>
-<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
+</noscript></div></article></div></main><footer class=footer>
+<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.93.2">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
 <i class="fas fa-arrow-up fa-fw"></i>
 </a><a href=# id=view-comments class=fixed-button title="View Comments">
 <i class="fas fa-comment fa-fw"></i>
 </a>
-</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.en",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
-</html>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.en",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>

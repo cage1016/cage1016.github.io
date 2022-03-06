@@ -9,7 +9,7 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/zh-tw/posts/github-assets-cnb/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/github-assets-cnb/img/1.png"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-04-20T21:54:06+08:00">
-<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta property="article:modified_time" content="2022-03-06T07:11:52+00:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/zh-tw/posts/github-assets-cnb/img/1.png">
 <meta name=twitter:title content="Github Assets Cnb">
@@ -17,14 +17,12 @@
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/github-assets-cnb/><link rel=prev href=https://kaichu.io/zh-tw/posts/ghcr-io-pack-build/><link rel=next href=https://kaichu.io/zh-tw/posts/telepresence-2-have-a-tried/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Github Assets Cnb","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/github-assets-cnb\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-assets-cnb\/img\/1.png","width":2286,"height":1172}],"genre":"posts","keywords":"buildpacks, gcp, pack, github, paketo","wordcount":716,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-assets-cnb\/","datePublished":"2021-04-20T21:54:06+08:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 `dockerfile` 透過 `curl` 指令來獲取檔案，本篇文章則透過 paketo-buildpacks/packit 來實作一個可以下載 Github Assets 的 buildpack cage1016/github-assets-cnb"}</script></head>
-<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/github-assets-cnb/><link rel=prev href=https://kaichu.io/zh-tw/posts/ghcr-io-pack-build/><link rel=next href=https://kaichu.io/zh-tw/posts/telepresence-2-have-a-tried/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Github Assets Cnb","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/github-assets-cnb\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-assets-cnb\/img\/1.png","width":2286,"height":1172}],"genre":"posts","keywords":"buildpacks, gcp, pack, github, paketo","wordcount":716,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-assets-cnb\/","datePublished":"2021-04-20T21:54:06+08:00","dateModified":"2022-03-06T07:11:52+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 `dockerfile` 透過 `curl` 指令來獲取檔案，本篇文章則透過 paketo-buildpacks/packit 來實作一個可以下載 Github Assets 的 buildpack cage1016/github-assets-cnb"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/zh-tw/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu>
+</div><div class=menu>
 <div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/github-assets-cnb/>English</option><option value=/zh-tw/posts/github-assets-cnb/ selected>繁體中文</option></select>
 </a><span class="menu-item search" id=search-desktop>
@@ -41,20 +39,14 @@
 </span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
 <i class="fas fa-adjust fa-fw"></i>
 </a>
-</div>
-</div>
-</div>
-</header><header class=mobile id=header-mobile>
+</div></div></div></header><header class=mobile id=header-mobile>
 <div class=header-container>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/zh-tw/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu-toggle id=menu-toggle-mobile>
+</div><div class=menu-toggle id=menu-toggle-mobile>
 <span></span><span></span><span></span>
-</div>
-</div>
-<div class=menu id=menu-mobile><div class=search-wrapper>
+</div></div><div class=menu id=menu-mobile><div class=search-wrapper>
 <div class="search mobile" id=search-mobile>
 <input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
 <a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
@@ -66,57 +58,32 @@
 <span class="search-button search-loading" id=search-loading-mobile>
 <i class="fas fa-spinner fa-fw fa-spin"></i>
 </span>
-</div>
-<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+</div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
 取消
 </a>
 </div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
 <i class="fas fa-adjust fa-fw"></i>
 </a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select onchange="location=this.value"><option value=/posts/github-assets-cnb/>English</option><option value=/zh-tw/posts/github-assets-cnb/ selected>繁體中文</option></select>
-</a></div>
-</div>
-</header>
-<div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div>
-</div>
-<div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div>
-</div>
-<main class=main>
+</a></div></div></header><div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div></div><main class=main>
 <div class=container><div class=toc id=toc-auto>
-<h2 class=toc-title>目錄</h2>
-<div class="toc-content always-active" id=toc-content-auto></div>
-</div><article class="page single"><h1 class="single-title animated flipInX">Github Assets Cnb</h1><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-04-20>2021-04-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 716 字&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 2 分鐘&nbsp;</div>
-</div><div class="details toc" id=toc-static kept>
+<h2 class=toc-title>目錄</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Github Assets Cnb</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-04-20>2021-04-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 716 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 2 分鐘&nbsp;</div></div><div class="details toc" id=toc-static kept>
 <div class="details-summary toc-title">
 <span>目錄</span>
 <span><i class="details-icon fas fa-angle-right"></i></span>
-</div>
-<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+</div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
 <ul>
 <li>
 <ul>
 <li><a href=#cage1016github-assets-cnb>cage1016/github-assets-cnb</a>
 <ul>
-<li><a href=#usage>Usage</a></li>
-<li><a href=#github-assets-cnb210><a href=mailto:github-assets-cnb@2.1.0>github-assets-cnb@2.1.0</a></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</nav></div>
-</div><div class=content id=content><p><figure><a class=lightgallery href=img/1.png title="Github Asset Cnb" data-thumbnail=img/1.png data-sub-html="<h2>Github Asset Cnb</h2><p>Github Asset Cnb</p>">
+<li><a href=#usage>Usage</a></li><li><a href=#github-assets-cnb210><a href=mailto:github-assets-cnb@2.1.0>github-assets-cnb@2.1.0</a></a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><p><figure><a class=lightgallery href=img/1.png title="Github Asset Cnb" data-thumbnail=img/1.png data-sub-html="<h2>Github Asset Cnb</h2><p>Github Asset Cnb</p>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/1.png data-srcset="img/1.png, img/1.png 1.5x, img/1.png 2x" data-sizes=auto alt=img/1.png>
-</a><figcaption class=image-caption>Github Asset Cnb</figcaption>
-</figure></p>
-<p>在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 <code>dockerfile</code> 透過 <code>curl</code> 指令來獲取檔案，如果是 private repo 時另外配置 <code>TOKEN</code> 即可</p>
-<p><strong>dockerfile</strong></p>
-<div class=highlight><div class=chroma>
+</a><figcaption class=image-caption>Github Asset Cnb</figcaption></figure></p><p>在構建 container image 時，有時候會有需求動態下載 Github repo 中的 Assets 檔案，簡單的方式就是在 <code>dockerfile</code> 透過 <code>curl</code> 指令來獲取檔案，如果是 private repo 時另外配置 <code>TOKEN</code> 即可</p><p><strong>dockerfile</strong></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -131,55 +98,32 @@
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=k>ARG</span> <span class=nv>GITHUB_TOKEN</span><span class=o>=</span>&lt;github-token&gt;<span class=err>
-</span><span class=err></span><span class=k>ARG</span> <span class=nv>REPO</span><span class=o>=</span>qeek-dev/apitest-toolchain<span class=err>
-</span><span class=err></span><span class=k>ARG</span> <span class=nv>FILE</span><span class=o>=</span>apitest-toolchain-linux-amd64<span class=err>
-</span><span class=err></span><span class=k>ARG</span> <span class=nv>VERSION</span><span class=o>=</span>v0.1.0<span class=err>
-</span><span class=err></span><span class=k>ARG</span> <span class=nv>TARGET</span><span class=o>=</span>apitest-toolchain<span class=err>
-</span><span class=err>
-</span><span class=err></span><span class=k>RUN</span> <span class=nv>ASSET_ID</span><span class=o>=</span><span class=k>$(if</span> <span class=o>[</span> <span class=nv>$VERSION</span> !<span class=o>=</span> <span class=s2>&#34;latest&#34;</span> <span class=o>]</span><span class=p>;</span> <span class=k>then</span> <span class=se>\
-</span><span class=se></span>        <span class=nb>echo</span> <span class=k>$(</span>curl -H <span class=s2>&#34;Authorization: token </span><span class=nv>$GITHUB_TOKEN</span><span class=s2>&#34;</span> -H <span class=s2>&#34;Accept: application/vnd.github.v3.raw&#34;</span> -s https://api.github.com/repos/<span class=nv>$REPO</span>/releases <span class=p>|</span> jq <span class=s2>&#34;. | map(select(.VERSION == \&#34;</span><span class=nv>$VERSION</span><span class=s2>\&#34;))[0].assets | map(select(.name == \&#34;</span><span class=nv>$FILE</span><span class=s2>\&#34;))[0].id&#34;</span><span class=k>)</span><span class=p>;</span> <span class=se>\
-</span><span class=se></span>    <span class=k>else</span><span class=se>\
-</span><span class=se></span>        <span class=nb>echo</span> <span class=k>$(</span>curl -H <span class=s2>&#34;Authorization: token </span><span class=nv>$GITHUB_TOKEN</span><span class=s2>&#34;</span> -H <span class=s2>&#34;Accept: application/vnd.github.v3.raw&#34;</span> -s https://api.github.com/repos/<span class=nv>$REPO</span>/releases <span class=p>|</span> jq <span class=s2>&#34;.[0].assets | map(select(.name == \&#34;</span><span class=nv>$FILE</span><span class=s2>\&#34;))[0].id&#34;</span><span class=k>)</span><span class=p>;</span> <span class=se>\
-</span><span class=se></span>    <span class=k>fi)</span> <span class=se>\
-</span><span class=se></span>    <span class=o>&amp;&amp;</span> curl -vLJo /tmp/<span class=nv>$TARGET</span> -H <span class=s1>&#39;Accept: application/octet-stream&#39;</span> <span class=s2>&#34;https://</span><span class=nv>$GITHUB_TOKEN</span><span class=s2>:@api.github.com/repos/</span><span class=nv>$REPO</span><span class=s2>/releases/assets/</span><span class=nv>$ASSET_ID</span><span class=s2>&#34;</span> <span class=se>\
-</span><span class=se></span>    <span class=o>&amp;&amp;</span> chmod +x /tmp/<span class=nv>$TARGET</span> <span class=o>&amp;&amp;</span> mv /tmp/<span class=nv>$TARGET</span> /bin<span class=err>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>上述 <code>dockerfile</code> 可以分成二個部份</p>
-<ol>
-<li>透過 Github API 獲取對應 Asset ID</li>
-<li>透過 curl 下載對應 Asset ID 的實體檔案</li>
-</ol>
-<p>也因為自己有這一個需求，所以 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb</a> 這一個 Buildapck 的專案就出現了</p>
-<h3 id=cage1016github-assets-cnb>cage1016/github-assets-cnb</h3>
-<blockquote>
-<p>A Cloud Native Buildpack that Download Github Assets</p>
-</blockquote>
-<p>基本上這一個 buildpack 就是透過 <a href=https://github.com/paketo-buildpacks/packit target=_blank rel="noopener noreffer">paketo-buildpacks/packit</a> 這一個 Buildpacks Utils Library 來實作，一定程度減輕了對 <a href=https://github.com/buildpacks/spec target=_blank rel="noopener noreffer">buildpacks/spec</a> 有點麻煩的規範</p>
-<p>例如</p>
-<ul>
-<li><code>github.com/paketo-buildpacks/packit/cargo</code>: 有提供對 metadata.dependencies 操作的函式</li>
-<li><code>github.com/paketo-buildpacks/packit/postal</code>: 有提供 <code>Drop</code> 可以直接透過 http 來下載檔案</li>
-</ul>
-<h4 id=usage>Usage</h4>
-<ol>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=line><span class=cl><span class=k>ARG</span> <span class=nv>GITHUB_TOKEN</span><span class=o>=</span>&lt;github-token&gt;<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>ARG</span> <span class=nv>REPO</span><span class=o>=</span>qeek-dev/apitest-toolchain<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>ARG</span> <span class=nv>FILE</span><span class=o>=</span>apitest-toolchain-linux-amd64<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>ARG</span> <span class=nv>VERSION</span><span class=o>=</span>v0.1.0<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>ARG</span> <span class=nv>TARGET</span><span class=o>=</span>apitest-toolchain<span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>RUN</span> <span class=nv>ASSET_ID</span><span class=o>=</span><span class=k>$(if</span> <span class=o>[</span> <span class=nv>$VERSION</span> !<span class=o>=</span> <span class=s2>&#34;latest&#34;</span> <span class=o>]</span><span class=p>;</span> <span class=k>then</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>        <span class=nb>echo</span> <span class=k>$(</span>curl -H <span class=s2>&#34;Authorization: token </span><span class=nv>$GITHUB_TOKEN</span><span class=s2>&#34;</span> -H <span class=s2>&#34;Accept: application/vnd.github.v3.raw&#34;</span> -s https://api.github.com/repos/<span class=nv>$REPO</span>/releases <span class=p>|</span> jq <span class=s2>&#34;. | map(select(.VERSION == \&#34;</span><span class=nv>$VERSION</span><span class=s2>\&#34;))[0].assets | map(select(.name == \&#34;</span><span class=nv>$FILE</span><span class=s2>\&#34;))[0].id&#34;</span><span class=k>)</span><span class=p>;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    <span class=k>else</span><span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>        <span class=nb>echo</span> <span class=k>$(</span>curl -H <span class=s2>&#34;Authorization: token </span><span class=nv>$GITHUB_TOKEN</span><span class=s2>&#34;</span> -H <span class=s2>&#34;Accept: application/vnd.github.v3.raw&#34;</span> -s https://api.github.com/repos/<span class=nv>$REPO</span>/releases <span class=p>|</span> jq <span class=s2>&#34;.[0].assets | map(select(.name == \&#34;</span><span class=nv>$FILE</span><span class=s2>\&#34;))[0].id&#34;</span><span class=k>)</span><span class=p>;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    <span class=k>fi)</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    <span class=o>&amp;&amp;</span> curl -vLJo /tmp/<span class=nv>$TARGET</span> -H <span class=s1>&#39;Accept: application/octet-stream&#39;</span> <span class=s2>&#34;https://</span><span class=nv>$GITHUB_TOKEN</span><span class=s2>:@api.github.com/repos/</span><span class=nv>$REPO</span><span class=s2>/releases/assets/</span><span class=nv>$ASSET_ID</span><span class=s2>&#34;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    <span class=o>&amp;&amp;</span> chmod +x /tmp/<span class=nv>$TARGET</span> <span class=o>&amp;&amp;</span> mv /tmp/<span class=nv>$TARGET</span> /bin<span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>上述 <code>dockerfile</code> 可以分成二個部份</p><ol>
+<li>透過 Github API 獲取對應 Asset ID</li><li>透過 curl 下載對應 Asset ID 的實體檔案</li></ol><p>也因為自己有這一個需求，所以 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb</a> 這一個 Buildapck 的專案就出現了</p><h3 id=cage1016github-assets-cnb>cage1016/github-assets-cnb</h3><blockquote>
+<p>A Cloud Native Buildpack that Download Github Assets</p></blockquote><p>基本上這一個 buildpack 就是透過 <a href=https://github.com/paketo-buildpacks/packit target=_blank rel="noopener noreffer">paketo-buildpacks/packit</a> 這一個 Buildpacks Utils Library 來實作，一定程度減輕了對 <a href=https://github.com/buildpacks/spec target=_blank rel="noopener noreffer">buildpacks/spec</a> 有點麻煩的規範</p><p>例如</p><ul>
+<li><code>github.com/paketo-buildpacks/packit/cargo</code>: 有提供對 metadata.dependencies 操作的函式</li><li><code>github.com/paketo-buildpacks/packit/postal</code>: 有提供 <code>Drop</code> 可以直接透過 http 來下載檔案</li></ul><h4 id=usage>Usage</h4><ol>
 <li>
-<p>Create a folder</p>
-<div class=highlight><div class=chroma>
+<p>Create a folder</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>mkdir -p sample-app
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>create <code>project.toml</code>, 這邊以下載 <code>skaffold</code> 為例，如果 Github Asset 是屬於 private repo，配置加上 <code>TOKEN</code> 即可</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir -p sample-app
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>create <code>project.toml</code>, 這邊以下載 <code>skaffold</code> 為例，如果 Github Asset 是屬於 private repo，配置加上 <code>TOKEN</code> 即可</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -208,85 +152,55 @@
 </span><span class=lnt>25
 </span><span class=lnt>26
 </span><span class=lnt>27
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt;&gt; sample-app/project.toml
-</span><span class=s># [[build.env]]
-</span><span class=s># optional, github token for private assets
-</span><span class=s># name = &#34;TOKEN&#34;
-</span><span class=s># value = &#34;&lt;github-token&gt;&#34;
-</span><span class=s>
-</span><span class=s># skaffold
-</span><span class=s>[[build.env]]
-</span><span class=s># required
-</span><span class=s>name = &#34;REPO&#34;
-</span><span class=s>value = &#34;GoogleContainerTools/skaffold&#34;
-</span><span class=s>
-</span><span class=s>[[build.env]]
-</span><span class=s># required
-</span><span class=s>name = &#34;FILE&#34;
-</span><span class=s>value = &#34;skaffold-linux-amd64&#34;
-</span><span class=s>
-</span><span class=s>[[build.env]]
-</span><span class=s># optional, default set to FILE value
-</span><span class=s>name = &#34;TARGET&#34;
-</span><span class=s>value = &#34;skaffold&#34;
-</span><span class=s>
-</span><span class=s>[[build.env]]
-</span><span class=s># optional, default set to &#39;latest&#39;
-</span><span class=s>name = &#34;VERSION&#34;
-</span><span class=s>value = &#34;v1.22.0&#34;
-</span><span class=s>EOF</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>build container image with buildpack</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; sample-app/project.toml
+</span></span></span><span class=line><span class=cl><span class=s># [[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># optional, github token for private assets
+</span></span></span><span class=line><span class=cl><span class=s># name = &#34;TOKEN&#34;
+</span></span></span><span class=line><span class=cl><span class=s># value = &#34;&lt;github-token&gt;&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s># skaffold
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># required
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;REPO&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;GoogleContainerTools/skaffold&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># required
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;FILE&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;skaffold-linux-amd64&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># optional, default set to FILE value
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;TARGET&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;skaffold&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s># optional, default set to &#39;latest&#39;
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;VERSION&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;v1.22.0&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>build container image with buildpack</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>pack build test_assets_run --path ./sample-app <span class=se>\
-</span><span class=se></span>    -b cage1016/github-assets-cnb@1.0.0 <span class=se>\
-</span><span class=se></span>    --builder gcr.io/buildpacks/builder:v1 <span class=se>\
-</span><span class=se></span>    <span class=o>&amp;&amp;</span> docker run --rm test_assets_run <span class=s2>&#34;skaffold version&#34;</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>demo</p>
-<p>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>pack build test_assets_run --path ./sample-app <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    -b cage1016/github-assets-cnb@1.0.0 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --builder gcr.io/buildpacks/builder:v1 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    <span class=o>&amp;&amp;</span> docker run --rm test_assets_run <span class=s2>&#34;skaffold version&#34;</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>demo</p><p>
 <asciinema-player src=408800.cast cols=640 rows=20 loop=true start-at=5 speed=1></asciinema-player>
-</p>
-</li>
+</p></li><li>
+<p>詳細實作的細節請至 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb</a> 查閱</p></li></ol><h4 id=github-assets-cnb210><a href=mailto:github-assets-cnb@2.1.0 rel>github-assets-cnb@2.1.0</a></h4><p><a href=mailto:github-assets-cnb@1.1.0 rel>github-assets-cnb@1.1.0</a> 我們在 <code>project.toml</code> 中配置相關的的 <code>[[build.env]]</code> 來指定對應的 Github Assets 參數。基本上可以達成一開始的期望在 Buildpack 構建 Container image 過期程中下載 Github Assses 的檔案，不過如果有需求下載 <strong>多個</strong> Assets 時就沒有辦法滿足這個需求了</p><p>所以在 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">github-assets-cnb@2.1.0</a> 中增加了</p><ul>
+<li>Support Download Public/Private Github Assets</li><li><code>x-tar</code>, <code>gzip</code>, <code>x-zx</code>, <code>zip</code> auto unarchive</li></ul><p>Support <code>metadata.githubassets</code> fields</p><ul>
+<li><code>repo</code>: Github Repo</li><li><code>asset</code>: Github Repo asset name</li><li><code>tag</code>: Release tag name, default set to &ldquo;latest&rdquo;</li><li><code>token_env</code>: (optional), Please assign ENV name for private repo</li><li><code>destination</code>: download asset destination path to, <code>bin/&lt;your-asset></code> for <code>application/x-executable</code> asset</li><li><code>strip_components</code>: <code>x-tar</code>, <code>gzip</code>, <code>x-zx</code> suuport StripComponents feature.</li></ul><ol>
 <li>
-<p>詳細實作的細節請至 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">cage1016/github-assets-cnb</a> 查閱</p>
-</li>
-</ol>
-<h4 id=github-assets-cnb210><a href=mailto:github-assets-cnb@2.1.0 rel>github-assets-cnb@2.1.0</a></h4>
-<p><a href=mailto:github-assets-cnb@1.1.0 rel>github-assets-cnb@1.1.0</a> 我們在 <code>project.toml</code> 中配置相關的的 <code>[[build.env]]</code> 來指定對應的 Github Assets 參數。基本上可以達成一開始的期望在 Buildpack 構建 Container image 過期程中下載 Github Assses 的檔案，不過如果有需求下載 <strong>多個</strong> Assets 時就沒有辦法滿足這個需求了</p>
-<p>所以在 <a href=https://github.com/cage1016/github-assets-cnb target=_blank rel="noopener noreffer">github-assets-cnb@2.1.0</a> 中增加了</p>
-<ul>
-<li>Support Download Public/Private Github Assets</li>
-<li><code>x-tar</code>, <code>gzip</code>, <code>x-zx</code>, <code>zip</code> auto unarchive</li>
-</ul>
-<p>Support <code>metadata.githubassets</code> fields</p>
-<ul>
-<li><code>repo</code>: Github Repo</li>
-<li><code>asset</code>: Github Repo asset name</li>
-<li><code>tag</code>: Release tag name, default set to &ldquo;latest&rdquo;</li>
-<li><code>token_env</code>: (optional), Please assign ENV name for private repo</li>
-<li><code>destination</code>: download asset destination path to, <code>bin/&lt;your-asset></code> for <code>application/x-executable</code> asset</li>
-<li><code>strip_components</code>: <code>x-tar</code>, <code>gzip</code>, <code>x-zx</code> suuport StripComponents feature.</li>
-</ul>
-<ol>
-<li>
-<p>Create <code>project.toml</code> if you want to embed github assets</p>
-<div class=highlight><div class=chroma>
+<p>Create <code>project.toml</code> if you want to embed github assets</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -311,91 +225,61 @@
 </span><span class=lnt>21
 </span><span class=lnt>22
 </span><span class=lnt>23
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
-</span><span class=s># assign token
-</span><span class=s>[[build.env]]
-</span><span class=s>name = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
-</span><span class=s>value = &#34;&lt;github-token&gt;&#34;
-</span><span class=s>
-</span><span class=s>[[metadata.githubassets]]
-</span><span class=s>repo = &#34;kkdai/youtube&#34;
-</span><span class=s>asset = &#34;youtubedr_2.7.0_linux_arm64.tar.gz&#34;
-</span><span class=s>destination = &#34;bin&#34;
-</span><span class=s>
-</span><span class=s>[[metadata.githubassets]]
-</span><span class=s>repo = &#34;qeek-dev/apitest-toolchain&#34;
-</span><span class=s>token_env = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
-</span><span class=s>asset = &#34;apitest-toolchain-linux-amd64&#34;
-</span><span class=s>destination = &#34;bin/apitest-toolchain&#34;
-</span><span class=s>tag = &#34;v0.1.0&#34;
-</span><span class=s>
-</span><span class=s>[[metadata.githubassets]]
-</span><span class=s>repo = &#34;stedolan/jq&#34;
-</span><span class=s>asset = &#34;jq-linux64&#34;
-</span><span class=s>destination = &#34;bin/jq&#34;
-</span><span class=s>EOF</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>Build container image</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; project.toml
+</span></span></span><span class=line><span class=cl><span class=s># assign token
+</span></span></span><span class=line><span class=cl><span class=s>[[build.env]]
+</span></span></span><span class=line><span class=cl><span class=s>name = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
+</span></span></span><span class=line><span class=cl><span class=s>value = &#34;&lt;github-token&gt;&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[metadata.githubassets]]
+</span></span></span><span class=line><span class=cl><span class=s>repo = &#34;kkdai/youtube&#34;
+</span></span></span><span class=line><span class=cl><span class=s>asset = &#34;youtubedr_2.7.0_linux_arm64.tar.gz&#34;
+</span></span></span><span class=line><span class=cl><span class=s>destination = &#34;bin&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[metadata.githubassets]]
+</span></span></span><span class=line><span class=cl><span class=s>repo = &#34;qeek-dev/apitest-toolchain&#34;
+</span></span></span><span class=line><span class=cl><span class=s>token_env = &#34;APITEST_TOOLCHAIN_TOKEN&#34;
+</span></span></span><span class=line><span class=cl><span class=s>asset = &#34;apitest-toolchain-linux-amd64&#34;
+</span></span></span><span class=line><span class=cl><span class=s>destination = &#34;bin/apitest-toolchain&#34;
+</span></span></span><span class=line><span class=cl><span class=s>tag = &#34;v0.1.0&#34;
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>[[metadata.githubassets]]
+</span></span></span><span class=line><span class=cl><span class=s>repo = &#34;stedolan/jq&#34;
+</span></span></span><span class=line><span class=cl><span class=s>asset = &#34;jq-linux64&#34;
+</span></span></span><span class=line><span class=cl><span class=s>destination = &#34;bin/jq&#34;
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>Build container image</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>pack build myapp --buildpack cage1016/github-assets-cnb@2.1.0
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>Check <code>/layers/cage1016_github-assets-cnb</code></p>
-<p><figure><a class=lightgallery href=/zh-tw/posts/github-assets-cnb/img/snipaste.png title=snipaste data-thumbnail=/zh-tw/posts/github-assets-cnb/img/snipaste.png data-sub-html="<h2>Container image</h2><p>snipaste</p>">
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>pack build myapp --buildpack cage1016/github-assets-cnb@2.1.0
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>Check <code>/layers/cage1016_github-assets-cnb</code></p><p><figure><a class=lightgallery href=/zh-tw/posts/github-assets-cnb/img/snipaste.png title=snipaste data-thumbnail=/zh-tw/posts/github-assets-cnb/img/snipaste.png data-sub-html="<h2>Container image</h2><p>snipaste</p>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/snipaste.png data-srcset="/zh-tw/posts/github-assets-cnb/img/snipaste.png, img/snipaste.png 1.5x, /zh-tw/posts/github-assets-cnb/img/snipaste.png 2x" data-sizes=auto alt=/zh-tw/posts/github-assets-cnb/img/snipaste.png>
-</a><figcaption class=image-caption>Container image</figcaption>
-</figure></p>
-</li>
-</ol></div><div class=post-footer id=post-footer>
+</a><figcaption class=image-caption>Container image</figcaption></figure></p></li></ol></div><div class=post-footer id=post-footer>
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>更新於 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
-<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
-</div>
-<div class=post-info-license></div>
-</div>
-<div class=post-info-line>
+<span>更新於 2022-03-06&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9f430b82ed63fd18dfc684e45a829b615d1b79c0 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9f430b82ed63fd18dfc684e45a829b615d1b79c0: add Wason Language Translator CLI">
+<i class="fas fa-hashtag fa-fw"></i>9f430b8</a></span>
+</div><div class=post-info-license></div></div><div class=post-info-line>
 <div class=post-info-md><span>
 <a class=link-to-markdown href=/zh-tw/posts/github-assets-cnb/index.md target=_blank>檢視原始程式碼</a>
-</span></div>
-<div class=post-info-share>
+</span></div><div class=post-info-share>
 <span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/github-assets-cnb/ data-title="Github Assets Cnb" data-via=CageChung data-hashtags=buildpacks,gcp,pack,github,paketo><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/github-assets-cnb/ data-hashtag=buildpacks><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/github-assets-cnb/><i class="fab fa-linkedin fa-fw"></i></a></span>
-</div>
-</div>
-</div>
-<div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/buildpacks/>buildpacks</a>,&nbsp;<a href=/zh-tw/tags/gcp/>GCP</a>,&nbsp;<a href=/zh-tw/tags/pack/>pack</a>,&nbsp;<a href=/zh-tw/tags/github/>github</a>,&nbsp;<a href=/zh-tw/tags/paketo/>paketo</a></section>
-<section>
+</div></div></div><div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/buildpacks/>buildpacks</a>,&nbsp;<a href=/zh-tw/tags/gcp/>GCP</a>,&nbsp;<a href=/zh-tw/tags/pack/>pack</a>,&nbsp;<a href=/zh-tw/tags/github/>github</a>,&nbsp;<a href=/zh-tw/tags/paketo/>paketo</a></section><section>
 <span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
-</section>
-</div>
-<div class=post-nav><a href=/zh-tw/posts/ghcr-io-pack-build/ class=prev rel=prev title="ghcr.io Pack Build"><i class="fas fa-angle-left fa-fw"></i>ghcr.io Pack Build</a>
-<a href=/zh-tw/posts/telepresence-2-have-a-tried/ class=next rel=next title="Telepresence 2 Have a Tried">Telepresence 2 Have a Tried<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-<div id=comments><div id=utterances></div><noscript>
+</section></div><div class=post-nav><a href=/zh-tw/posts/ghcr-io-pack-build/ class=prev rel=prev title="ghcr.io Pack Build"><i class="fas fa-angle-left fa-fw"></i>ghcr.io Pack Build</a>
+<a href=/zh-tw/posts/telepresence-2-have-a-tried/ class=next rel=next title="Telepresence 2 Have a Tried">Telepresence 2 Have a Tried<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
-</noscript></div></article></div>
-</main><footer class=footer>
-<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
-</div>
-</footer></div>
-<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
+</noscript></div></article></div></main><footer class=footer>
+<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.93.2">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
 <i class="fas fa-arrow-up fa-fw"></i>
 </a><a href=# id=view-comments class=fixed-button title=查看評論>
 <i class="fas fa-comment fa-fw"></i>
 </a>
-</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
-</html>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>

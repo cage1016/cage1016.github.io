@@ -9,7 +9,7 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/1.png"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-05-07T08:39:11+00:00">
-<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta property="article:modified_time" content="2022-03-06T07:11:52+00:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/1.png">
 <meta name=twitter:title content="Github Script Repos and Collaborators List Sync">
@@ -17,14 +17,12 @@
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/><link rel=prev href=https://kaichu.io/zh-tw/posts/telepresence-2-have-a-tried/><link rel=next href=https://kaichu.io/zh-tw/posts/build-kubernetes-grpc-health-probe-with-pack/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Github Script Repos and Collaborators List Sync","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/github-script-repos-and-collaborators-list-sync\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-script-repos-and-collaborators-list-sync\/img\/1.png","width":825,"height":350}],"genre":"posts","keywords":"github, actions","wordcount":771,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-script-repos-and-collaborators-list-sync\/","datePublished":"2021-05-07T08:39:11+00:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"記錄了如何將整理 Github 公用帳號列表及成員的簡單服務從 GAE cron job 搬到 Github Actions 的使用方式"}</script></head>
-<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/><link rel=prev href=https://kaichu.io/zh-tw/posts/telepresence-2-have-a-tried/><link rel=next href=https://kaichu.io/zh-tw/posts/build-kubernetes-grpc-health-probe-with-pack/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Github Script Repos and Collaborators List Sync","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/github-script-repos-and-collaborators-list-sync\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-script-repos-and-collaborators-list-sync\/img\/1.png","width":825,"height":350}],"genre":"posts","keywords":"github, actions","wordcount":771,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/github-script-repos-and-collaborators-list-sync\/","datePublished":"2021-05-07T08:39:11+00:00","dateModified":"2022-03-06T07:11:52+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"記錄了如何將整理 Github 公用帳號列表及成員的簡單服務從 GAE cron job 搬到 Github Actions 的使用方式"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/zh-tw/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu>
+</div><div class=menu>
 <div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/github-script-repos-and-collaborators-list-sync/>English</option><option value=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/ selected>繁體中文</option></select>
 </a><span class="menu-item search" id=search-desktop>
@@ -41,20 +39,14 @@
 </span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
 <i class="fas fa-adjust fa-fw"></i>
 </a>
-</div>
-</div>
-</div>
-</header><header class=mobile id=header-mobile>
+</div></div></div></header><header class=mobile id=header-mobile>
 <div class=header-container>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/zh-tw/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu-toggle id=menu-toggle-mobile>
+</div><div class=menu-toggle id=menu-toggle-mobile>
 <span></span><span></span><span></span>
-</div>
-</div>
-<div class=menu id=menu-mobile><div class=search-wrapper>
+</div></div><div class=menu id=menu-mobile><div class=search-wrapper>
 <div class="search mobile" id=search-mobile>
 <input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
 <a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
@@ -66,100 +58,54 @@
 <span class="search-button search-loading" id=search-loading-mobile>
 <i class="fas fa-spinner fa-fw fa-spin"></i>
 </span>
-</div>
-<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+</div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
 取消
 </a>
 </div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
 <i class="fas fa-adjust fa-fw"></i>
 </a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select onchange="location=this.value"><option value=/posts/github-script-repos-and-collaborators-list-sync/>English</option><option value=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/ selected>繁體中文</option></select>
-</a></div>
-</div>
-</header>
-<div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div>
-</div>
-<div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div>
-</div>
-<main class=main>
+</a></div></div></header><div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div></div><main class=main>
 <div class=container><div class=toc id=toc-auto>
-<h2 class=toc-title>目錄</h2>
-<div class="toc-content always-active" id=toc-content-auto></div>
-</div><article class="page single"><h1 class="single-title animated flipInX">Github Script Repos and Collaborators List Sync</h1><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-05-07>2021-05-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 771 字&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 2 分鐘&nbsp;</div>
-</div><div class="details toc" id=toc-static kept>
+<h2 class=toc-title>目錄</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Github Script Repos and Collaborators List Sync</h1><div class=post-meta>
+<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-05-07>2021-05-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 771 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 2 分鐘&nbsp;</div></div><div class="details toc" id=toc-static kept>
 <div class="details-summary toc-title">
 <span>目錄</span>
 <span><i class="details-icon fas fa-angle-right"></i></span>
-</div>
-<div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
+</div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
 <ul>
 <li>
 <ul>
-<li><a href=#githubworkflowscronyml>.github/workflows/cron.yml</a></li>
-<li><a href=#心得>心得</a></li>
-</ul>
-</li>
-</ul>
-</nav></div>
-</div><div class=content id=content><p><figure><a class=lightgallery href=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png title=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png data-thumbnail=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png data-sub-html="<h2>Google Spreadsheet</h2>">
+<li><a href=#githubworkflowscronyml>.github/workflows/cron.yml</a></li><li><a href=#心得>心得</a></li></ul></li></ul></nav></div></div><div class=content id=content><p><figure><a class=lightgallery href=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png title=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png data-thumbnail=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png data-sub-html="<h2>Google Spreadsheet</h2>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/0.png data-srcset="/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png, img/0.png 1.5x, /zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png 2x" data-sizes=auto alt=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/0.png>
-</a><figcaption class=image-caption>Google Spreadsheet</figcaption>
-</figure></p>
-<p><figure><a class=lightgallery href=img/1.png title=img/1.png data-thumbnail=img/1.png data-sub-html="<h2>Github Markdown</h2>">
+</a><figcaption class=image-caption>Google Spreadsheet</figcaption></figure></p><p><figure><a class=lightgallery href=img/1.png title=img/1.png data-thumbnail=img/1.png data-sub-html="<h2>Github Markdown</h2>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/1.png data-srcset="img/1.png, img/1.png 1.5x, img/1.png 2x" data-sizes=auto alt=img/1.png>
-</a><figcaption class=image-caption>Github Markdown</figcaption>
-</figure></p>
-<p>在 2018 年時為了公用帳號有一個 Github repostiories & collaborators 列表的需求，還特別在 GAE 上用 Golang 寫了一個服務並啟用 cron job</p>
-<p><em>cron.yaml</em></p>
-<div class=highlight><div class=chroma>
+</a><figcaption class=image-caption>Github Markdown</figcaption></figure></p><p>在 2018 年時為了公用帳號有一個 Github repostiories & collaborators 列表的需求，還特別在 GAE 上用 Golang 寫了一個服務並啟用 cron job</p><p><em>cron.yaml</em></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cron:
-    - description: <span class=s2>&#34;Sync Github Repo&#34;</span>
-      url: /sync
-      schedule: every <span class=m>1</span> hours from 00:00 to 23:59
-      timezone: Asia/Taipei
-</code></pre></td></tr></table>
-</div>
-</div><p>每一個小時用 Golang 呼叫 Github Graphql 取回來所有 Repo 列表，最後透過 Spreadsheet API 寫到特定的 Spreadsheet 中</p>
-<ul>
-<li>需要開一個 Google Platform Platfrom 專案</li>
-<li>部署 GAE 應用程式</li>
-<li>Golang 呼叫 Github Graphql 取資料</li>
-<li>Spreadsheet API 回寫資料</li>
-</ul>
-<p>一這波操作下來是沒花到什麼錢啦，就是麻煩了一些，本來這個小東西跑的也好好的，最近最近人員的異動導至需要重新 review 大家的權限，Github 在 2019/11/3 正式推出了 Github Action，自己滿多 Repo 也早就在使用了，所以想說上述的需撾用 Github Action 重新實作會更來的容易些，事實上真的很方更，每一次 Action 的執行時間都不到 30 秒，就是快</p>
-<p>在重構的時候也發現了許多非常棒的工具，也因此特別寫一篇文章來記錄一下</p>
-<ul>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cron:
+</span></span><span class=line><span class=cl>    - description: <span class=s2>&#34;Sync Github Repo&#34;</span>
+</span></span><span class=line><span class=cl>      url: /sync
+</span></span><span class=line><span class=cl>      schedule: every <span class=m>1</span> hours from 00:00 to 23:59
+</span></span><span class=line><span class=cl>      timezone: Asia/Taipei
+</span></span></code></pre></td></tr></table></div></div><p>每一個小時用 Golang 呼叫 Github Graphql 取回來所有 Repo 列表，最後透過 Spreadsheet API 寫到特定的 Spreadsheet 中</p><ul>
+<li>需要開一個 Google Platform Platfrom 專案</li><li>部署 GAE 應用程式</li><li>Golang 呼叫 Github Graphql 取資料</li><li>Spreadsheet API 回寫資料</li></ul><p>一這波操作下來是沒花到什麼錢啦，就是麻煩了一些，本來這個小東西跑的也好好的，最近最近人員的異動導至需要重新 review 大家的權限，Github 在 2019/11/3 正式推出了 Github Action，自己滿多 Repo 也早就在使用了，所以想說上述的需撾用 Github Action 重新實作會更來的容易些，事實上真的很方更，每一次 Action 的執行時間都不到 30 秒，就是快</p><p>在重構的時候也發現了許多非常棒的工具，也因此特別寫一篇文章來記錄一下</p><ul>
 <li>
-<p><a href=https://docs.github.com/en/graphql/overview/explorer target=_blank rel="noopener noreffer">GitHub GraphQL API</a>: Github Graphql Playground</p>
-<p><figure><a class=lightgallery href=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png title=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png data-thumbnail=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png data-sub-html="<h2>grpchql</h2>">
+<p><a href=https://docs.github.com/en/graphql/overview/explorer target=_blank rel="noopener noreffer">GitHub GraphQL API</a>: Github Graphql Playground</p><p><figure><a class=lightgallery href=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png title=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png data-thumbnail=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png data-sub-html="<h2>grpchql</h2>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/3.png data-srcset="/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png, img/3.png 1.5x, /zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png 2x" data-sizes=auto alt=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/3.png>
-</a><figcaption class=image-caption>grpchql</figcaption>
-</figure></p>
-</li>
-<li>
-<p><a href=https://github.com/nektos/act target=_blank rel="noopener noreffer">nektos/act: Run your GitHub Actions locally 🚀</a>: 不得不提這一個工具，可以在本地端開發測試 Github Action，本地就可以開發就是方便</p>
-<p><figure><a class=lightgallery href=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif title=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif data-thumbnail=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif data-sub-html="<h2>act demo</h2>">
+</a><figcaption class=image-caption>grpchql</figcaption></figure></p></li><li>
+<p><a href=https://github.com/nektos/act target=_blank rel="noopener noreffer">nektos/act: Run your GitHub Actions locally 🚀</a>: 不得不提這一個工具，可以在本地端開發測試 Github Action，本地就可以開發就是方便</p><p><figure><a class=lightgallery href=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif title=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif data-thumbnail=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif data-sub-html="<h2>act demo</h2>">
 <img class=lazyload src=/svg/loading.min.svg data-src=img/act-quickstart-2.gif data-srcset="/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif, img/act-quickstart-2.gif 1.5x, /zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif 2x" data-sizes=auto alt=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/img/act-quickstart-2.gif>
-</a><figcaption class=image-caption>act demo</figcaption>
-</figure>
-(pic <a href=https://github.com/nektos/act target=_blank rel="noopener noreffer">https://github.com/nektos/act</a>)</p>
-</li>
-<li>
-<p><a href=https://github.com/actions/github-script target=_blank rel="noopener noreffer">actions/github-script: Write workflows scripting the GitHub API in JavaScript</a>: 在寫 Github Action workflows scripts 時可以直接用 Javascript 呼到 Github API，包好了直接用方便</p>
-<div class=highlight><div class=chroma>
+</a><figcaption class=image-caption>act demo</figcaption></figure>(pic <a href=https://github.com/nektos/act target=_blank rel="noopener noreffer">https://github.com/nektos/act</a>)</p></li><li>
+<p><a href=https://github.com/actions/github-script target=_blank rel="noopener noreffer">actions/github-script: Write workflows scripting the GitHub API in JavaScript</a>: 在寫 Github Action workflows scripts 時可以直接用 Javascript 呼到 Github API，包好了直接用方便</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -196,119 +142,80 @@
 </span><span class=lnt>33
 </span><span class=lnt>34
 </span><span class=lnt>35
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=nx>jobs</span><span class=o>:</span>
-  <span class=nx>readme</span><span class=o>:</span>
-    <span class=nx>runs</span><span class=o>-</span><span class=nx>on</span><span class=o>:</span> <span class=nx>ubuntu</span><span class=o>-</span><span class=nx>latest</span>
-    <span class=nx>steps</span><span class=o>:</span>
-      <span class=o>-</span> <span class=nx>run</span><span class=o>:</span> <span class=nx>npm</span> <span class=nx>install</span> <span class=nx>tablemark</span>
-      <span class=o>-</span> <span class=nx>uses</span><span class=o>:</span> <span class=nx>actions</span><span class=o>/</span><span class=nx>github</span><span class=o>-</span><span class=nx>script</span><span class=err>@</span><span class=nx>v4</span>
-        <span class=nx>id</span><span class=o>:</span> <span class=nx>repository_collaborators</span>
-        <span class=kd>with</span><span class=o>:</span>
-          <span class=nx>github</span><span class=o>-</span><span class=nx>token</span><span class=o>:</span> <span class=nx>$</span><span class=p>{{</span> <span class=nx>secrets</span><span class=p>.</span><span class=nx>REPO_TOKEN</span> <span class=p>}}</span>
-          <span class=nx>script</span><span class=o>:</span> <span class=o>|</span>
-            <span class=kr>const</span> <span class=nx>query</span> <span class=o>=</span> <span class=sb>`query($endCursor: String = null) {
-</span><span class=sb>              viewer {
-</span><span class=sb>                repositories(first: 100, after: $endCursor, affiliations: [OWNER], orderBy: {field: CREATED_AT, direction: DESC}) {
-</span><span class=sb>                  totalCount
-</span><span class=sb>                  pageInfo {
-</span><span class=sb>                    endCursor
-</span><span class=sb>                    hasNextPage
-</span><span class=sb>                  }
-</span><span class=sb>                  nodes {
-</span><span class=sb>                    name
-</span><span class=sb>                    createdAt
-</span><span class=sb>                    url
-</span><span class=sb>                  }
-</span><span class=sb>                }
-</span><span class=sb>              }
-</span><span class=sb>            }`</span><span class=p>;</span>
-
-            <span class=kr>const</span> <span class=nx>request</span> <span class=o>=</span> <span class=p>{</span>
-              <span class=nx>owner</span><span class=o>:</span> <span class=nx>context</span><span class=p>.</span><span class=nx>repo</span><span class=p>.</span><span class=nx>owner</span><span class=p>,</span>
-              <span class=nx>repo</span><span class=o>:</span> <span class=nx>context</span><span class=p>.</span><span class=nx>repo</span><span class=p>.</span><span class=nx>repo</span>
-            <span class=p>}</span>
-            <span class=kr>const</span> <span class=p>{</span><span class=nx>data</span><span class=o>:</span><span class=nx>collaboratorsData</span><span class=p>}</span> <span class=o>=</span> <span class=p>(</span><span class=kr>await</span> <span class=nx>github</span><span class=p>.</span><span class=nx>repos</span><span class=p>.</span><span class=nx>getContent</span><span class=p>({</span>
-              <span class=p>...</span><span class=nx>request</span><span class=p>,</span>
-              <span class=nx>path</span><span class=o>:</span> <span class=s1>&#39;collaborators.txt&#39;</span>
-            <span class=p>}));</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><code>github.repos.getContent</code> Github API 直接封裝起來用一波</p>
-</li>
-<li>
-<p><a href=https://github.com/qeek-dev/github-project-sync target=_blank rel="noopener noreffer">qeek-dev/github-project-sync: sync github projects & collaborators</a>: Octokit plugin adding one method for all of api.github.com REST API endpoints</p>
-<p>這個網站提供了 API endpoints 的文件可以查詢</p>
-<p>EX:</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=nx>jobs</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>  <span class=nx>readme</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    <span class=nx>runs</span><span class=o>-</span><span class=nx>on</span><span class=o>:</span> <span class=nx>ubuntu</span><span class=o>-</span><span class=nx>latest</span>
+</span></span><span class=line><span class=cl>    <span class=nx>steps</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>      <span class=o>-</span> <span class=nx>run</span><span class=o>:</span> <span class=nx>npm</span> <span class=nx>install</span> <span class=nx>tablemark</span>
+</span></span><span class=line><span class=cl>      <span class=o>-</span> <span class=nx>uses</span><span class=o>:</span> <span class=nx>actions</span><span class=o>/</span><span class=nx>github</span><span class=o>-</span><span class=nx>script</span><span class=err>@</span><span class=nx>v4</span>
+</span></span><span class=line><span class=cl>        <span class=nx>id</span><span class=o>:</span> <span class=nx>repository_collaborators</span>
+</span></span><span class=line><span class=cl>        <span class=kd>with</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>          <span class=nx>github</span><span class=o>-</span><span class=nx>token</span><span class=o>:</span> <span class=nx>$</span><span class=p>{{</span> <span class=nx>secrets</span><span class=p>.</span><span class=nx>REPO_TOKEN</span> <span class=p>}}</span>
+</span></span><span class=line><span class=cl>          <span class=nx>script</span><span class=o>:</span> <span class=o>|</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>query</span> <span class=o>=</span> <span class=sb>`query($endCursor: String = null) {
+</span></span></span><span class=line><span class=cl><span class=sb>              viewer {
+</span></span></span><span class=line><span class=cl><span class=sb>                repositories(first: 100, after: $endCursor, affiliations: [OWNER], orderBy: {field: CREATED_AT, direction: DESC}) {
+</span></span></span><span class=line><span class=cl><span class=sb>                  totalCount
+</span></span></span><span class=line><span class=cl><span class=sb>                  pageInfo {
+</span></span></span><span class=line><span class=cl><span class=sb>                    endCursor
+</span></span></span><span class=line><span class=cl><span class=sb>                    hasNextPage
+</span></span></span><span class=line><span class=cl><span class=sb>                  }
+</span></span></span><span class=line><span class=cl><span class=sb>                  nodes {
+</span></span></span><span class=line><span class=cl><span class=sb>                    name
+</span></span></span><span class=line><span class=cl><span class=sb>                    createdAt
+</span></span></span><span class=line><span class=cl><span class=sb>                    url
+</span></span></span><span class=line><span class=cl><span class=sb>                  }
+</span></span></span><span class=line><span class=cl><span class=sb>                }
+</span></span></span><span class=line><span class=cl><span class=sb>              }
+</span></span></span><span class=line><span class=cl><span class=sb>            }`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=nx>request</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>              <span class=nx>owner</span><span class=o>:</span> <span class=nx>context</span><span class=p>.</span><span class=nx>repo</span><span class=p>.</span><span class=nx>owner</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>              <span class=nx>repo</span><span class=o>:</span> <span class=nx>context</span><span class=p>.</span><span class=nx>repo</span><span class=p>.</span><span class=nx>repo</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=kr>const</span> <span class=p>{</span><span class=nx>data</span><span class=o>:</span><span class=nx>collaboratorsData</span><span class=p>}</span> <span class=o>=</span> <span class=p>(</span><span class=kr>await</span> <span class=nx>github</span><span class=p>.</span><span class=nx>repos</span><span class=p>.</span><span class=nx>getContent</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>              <span class=p>...</span><span class=nx>request</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>              <span class=nx>path</span><span class=o>:</span> <span class=s1>&#39;collaborators.txt&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}));</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>github.repos.getContent</code> Github API 直接封裝起來用一波</p></li><li>
+<p><a href=https://github.com/qeek-dev/github-project-sync target=_blank rel="noopener noreffer">qeek-dev/github-project-sync: sync github projects & collaborators</a>: Octokit plugin adding one method for all of api.github.com REST API endpoints</p><p>這個網站提供了 API endpoints 的文件可以查詢</p><p>EX:</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=nx>octokit</span><span class=p>.</span><span class=nx>rest</span><span class=p>.</span><span class=nx>repos</span><span class=p>.</span><span class=nx>getContent</span><span class=p>({</span>
-  <span class=nx>owner</span><span class=p>,</span>
-  <span class=nx>repo</span><span class=p>,</span>
-  <span class=nx>path</span><span class=p>,</span>
-<span class=p>});</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-</ul>
-<h3 id=githubworkflowscronyml>.github/workflows/cron.yml</h3>
-<script type=application/javascript src=https://gist.github.com/cage1016/237face69fd71ca321bf22db855d1dcb.js></script>
-<p>基本的流程如下</p>
-<ol>
-<li>Github Graphql 取回所有的 repos & collaborators, 需要 <code>github-token: ${{ secrets.REPO_TOKEN }}</code></li>
-<li>準備 md 所需的資料</li>
-<li>使用 <code>tablemark</code> library 將 Array 轉換為 markdown</li>
-<li><code>if (Buffer.from(data.content, 'base64').compare(Buffer.from(result)) === 0) return</code>，比對新舊 <code>README.md</code> 檔案是否一致，不一樣才需要更新</li>
-<li><code>Buffer.from(data.content, 'base64').toString()</code>，如果需要取出 <code>github.repos.getContent</code> 中的值需要進行轉 base64 轉換</li>
-</ol>
-<h3 id=心得>心得</h3>
-<p>如果專案放在 Github 上，Github action 真的可以作滿多事情的。<a href="https://github.com/marketplace?type=actions" target=_blank rel="noopener noreffer">GitHub Marketplace</a> 也有非常多的資源可以用，不知道怎麼寫的話可以去援尋原始碼，真的推薦可以使用</p></div><div class=post-footer id=post-footer>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=nx>octokit</span><span class=p>.</span><span class=nx>rest</span><span class=p>.</span><span class=nx>repos</span><span class=p>.</span><span class=nx>getContent</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>  <span class=nx>owner</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>repo</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>path</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></td></tr></table></div></div></li></ul><h3 id=githubworkflowscronyml>.github/workflows/cron.yml</h3><script type=application/javascript src=https://gist.github.com/cage1016/237face69fd71ca321bf22db855d1dcb.js></script>
+<p>基本的流程如下</p><ol>
+<li>Github Graphql 取回所有的 repos & collaborators, 需要 <code>github-token: ${{ secrets.REPO_TOKEN }}</code></li><li>準備 md 所需的資料</li><li>使用 <code>tablemark</code> library 將 Array 轉換為 markdown</li><li><code>if (Buffer.from(data.content, 'base64').compare(Buffer.from(result)) === 0) return</code>，比對新舊 <code>README.md</code> 檔案是否一致，不一樣才需要更新</li><li><code>Buffer.from(data.content, 'base64').toString()</code>，如果需要取出 <code>github.repos.getContent</code> 中的值需要進行轉 base64 轉換</li></ol><h3 id=心得>心得</h3><p>如果專案放在 Github 上，Github action 真的可以作滿多事情的。<a href="https://github.com/marketplace?type=actions" target=_blank rel="noopener noreffer">GitHub Marketplace</a> 也有非常多的資源可以用，不知道怎麼寫的話可以去援尋原始碼，真的推薦可以使用</p></div><div class=post-footer id=post-footer>
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>更新於 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
-<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
-</div>
-<div class=post-info-license></div>
-</div>
-<div class=post-info-line>
+<span>更新於 2022-03-06&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9f430b82ed63fd18dfc684e45a829b615d1b79c0 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9f430b82ed63fd18dfc684e45a829b615d1b79c0: add Wason Language Translator CLI">
+<i class="fas fa-hashtag fa-fw"></i>9f430b8</a></span>
+</div><div class=post-info-license></div></div><div class=post-info-line>
 <div class=post-info-md><span>
 <a class=link-to-markdown href=/zh-tw/posts/github-script-repos-and-collaborators-list-sync/index.md target=_blank>檢視原始程式碼</a>
-</span></div>
-<div class=post-info-share>
+</span></div><div class=post-info-share>
 <span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/ data-title="Github Script Repos and Collaborators List Sync" data-via=CageChung data-hashtags=github,actions><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/ data-hashtag=github><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/github-script-repos-and-collaborators-list-sync/><i class="fab fa-linkedin fa-fw"></i></a></span>
-</div>
-</div>
-</div>
-<div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/github/>github</a>,&nbsp;<a href=/zh-tw/tags/actions/>actions</a></section>
-<section>
+</div></div></div><div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/github/>github</a>,&nbsp;<a href=/zh-tw/tags/actions/>actions</a></section><section>
 <span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
-</section>
-</div>
-<div class=post-nav><a href=/zh-tw/posts/telepresence-2-have-a-tried/ class=prev rel=prev title="Telepresence 2 Have a Tried"><i class="fas fa-angle-left fa-fw"></i>Telepresence 2 Have a Tried</a>
-<a href=/zh-tw/posts/build-kubernetes-grpc-health-probe-with-pack/ class=next rel=next title="Build Kuberntes GRPC Health Probe with Pack">Build Kuberntes GRPC Health Probe with Pack<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-<div id=comments><div id=utterances></div><noscript>
+</section></div><div class=post-nav><a href=/zh-tw/posts/telepresence-2-have-a-tried/ class=prev rel=prev title="Telepresence 2 Have a Tried"><i class="fas fa-angle-left fa-fw"></i>Telepresence 2 Have a Tried</a>
+<a href=/zh-tw/posts/build-kubernetes-grpc-health-probe-with-pack/ class=next rel=next title="Build Kuberntes GRPC Health Probe with Pack">Build Kuberntes GRPC Health Probe with Pack<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
-</noscript></div></article></div>
-</main><footer class=footer>
-<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
-</div>
-</footer></div>
-<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
+</noscript></div></article></div></main><footer class=footer>
+<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.93.2">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
 <i class="fas fa-arrow-up fa-fw"></i>
 </a><a href=# id=view-comments class=fixed-button title=查看評論>
 <i class="fas fa-comment fa-fw"></i>
 </a>
-</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
-</html>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>

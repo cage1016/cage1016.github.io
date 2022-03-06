@@ -9,7 +9,7 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://kaichu.io/posts/k3s-nats-tls-openssl/"><meta property="og:image" content="https://kaichu.io/posts/k3s-nats-tls-openssl/img/cover.webp"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-08-11T06:01:13+00:00">
-<meta property="article:modified_time" content="2022-02-07T16:24:14+08:00">
+<meta property="article:modified_time" content="2022-03-06T07:11:52+00:00">
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://kaichu.io/posts/k3s-nats-tls-openssl/img/cover.webp">
 <meta name=twitter:title content="K3s Nats tls by openssl">
@@ -17,14 +17,12 @@
 <meta name=application-name content="KaiChu">
 <meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/k3s-nats-tls-openssl/><link rel=prev href=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><link rel=next href=https://kaichu.io/posts/cloud-next-21-pre-event/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"K3s Nats tls by openssl","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/k3s-nats-tls-openssl\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls-openssl\/img\/cover.webp","width":2058,"height":976}],"genre":"posts","keywords":"k3s, tls, nats, k8s","wordcount":1526,"url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls-openssl\/","datePublished":"2021-08-11T06:01:13+00:00","dateModified":"2022-02-07T16:24:14+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在開發 Kubernetes 應用程式時常使用 NATS 來作為內部 Pub/Sub 傳遞非同步訊息時使用，有時候也有對外開放的需求。而在本地機器開發時會採用輕量的 k8s cluster 解決方案，如 Kind, k3s, minikube 等來減輕本地開發資原的壓力，不過基於 container 的方式還是有一些限制，本篇文章以 k3s 為基礎來搭設開啟 TLS 的 NATS 服務器在本地的使用方式。"}</script></head>
-<body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':'auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark')&&document.body.setAttribute('theme','dark')</script>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/k3s-nats-tls-openssl/><link rel=prev href=https://kaichu.io/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/><link rel=next href=https://kaichu.io/posts/cloud-next-21-pre-event/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"K3s Nats tls by openssl","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/k3s-nats-tls-openssl\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls-openssl\/img\/cover.webp","width":2058,"height":976}],"genre":"posts","keywords":"k3s, tls, nats, k8s","wordcount":1526,"url":"https:\/\/kaichu.io\/posts\/k3s-nats-tls-openssl\/","datePublished":"2021-08-11T06:01:13+00:00","dateModified":"2022-03-06T07:11:52+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"在開發 Kubernetes 應用程式時常使用 NATS 來作為內部 Pub/Sub 傳遞非同步訊息時使用，有時候也有對外開放的需求。而在本地機器開發時會採用輕量的 k8s cluster 解決方案，如 Kind, k3s, minikube 等來減輕本地開發資原的壓力，不過基於 container 的方式還是有一些限制，本篇文章以 k3s 為基礎來搭設開啟 TLS 的 NATS 服務器在本地的使用方式。"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script>
 <div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu>
+</div><div class=menu>
 <div class=menu-inner><a class=menu-item href=/ title=Home> Home </a><a class=menu-item href=/posts/> Posts </a><a class=menu-item href=/tags/> Tags </a><a class=menu-item href=/about/> About </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/k3s-nats-tls-openssl/ selected>English</option><option value=/zh-tw/posts/k3s-nats-tls-openssl/>繁體中文</option></select>
 </a><span class="menu-item search" id=search-desktop>
@@ -41,20 +39,14 @@
 </span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
 <i class="fas fa-adjust fa-fw"></i>
 </a>
-</div>
-</div>
-</div>
-</header><header class=mobile id=header-mobile>
+</div></div></div></header><header class=mobile id=header-mobile>
 <div class=header-container>
 <div class=header-wrapper>
 <div class=header-title>
 <a href=/ title=KaiChu>KaiChu</a>
-</div>
-<div class=menu-toggle id=menu-toggle-mobile>
+</div><div class=menu-toggle id=menu-toggle-mobile>
 <span></span><span></span><span></span>
-</div>
-</div>
-<div class=menu id=menu-mobile><div class=search-wrapper>
+</div></div><div class=menu id=menu-mobile><div class=search-wrapper>
 <div class="search mobile" id=search-mobile>
 <input type=text placeholder="Search titles or contents..." id=search-input-mobile>
 <a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search>
@@ -66,43 +58,27 @@
 <span class="search-button search-loading" id=search-loading-mobile>
 <i class="fas fa-spinner fa-fw fa-spin"></i>
 </span>
-</div>
-<a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
+</div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
 Cancel
 </a>
 </div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
 <i class="fas fa-adjust fa-fw"></i>
 </a><a href=javascript:void(0); class=menu-item title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select onchange="location=this.value"><option value=/posts/k3s-nats-tls-openssl/ selected>English</option><option value=/zh-tw/posts/k3s-nats-tls-openssl/>繁體中文</option></select>
-</a></div>
-</div>
-</header>
-<div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div>
-</div>
-<div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div>
-</div>
-<main class=main>
+</a></div></div></header><div class="search-dropdown desktop">
+<div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile">
+<div id=search-dropdown-mobile></div></div><main class=main>
 <div class=container><article class="page single"><h1 class="single-title animated flipInX">K3s Nats tls by openssl</h1><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div>
-<div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-11>2021-08-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1526 words&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div>
-</div><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=/posts/k3s-nats-tls-openssl/img/cover.webp data-srcset="/posts/k3s-nats-tls-openssl/img/cover.webp, /posts/k3s-nats-tls-openssl/img/cover.webp 1.5x, /posts/k3s-nats-tls-openssl/img/cover.webp 2x" data-sizes=auto alt=/posts/k3s-nats-tls-openssl/img/cover.webp title="在開發 Kubernetes 應用程式時常使用 NATS 來作為內部 Pub/Sub 傳遞非同步訊息時使用，有時候也有對外開放的需求。而在本地機器開發時會採用輕量的 k8s cluster 解決方案，如 Kind, k3s, minikube 等來減輕本地開發資原的壓力，不過基於 container 的方式還是有一些限制，本篇文章以 k3s 為基礎來搭設開啟 TLS 的 NATS 服務器在本地的使用方式。"></div><div class=content id=content><ol>
+<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-08-11>2021-08-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;1526 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div></div><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=/posts/k3s-nats-tls-openssl/img/cover.webp data-srcset="/posts/k3s-nats-tls-openssl/img/cover.webp, /posts/k3s-nats-tls-openssl/img/cover.webp 1.5x, /posts/k3s-nats-tls-openssl/img/cover.webp 2x" data-sizes=auto alt=/posts/k3s-nats-tls-openssl/img/cover.webp title="在開發 Kubernetes 應用程式時常使用 NATS 來作為內部 Pub/Sub 傳遞非同步訊息時使用，有時候也有對外開放的需求。而在本地機器開發時會採用輕量的 k8s cluster 解決方案，如 Kind, k3s, minikube 等來減輕本地開發資原的壓力，不過基於 container 的方式還是有一些限制，本篇文章以 k3s 為基礎來搭設開啟 TLS 的 NATS 服務器在本地的使用方式。"></div><div class=content id=content><ol>
 <li>
-<p>透過 <code>k3d</code> 建立本地 k3s cluster。因為 k3s 也是透過 docker 來摸擬 k8s cluster，所以透過 k3s 本身 port mapping 的配置來對外開放 <code>8080:80</code> 及 <code>4222:31400</code> 二個 port。 <code>8080:80</code> 給 <code>hashicorp/http-echo</code> 用。而 <code>4222:31400</code> 是對應 NATS nodeport 用</p>
-<div class=highlight><div class=chroma>
+<p>透過 <code>k3d</code> 建立本地 k3s cluster。因為 k3s 也是透過 docker 來摸擬 k8s cluster，所以透過 k3s 本身 port mapping 的配置來對外開放 <code>8080:80</code> 及 <code>4222:31400</code> 二個 port。 <code>8080:80</code> 給 <code>hashicorp/http-echo</code> 用。而 <code>4222:31400</code> 是對應 NATS nodeport 用</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>k3d cluster create dev -p 8080:80@loadbalancer -p 8443:443@loadbalancer -p <span class=s2>&#34;4222:31400@server[0]&#34;</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>建立 <code>hashicorp/http-echo</code>。等待所有的 Pod 及服務就緒後，就可以透過 <a href=http://localhost:8080 target=_blank rel="noopener noreffer">http://localhost:8080</a> 來讀取 <code>hashicorp/http-echo</code></p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>k3d cluster create dev -p 8080:80@loadbalancer -p 8443:443@loadbalancer -p <span class=s2>&#34;4222:31400@server[0]&#34;</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>建立 <code>hashicorp/http-echo</code>。等待所有的 Pod 及服務就緒後，就可以透過 <a href=http://localhost:8080 target=_blank rel="noopener noreffer">http://localhost:8080</a> 來讀取 <code>hashicorp/http-echo</code></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -123,36 +99,29 @@ Cancel
 </span><span class=lnt>17
 </span><span class=lnt>18
 </span><span class=lnt>19
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>kubectl run --image hashicorp/http-echo --port <span class=m>80</span> <span class=nb>echo</span> -- -listen<span class=o>=</span>:80 --text<span class=o>=</span><span class=s2>&#34;Hello from echo&#34;</span>
-kubectl expose pod <span class=nb>echo</span> --port <span class=m>80</span> --target-port <span class=m>80</span> --type NodePort --name <span class=nb>echo</span>
-cat <span class=s>&lt;&lt;EOF | kubectl apply -f -
-</span><span class=s>apiVersion: extensions/v1beta1
-</span><span class=s>kind: Ingress
-</span><span class=s>metadata:
-</span><span class=s>  name: echo-ingress
-</span><span class=s>  annotations:
-</span><span class=s>    kubernetes.io/ingress.class: traefik
-</span><span class=s>spec:
-</span><span class=s>  rules:
-</span><span class=s>  - http:
-</span><span class=s>      paths:
-</span><span class=s>      - path: /
-</span><span class=s>        pathType: Prefix
-</span><span class=s>        backend:
-</span><span class=s>          serviceName: echo
-</span><span class=s>          servicePort: 80
-</span><span class=s>EOF</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>下一個步驟就是建立 NATS。因為這一次我們要建立的是有啟用 TLS 的 NATS 服務器。而 TLS 的部份我們採用 self signed 的方式來建立，實際使用就看最終部署的情況來決定是誰來產出 cluster 有需的 TLS，而本 Demo 就方便的方式自建</p>
-</li>
-<li>
-<p>首先建立所需的 <code>certificate.conf</code> 檔案。其中 <code>IP</code> 及 <code>DNS</code> 可以依照需求進行修改</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>kubectl run --image hashicorp/http-echo --port <span class=m>80</span> <span class=nb>echo</span> -- -listen<span class=o>=</span>:80 --text<span class=o>=</span><span class=s2>&#34;Hello from echo&#34;</span>
+</span></span><span class=line><span class=cl>kubectl expose pod <span class=nb>echo</span> --port <span class=m>80</span> --target-port <span class=m>80</span> --type NodePort --name <span class=nb>echo</span>
+</span></span><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF | kubectl apply -f -
+</span></span></span><span class=line><span class=cl><span class=s>apiVersion: extensions/v1beta1
+</span></span></span><span class=line><span class=cl><span class=s>kind: Ingress
+</span></span></span><span class=line><span class=cl><span class=s>metadata:
+</span></span></span><span class=line><span class=cl><span class=s>  name: echo-ingress
+</span></span></span><span class=line><span class=cl><span class=s>  annotations:
+</span></span></span><span class=line><span class=cl><span class=s>    kubernetes.io/ingress.class: traefik
+</span></span></span><span class=line><span class=cl><span class=s>spec:
+</span></span></span><span class=line><span class=cl><span class=s>  rules:
+</span></span></span><span class=line><span class=cl><span class=s>  - http:
+</span></span></span><span class=line><span class=cl><span class=s>      paths:
+</span></span></span><span class=line><span class=cl><span class=s>      - path: /
+</span></span></span><span class=line><span class=cl><span class=s>        pathType: Prefix
+</span></span></span><span class=line><span class=cl><span class=s>        backend:
+</span></span></span><span class=line><span class=cl><span class=s>          serviceName: echo
+</span></span></span><span class=line><span class=cl><span class=s>          servicePort: 80
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>下一個步驟就是建立 NATS。因為這一次我們要建立的是有啟用 TLS 的 NATS 服務器。而 TLS 的部份我們採用 self signed 的方式來建立，實際使用就看最終部署的情況來決定是誰來產出 cluster 有需的 TLS，而本 Demo 就方便的方式自建</p></li><li>
+<p>首先建立所需的 <code>certificate.conf</code> 檔案。其中 <code>IP</code> 及 <code>DNS</code> 可以依照需求進行修改</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -185,45 +154,40 @@ cat <span class=s>&lt;&lt;EOF | kubectl apply -f -
 </span><span class=lnt>29
 </span><span class=lnt>30
 </span><span class=lnt>31
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>cat <span class=s>&lt;&lt;EOF &gt;&gt; certificate.conf
-</span><span class=s>[req]
-</span><span class=s>default_bits = 2048
-</span><span class=s>prompt = no
-</span><span class=s>default_md = sha256
-</span><span class=s>req_extensions = req_ext
-</span><span class=s>distinguished_name = dn
-</span><span class=s>[dn]
-</span><span class=s>C = TW
-</span><span class=s>ST = New Taipei City
-</span><span class=s>O = Your organization
-</span><span class=s>CN = localhost
-</span><span class=s>[req_ext]
-</span><span class=s>subjectAltName = @alt_names
-</span><span class=s>[alt_names]
-</span><span class=s>DNS.1 = kubernetes
-</span><span class=s>DNS.2 = kubernetes.default
-</span><span class=s>DNS.3 = kubernetes.default.svc
-</span><span class=s>DNS.4 = kubernetes.default.svc.cluster
-</span><span class=s>DNS.5 = kubernetes.default.svc.cluster.local
-</span><span class=s>DNS.6 = localhost
-</span><span class=s>IP.1 = 127.0.0.1
-</span><span class=s>IP.2 = 172.17.34.52
-</span><span class=s>IP.3 = 192.168.0.15
-</span><span class=s>[v3_ext]
-</span><span class=s>authorityKeyIdentifier=keyid,issuer:always
-</span><span class=s>basicConstraints=CA:FALSE
-</span><span class=s>keyUsage=keyEncipherment,dataEncipherment
-</span><span class=s>extendedKeyUsage=serverAuth,clientAuth
-</span><span class=s>subjectAltName=@alt_names
-</span><span class=s>EOF</span>
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>產生 NATS 服務器有需的 TLS 檔，及之後提供給 Client 使用的 <code>client1.crt</code> <code>client1.key</code> <code>ca.crt</code> <code>client2.crt</code> <code>client2.key</code> <code>ca.crt</code>。這邊使用的方式是透過 <code>openssl</code>，有效日期也是 demo 方便先設為 1000 天。另外我們將啟用 NATS tls verifyAndMap 的功能。所以我們在 <code>certificate.conf</code> 的 Subject Alternative Name (SAN) 會指定 email，當 NATS 有開啟 <code>verifyAndMap</code> 就會檢查 Subject Alternative Name (SAN)</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; certificate.conf
+</span></span></span><span class=line><span class=cl><span class=s>[req]
+</span></span></span><span class=line><span class=cl><span class=s>default_bits = 2048
+</span></span></span><span class=line><span class=cl><span class=s>prompt = no
+</span></span></span><span class=line><span class=cl><span class=s>default_md = sha256
+</span></span></span><span class=line><span class=cl><span class=s>req_extensions = req_ext
+</span></span></span><span class=line><span class=cl><span class=s>distinguished_name = dn
+</span></span></span><span class=line><span class=cl><span class=s>[dn]
+</span></span></span><span class=line><span class=cl><span class=s>C = TW
+</span></span></span><span class=line><span class=cl><span class=s>ST = New Taipei City
+</span></span></span><span class=line><span class=cl><span class=s>O = Your organization
+</span></span></span><span class=line><span class=cl><span class=s>CN = localhost
+</span></span></span><span class=line><span class=cl><span class=s>[req_ext]
+</span></span></span><span class=line><span class=cl><span class=s>subjectAltName = @alt_names
+</span></span></span><span class=line><span class=cl><span class=s>[alt_names]
+</span></span></span><span class=line><span class=cl><span class=s>DNS.1 = kubernetes
+</span></span></span><span class=line><span class=cl><span class=s>DNS.2 = kubernetes.default
+</span></span></span><span class=line><span class=cl><span class=s>DNS.3 = kubernetes.default.svc
+</span></span></span><span class=line><span class=cl><span class=s>DNS.4 = kubernetes.default.svc.cluster
+</span></span></span><span class=line><span class=cl><span class=s>DNS.5 = kubernetes.default.svc.cluster.local
+</span></span></span><span class=line><span class=cl><span class=s>DNS.6 = localhost
+</span></span></span><span class=line><span class=cl><span class=s>IP.1 = 127.0.0.1
+</span></span></span><span class=line><span class=cl><span class=s>IP.2 = 172.17.34.52
+</span></span></span><span class=line><span class=cl><span class=s>IP.3 = 192.168.0.15
+</span></span></span><span class=line><span class=cl><span class=s>[v3_ext]
+</span></span></span><span class=line><span class=cl><span class=s>authorityKeyIdentifier=keyid,issuer:always
+</span></span></span><span class=line><span class=cl><span class=s>basicConstraints=CA:FALSE
+</span></span></span><span class=line><span class=cl><span class=s>keyUsage=keyEncipherment,dataEncipherment
+</span></span></span><span class=line><span class=cl><span class=s>extendedKeyUsage=serverAuth,clientAuth
+</span></span></span><span class=line><span class=cl><span class=s>subjectAltName=@alt_names
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>產生 NATS 服務器有需的 TLS 檔，及之後提供給 Client 使用的 <code>client1.crt</code> <code>client1.key</code> <code>ca.crt</code> <code>client2.crt</code> <code>client2.key</code> <code>ca.crt</code>。這邊使用的方式是透過 <code>openssl</code>，有效日期也是 demo 方便先設為 1000 天。另外我們將啟用 NATS tls verifyAndMap 的功能。所以我們在 <code>certificate.conf</code> 的 Subject Alternative Name (SAN) 會指定 email，當 NATS 有開啟 <code>verifyAndMap</code> 就會檢查 Subject Alternative Name (SAN)</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -261,53 +225,46 @@ cat <span class=s>&lt;&lt;EOF | kubectl apply -f -
 </span><span class=lnt>34
 </span><span class=lnt>35
 </span><span class=lnt>36
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>cat <span class=s>&lt;&lt;EOF &gt;&gt; gen.sh
-</span><span class=s>#!/bin/bash
-</span><span class=s>
-</span><span class=s># Move to root directory...
-</span><span class=s>mkdir -p keys
-</span><span class=s>cd keys
-</span><span class=s>
-</span><span class=s># Generate the Certificate Files
-</span><span class=s>openssl genrsa -out ca.key 2048
-</span><span class=s>openssl req -x509 -new -nodes -key ca.key -subj &#34;/CN=localhost&#34; -days 1000 -out ca.crt
-</span><span class=s>
-</span><span class=s># server
-</span><span class=s>openssl genrsa -out server.key 2048
-</span><span class=s>openssl req -new -key server.key -out server.csr -config ../certificate.conf
-</span><span class=s>openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
-</span><span class=s>    -CAcreateserial -out server.crt -days 1000 \
-</span><span class=s>    -extensions v3_ext -extfile ../certificate.conf
-</span><span class=s>
-</span><span class=s># client1
-</span><span class=s>openssl genrsa -out client1.key 2048
-</span><span class=s>openssl req -new -key client1.key -out client1.csr -config ../certificate.conf
-</span><span class=s>openssl x509 -req -in client1.csr -CA ca.crt -CAkey ca.key \
-</span><span class=s>    -CAcreateserial -out client1.crt -days 1000 \
-</span><span class=s>    -extensions v3_ext -extfile &lt;(cat $(PWD)/certificate.conf | sed &#39;s/IP.3 = 192.168.0.15/&amp;\nemail.1 = client1@example.com/&#39;)
-</span><span class=s>
-</span><span class=s>echo $(PWD)
-</span><span class=s># client2
-</span><span class=s>openssl genrsa -out client2.key 2048
-</span><span class=s>openssl req -new -key client2.key -out client2.csr -config ../certificate.conf
-</span><span class=s>openssl x509 -req -in client2.csr -CA ca.crt -CAkey ca.key \
-</span><span class=s>    -CAcreateserial -out client2.crt -days 1000 \
-</span><span class=s>    -extensions v3_ext -extfile ../certificate.conf        
-</span><span class=s>EOF</span>
-
-chmod +x ./gen.sh
-./gen.sh
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>我們產生了二組 client tls keypair。我們在產生 client1 的 tls 檔案時加入額外的 Subject Alternative Name (SAN) 資訊 <code>email:client1@example.com</code></p>
-<blockquote>
-<p>step: A zero trust swiss army knife for working with X509, OAuth, JWT, OATH OTP, etc. <a href=https://smallstep.com/cli/ target=_blank rel="noopener noreffer">step-cli | Automate Certificates & Common Cryptography Primitives</a></p>
-</blockquote>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; gen.sh
+</span></span></span><span class=line><span class=cl><span class=s>#!/bin/bash
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s># Move to root directory...
+</span></span></span><span class=line><span class=cl><span class=s>mkdir -p keys
+</span></span></span><span class=line><span class=cl><span class=s>cd keys
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s># Generate the Certificate Files
+</span></span></span><span class=line><span class=cl><span class=s>openssl genrsa -out ca.key 2048
+</span></span></span><span class=line><span class=cl><span class=s>openssl req -x509 -new -nodes -key ca.key -subj &#34;/CN=localhost&#34; -days 1000 -out ca.crt
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s># server
+</span></span></span><span class=line><span class=cl><span class=s>openssl genrsa -out server.key 2048
+</span></span></span><span class=line><span class=cl><span class=s>openssl req -new -key server.key -out server.csr -config ../certificate.conf
+</span></span></span><span class=line><span class=cl><span class=s>openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
+</span></span></span><span class=line><span class=cl><span class=s>    -CAcreateserial -out server.crt -days 1000 \
+</span></span></span><span class=line><span class=cl><span class=s>    -extensions v3_ext -extfile ../certificate.conf
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s># client1
+</span></span></span><span class=line><span class=cl><span class=s>openssl genrsa -out client1.key 2048
+</span></span></span><span class=line><span class=cl><span class=s>openssl req -new -key client1.key -out client1.csr -config ../certificate.conf
+</span></span></span><span class=line><span class=cl><span class=s>openssl x509 -req -in client1.csr -CA ca.crt -CAkey ca.key \
+</span></span></span><span class=line><span class=cl><span class=s>    -CAcreateserial -out client1.crt -days 1000 \
+</span></span></span><span class=line><span class=cl><span class=s>    -extensions v3_ext -extfile &lt;(cat $(PWD)/certificate.conf | sed &#39;s/IP.3 = 192.168.0.15/&amp;\nemail.1 = client1@example.com/&#39;)
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>echo $(PWD)
+</span></span></span><span class=line><span class=cl><span class=s># client2
+</span></span></span><span class=line><span class=cl><span class=s>openssl genrsa -out client2.key 2048
+</span></span></span><span class=line><span class=cl><span class=s>openssl req -new -key client2.key -out client2.csr -config ../certificate.conf
+</span></span></span><span class=line><span class=cl><span class=s>openssl x509 -req -in client2.csr -CA ca.crt -CAkey ca.key \
+</span></span></span><span class=line><span class=cl><span class=s>    -CAcreateserial -out client2.crt -days 1000 \
+</span></span></span><span class=line><span class=cl><span class=s>    -extensions v3_ext -extfile ../certificate.conf        
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>chmod +x ./gen.sh
+</span></span><span class=line><span class=cl>./gen.sh
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>我們產生了二組 client tls keypair。我們在產生 client1 的 tls 檔案時加入額外的 Subject Alternative Name (SAN) 資訊 <code>email:client1@example.com</code></p><blockquote>
+<p>step: A zero trust swiss army knife for working with X509, OAuth, JWT, OATH OTP, etc. <a href=https://smallstep.com/cli/ target=_blank rel="noopener noreffer">step-cli | Automate Certificates & Common Cryptography Primitives</a></p></blockquote><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -341,43 +298,40 @@ chmod +x ./gen.sh
 </span><span class=lnt>30
 </span><span class=lnt>31
 </span><span class=lnt>32
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>step certificate inspect keys/client1.crt 
-Certificate:
-    Data:
-        Version: <span class=m>3</span> <span class=o>(</span>0x2<span class=o>)</span>
-        Serial Number: <span class=m>11938605982689757523</span> <span class=o>(</span>0xa5ae72e347938953<span class=o>)</span>
-    Signature Algorithm: SHA1-RSA
-        Issuer: <span class=nv>CN</span><span class=o>=</span>localhost
-        Validity
-            Not Before: Aug <span class=m>19</span> 03:20:51 <span class=m>2021</span> UTC
-            Not After : May <span class=m>15</span> 03:20:51 <span class=m>2024</span> UTC
-        Subject: <span class=nv>C</span><span class=o>=</span>TW,ST<span class=o>=</span>New Taipei City,O<span class=o>=</span>Your organization,CN<span class=o>=</span>localhost
-        Subject Public Key Info:
-            Public Key Algorithm: RSA
-                Public-Key: <span class=o>(</span><span class=m>2048</span> bit<span class=o>)</span>
-                Modulus:
-                    ...
-                Exponent: <span class=m>65537</span> <span class=o>(</span>0x10001<span class=o>)</span>
-        X509v3 extensions:
-            X509v3 Authority Key Identifier:
-                keyid
-            X509v3 Basic Constraints:
-                CA:FALSE
-            X509v3 Key Usage:
-                Key Encipherment, Data Encipherment
-            X509v3 Extended Key Usage:
-                Server Authentication, Client Authentication
-            X509v3 Subject Alternative Name:
-                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:localhost
-                email:client1@example.com
-                IP Address:127.0.0.1, IP Address:172.17.34.52, IP Address:192.168.0.15
-    Signature Algorithm: SHA1-RSA
-        ...    
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>step certificate inspect keys/client1.crt 
+</span></span><span class=line><span class=cl>Certificate:
+</span></span><span class=line><span class=cl>    Data:
+</span></span><span class=line><span class=cl>        Version: <span class=m>3</span> <span class=o>(</span>0x2<span class=o>)</span>
+</span></span><span class=line><span class=cl>        Serial Number: <span class=m>11938605982689757523</span> <span class=o>(</span>0xa5ae72e347938953<span class=o>)</span>
+</span></span><span class=line><span class=cl>    Signature Algorithm: SHA1-RSA
+</span></span><span class=line><span class=cl>        Issuer: <span class=nv>CN</span><span class=o>=</span>localhost
+</span></span><span class=line><span class=cl>        Validity
+</span></span><span class=line><span class=cl>            Not Before: Aug <span class=m>19</span> 03:20:51 <span class=m>2021</span> UTC
+</span></span><span class=line><span class=cl>            Not After : May <span class=m>15</span> 03:20:51 <span class=m>2024</span> UTC
+</span></span><span class=line><span class=cl>        Subject: <span class=nv>C</span><span class=o>=</span>TW,ST<span class=o>=</span>New Taipei City,O<span class=o>=</span>Your organization,CN<span class=o>=</span>localhost
+</span></span><span class=line><span class=cl>        Subject Public Key Info:
+</span></span><span class=line><span class=cl>            Public Key Algorithm: RSA
+</span></span><span class=line><span class=cl>                Public-Key: <span class=o>(</span><span class=m>2048</span> bit<span class=o>)</span>
+</span></span><span class=line><span class=cl>                Modulus:
+</span></span><span class=line><span class=cl>                    ...
+</span></span><span class=line><span class=cl>                Exponent: <span class=m>65537</span> <span class=o>(</span>0x10001<span class=o>)</span>
+</span></span><span class=line><span class=cl>        X509v3 extensions:
+</span></span><span class=line><span class=cl>            X509v3 Authority Key Identifier:
+</span></span><span class=line><span class=cl>                keyid
+</span></span><span class=line><span class=cl>            X509v3 Basic Constraints:
+</span></span><span class=line><span class=cl>                CA:FALSE
+</span></span><span class=line><span class=cl>            X509v3 Key Usage:
+</span></span><span class=line><span class=cl>                Key Encipherment, Data Encipherment
+</span></span><span class=line><span class=cl>            X509v3 Extended Key Usage:
+</span></span><span class=line><span class=cl>                Server Authentication, Client Authentication
+</span></span><span class=line><span class=cl>            X509v3 Subject Alternative Name:
+</span></span><span class=line><span class=cl>                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:localhost
+</span></span><span class=line><span class=cl>                email:client1@example.com
+</span></span><span class=line><span class=cl>                IP Address:127.0.0.1, IP Address:172.17.34.52, IP Address:192.168.0.15
+</span></span><span class=line><span class=cl>    Signature Algorithm: SHA1-RSA
+</span></span><span class=line><span class=cl>        ...    
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -410,45 +364,40 @@ Certificate:
 </span><span class=lnt>29
 </span><span class=lnt>30
 </span><span class=lnt>31
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>step certificate inspect keys/client2.crt 
-Certificate:
-    Data:
-        Version: <span class=m>3</span> <span class=o>(</span>0x2<span class=o>)</span>
-        Serial Number: <span class=m>11938605982689757524</span> <span class=o>(</span>0xa5ae72e347938954<span class=o>)</span>
-    Signature Algorithm: SHA1-RSA
-        Issuer: <span class=nv>CN</span><span class=o>=</span>localhost
-        Validity
-            Not Before: Aug <span class=m>19</span> 03:20:51 <span class=m>2021</span> UTC
-            Not After : May <span class=m>15</span> 03:20:51 <span class=m>2024</span> UTC
-        Subject: <span class=nv>C</span><span class=o>=</span>TW,ST<span class=o>=</span>New Taipei City,O<span class=o>=</span>Your organization,CN<span class=o>=</span>localhost
-        Subject Public Key Info:
-            Public Key Algorithm: RSA
-                Public-Key: <span class=o>(</span><span class=m>2048</span> bit<span class=o>)</span>
-                Modulus:
-                    ...
-                Exponent: <span class=m>65537</span> <span class=o>(</span>0x10001<span class=o>)</span>
-        X509v3 extensions:
-            X509v3 Authority Key Identifier:
-                keyid
-            X509v3 Basic Constraints:
-                CA:FALSE
-            X509v3 Key Usage:
-                Key Encipherment, Data Encipherment
-            X509v3 Extended Key Usage:
-                Server Authentication, Client Authentication
-            X509v3 Subject Alternative Name:
-                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:localhost
-                IP Address:127.0.0.1, IP Address:172.17.34.52, IP Address:192.168.0.15
-    Signature Algorithm: SHA1-RSA
-        ...
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>透過 <code>kubectl</code> 建立稍後 NATS 服務器所需 TLS 相關的 secret <code>nats-server-tls</code></p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>step certificate inspect keys/client2.crt 
+</span></span><span class=line><span class=cl>Certificate:
+</span></span><span class=line><span class=cl>    Data:
+</span></span><span class=line><span class=cl>        Version: <span class=m>3</span> <span class=o>(</span>0x2<span class=o>)</span>
+</span></span><span class=line><span class=cl>        Serial Number: <span class=m>11938605982689757524</span> <span class=o>(</span>0xa5ae72e347938954<span class=o>)</span>
+</span></span><span class=line><span class=cl>    Signature Algorithm: SHA1-RSA
+</span></span><span class=line><span class=cl>        Issuer: <span class=nv>CN</span><span class=o>=</span>localhost
+</span></span><span class=line><span class=cl>        Validity
+</span></span><span class=line><span class=cl>            Not Before: Aug <span class=m>19</span> 03:20:51 <span class=m>2021</span> UTC
+</span></span><span class=line><span class=cl>            Not After : May <span class=m>15</span> 03:20:51 <span class=m>2024</span> UTC
+</span></span><span class=line><span class=cl>        Subject: <span class=nv>C</span><span class=o>=</span>TW,ST<span class=o>=</span>New Taipei City,O<span class=o>=</span>Your organization,CN<span class=o>=</span>localhost
+</span></span><span class=line><span class=cl>        Subject Public Key Info:
+</span></span><span class=line><span class=cl>            Public Key Algorithm: RSA
+</span></span><span class=line><span class=cl>                Public-Key: <span class=o>(</span><span class=m>2048</span> bit<span class=o>)</span>
+</span></span><span class=line><span class=cl>                Modulus:
+</span></span><span class=line><span class=cl>                    ...
+</span></span><span class=line><span class=cl>                Exponent: <span class=m>65537</span> <span class=o>(</span>0x10001<span class=o>)</span>
+</span></span><span class=line><span class=cl>        X509v3 extensions:
+</span></span><span class=line><span class=cl>            X509v3 Authority Key Identifier:
+</span></span><span class=line><span class=cl>                keyid
+</span></span><span class=line><span class=cl>            X509v3 Basic Constraints:
+</span></span><span class=line><span class=cl>                CA:FALSE
+</span></span><span class=line><span class=cl>            X509v3 Key Usage:
+</span></span><span class=line><span class=cl>                Key Encipherment, Data Encipherment
+</span></span><span class=line><span class=cl>            X509v3 Extended Key Usage:
+</span></span><span class=line><span class=cl>                Server Authentication, Client Authentication
+</span></span><span class=line><span class=cl>            X509v3 Subject Alternative Name:
+</span></span><span class=line><span class=cl>                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:localhost
+</span></span><span class=line><span class=cl>                IP Address:127.0.0.1, IP Address:172.17.34.52, IP Address:192.168.0.15
+</span></span><span class=line><span class=cl>    Signature Algorithm: SHA1-RSA
+</span></span><span class=line><span class=cl>        ...
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>透過 <code>kubectl</code> 建立稍後 NATS 服務器所需 TLS 相關的 secret <code>nats-server-tls</code></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
@@ -456,25 +405,16 @@ Certificate:
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>kubectl create namespace nats
-kubectl create secret generic nats-server-tls <span class=se>\
-</span><span class=se></span>  --from-file<span class=o>=</span>ca.crt<span class=o>=</span>./keys/ca.crt <span class=se>\
-</span><span class=se></span>  --from-file<span class=o>=</span>tls.crt<span class=o>=</span>./keys/server.crt <span class=se>\
-</span><span class=se></span>  --from-file<span class=o>=</span>tls.key<span class=o>=</span>./keys/server.key <span class=se>\
-</span><span class=se></span>  --namespace nats
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>透過 <code>helm</code> 來安裝 NATS 服務器，並指定稍早建立相關的 secret <code>nats-server-tls</code></p>
-<blockquote>
-<p>記得先加入 nats helm chart repo</p>
-<p>$ <code>helm repo add nats https://nats-io.github.io/k8s/helm/charts/</code></p>
-<p>$ <code>helm repo update</code></p>
-</blockquote>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>kubectl create namespace nats
+</span></span><span class=line><span class=cl>kubectl create secret generic nats-server-tls <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --from-file<span class=o>=</span>ca.crt<span class=o>=</span>./keys/ca.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --from-file<span class=o>=</span>tls.crt<span class=o>=</span>./keys/server.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --from-file<span class=o>=</span>tls.key<span class=o>=</span>./keys/server.key <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --namespace nats
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>透過 <code>helm</code> 來安裝 NATS 服務器，並指定稍早建立相關的 secret <code>nats-server-tls</code></p><blockquote>
+<p>記得先加入 nats helm chart repo</p><p>$ <code>helm repo add nats https://nats-io.github.io/k8s/helm/charts/</code></p><p>$ <code>helm repo update</code></p></blockquote><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
@@ -485,23 +425,18 @@ kubectl create secret generic nats-server-tls <span class=se>\
 </span><span class=lnt>7
 </span><span class=lnt>8
 </span><span class=lnt>9
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>helm install nats nats/nats <span class=se>\
-</span><span class=se></span>    --set nats.tls.secret.name<span class=o>=</span>nats-server-tls <span class=se>\
-</span><span class=se></span>    --set nats.tls.ca<span class=o>=</span>ca.crt <span class=se>\
-</span><span class=se></span>    --set nats.tls.cert<span class=o>=</span>tls.crt <span class=se>\
-</span><span class=se></span>    --set nats.tls.key<span class=o>=</span>tls.key <span class=se>\
-</span><span class=se></span>    --set nats.tls.verifyAndMap<span class=o>=</span><span class=nb>true</span> <span class=se>\
-</span><span class=se></span>    --set auth.enabled<span class=o>=</span><span class=nb>true</span> <span class=se>\
-</span><span class=se></span>    --set auth.basic.users<span class=o>[</span>0<span class=o>]</span>.user<span class=o>=</span>client1@example.com <span class=se>\
-</span><span class=se></span>    --namespace nats
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>基本上作完這一步，如果我們透過 <code>port-forward</code> 的方式來 forward <code>nats/nats-client</code> <code>4222</code> 已經可以讀取到 NATS 服務器。不過使用 <code>helm</code> 安裝的 <code>nats/nats</code> 預設沒有對外開放服務，又因為使用 k3s cluster 受限於 docker 的原因，我們需要額外指定 NodePort <code>31400</code> 對應 k3s <code>4222:31400</code> 的設定來給外部讀取</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>helm install nats nats/nats <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --set nats.tls.secret.name<span class=o>=</span>nats-server-tls <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --set nats.tls.ca<span class=o>=</span>ca.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --set nats.tls.cert<span class=o>=</span>tls.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --set nats.tls.key<span class=o>=</span>tls.key <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --set nats.tls.verifyAndMap<span class=o>=</span><span class=nb>true</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --set auth.enabled<span class=o>=</span><span class=nb>true</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --set auth.basic.users<span class=o>[</span>0<span class=o>]</span>.user<span class=o>=</span>client1@example.com <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --namespace nats
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>基本上作完這一步，如果我們透過 <code>port-forward</code> 的方式來 forward <code>nats/nats-client</code> <code>4222</code> 已經可以讀取到 NATS 服務器。不過使用 <code>helm</code> 安裝的 <code>nats/nats</code> 預設沒有對外開放服務，又因為使用 k3s cluster 受限於 docker 的原因，我們需要額外指定 NodePort <code>31400</code> 對應 k3s <code>4222:31400</code> 的設定來給外部讀取</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -525,123 +460,85 @@ kubectl create secret generic nats-server-tls <span class=se>\
 </span><span class=lnt>20
 </span><span class=lnt>21
 </span><span class=lnt>22
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>cat <span class=s>&lt;&lt;EOF &gt;&gt; nats-np.yaml
-</span><span class=s>apiVersion: v1
-</span><span class=s>kind: Service
-</span><span class=s>metadata:
-</span><span class=s>  name: nats-np
-</span><span class=s>  namespace: nats
-</span><span class=s>  labels:
-</span><span class=s>    app.kubernetes.io/name: nats
-</span><span class=s>    app.kubernetes.io/instance: nats
-</span><span class=s>spec:
-</span><span class=s>  type: NodePort
-</span><span class=s>  ports:
-</span><span class=s>    - name: tcp-client
-</span><span class=s>      port: 4222
-</span><span class=s>      nodePort: 31400
-</span><span class=s>      targetPort: client
-</span><span class=s>  selector:
-</span><span class=s>    app.kubernetes.io/name: nats
-</span><span class=s>    app.kubernetes.io/instance: nats
-</span><span class=s>EOF</span>
-
-kubectl apply -f nats-np.yaml
-</code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>讀取 <a href=nats://localhost:4222 target=_blank rel="noopener noreffer">nats://localhost:4222</a></p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; nats-np.yaml
+</span></span></span><span class=line><span class=cl><span class=s>apiVersion: v1
+</span></span></span><span class=line><span class=cl><span class=s>kind: Service
+</span></span></span><span class=line><span class=cl><span class=s>metadata:
+</span></span></span><span class=line><span class=cl><span class=s>  name: nats-np
+</span></span></span><span class=line><span class=cl><span class=s>  namespace: nats
+</span></span></span><span class=line><span class=cl><span class=s>  labels:
+</span></span></span><span class=line><span class=cl><span class=s>    app.kubernetes.io/name: nats
+</span></span></span><span class=line><span class=cl><span class=s>    app.kubernetes.io/instance: nats
+</span></span></span><span class=line><span class=cl><span class=s>spec:
+</span></span></span><span class=line><span class=cl><span class=s>  type: NodePort
+</span></span></span><span class=line><span class=cl><span class=s>  ports:
+</span></span></span><span class=line><span class=cl><span class=s>    - name: tcp-client
+</span></span></span><span class=line><span class=cl><span class=s>      port: 4222
+</span></span></span><span class=line><span class=cl><span class=s>      nodePort: 31400
+</span></span></span><span class=line><span class=cl><span class=s>      targetPort: client
+</span></span></span><span class=line><span class=cl><span class=s>  selector:
+</span></span></span><span class=line><span class=cl><span class=s>    app.kubernetes.io/name: nats
+</span></span></span><span class=line><span class=cl><span class=s>    app.kubernetes.io/instance: nats
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>kubectl apply -f nats-np.yaml
+</span></span></code></pre></td></tr></table></div></div></li><li>
+<p>讀取 <a href=nats://localhost:4222 target=_blank rel="noopener noreffer">nats://localhost:4222</a></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>nats -s localhost:4222 pub say hi
-</code></pre></td></tr></table>
-</div>
-</div><blockquote>
-<p>nats: error: x509: certificate signed by unknown authority, try &ndash;help</p>
-</blockquote>
-<p>由於我們建立 NATS 服務器啟用 TLS，稍早也建立了一組 <code>client1.crt</code> <code>client1.key</code> <code>ca.crt</code>。再連接 NATS 服務器時代入相關的 tls 檔案即可正常操作</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>nats -s localhost:4222 pub say hi
+</span></span></code></pre></td></tr></table></div></div><blockquote>
+<p>nats: error: x509: certificate signed by unknown authority, try &ndash;help</p></blockquote><p>由於我們建立 NATS 服務器啟用 TLS，稍早也建立了一組 <code>client1.crt</code> <code>client1.key</code> <code>ca.crt</code>。再連接 NATS 服務器時代入相關的 tls 檔案即可正常操作</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>nats -s localhost <span class=se>\
-</span><span class=se></span>    --tlscert<span class=o>=</span>./keys/client1.crt <span class=se>\
-</span><span class=se></span>    --tlskey<span class=o>=</span>./keys/client1.key <span class=se>\
-</span><span class=se></span>    --tlsca<span class=o>=</span>./keys/ca.crt <span class=se>\
-</span><span class=se></span>    pub say hi
-</code></pre></td></tr></table>
-</div>
-</div><p>因為 NATS 啟用了 verifyAndMap，所以 <code>client2.crt</code> <code>client2.key</code> <code>ca.crt</code> 因為其 Subject Alternative Name (SAN) 沒有包含 email 資訊，所以就算擁有 tls keypair 也沒有權限讀取</p>
-<blockquote>
-<p>nats: error: nats: Authorization Violation, try &ndash;help</p>
-</blockquote>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>nats -s localhost <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --tlscert<span class=o>=</span>./keys/client1.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --tlskey<span class=o>=</span>./keys/client1.key <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --tlsca<span class=o>=</span>./keys/ca.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    pub say hi
+</span></span></code></pre></td></tr></table></div></div><p>因為 NATS 啟用了 verifyAndMap，所以 <code>client2.crt</code> <code>client2.key</code> <code>ca.crt</code> 因為其 Subject Alternative Name (SAN) 沒有包含 email 資訊，所以就算擁有 tls keypair 也沒有權限讀取</p><blockquote>
+<p>nats: error: nats: Authorization Violation, try &ndash;help</p></blockquote><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>nats -s localhost <span class=se>\
-</span><span class=se></span>    --tlscert<span class=o>=</span>./keys/client2.crt <span class=se>\
-</span><span class=se></span>    --tlskey<span class=o>=</span>./keys/client2.key <span class=se>\
-</span><span class=se></span>    --tlsca<span class=o>=</span>./keys/ca.crt <span class=se>\
-</span><span class=se></span>    pub say hi
-</code></pre></td></tr></table>
-</div>
-</div></li>
-</ol></div><div class=post-footer id=post-footer>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>nats -s localhost <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --tlscert<span class=o>=</span>./keys/client2.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --tlskey<span class=o>=</span>./keys/client2.key <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --tlsca<span class=o>=</span>./keys/ca.crt <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    pub say hi
+</span></span></code></pre></td></tr></table></div></div></li></ol></div><div class=post-footer id=post-footer>
 <div class=post-info>
 <div class=post-info-line>
 <div class=post-info-mod>
-<span>Updated on 2022-02-07&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/ce05da917849d31663149deeeb47da228c7a8a1a target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) ce05da917849d31663149deeeb47da228c7a8a1a: github action update algolia index">
-<i class="fas fa-hashtag fa-fw"></i>ce05da9</a></span>
-</div>
-<div class=post-info-license></div>
-</div>
-<div class=post-info-line>
+<span>Updated on 2022-03-06&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9f430b82ed63fd18dfc684e45a829b615d1b79c0 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9f430b82ed63fd18dfc684e45a829b615d1b79c0: add Wason Language Translator CLI">
+<i class="fas fa-hashtag fa-fw"></i>9f430b8</a></span>
+</div><div class=post-info-license></div></div><div class=post-info-line>
 <div class=post-info-md><span>
 <a class=link-to-markdown href=/posts/k3s-nats-tls-openssl/index.md target=_blank>Read Markdown</a>
-</span></div>
-<div class=post-info-share>
+</span></div><div class=post-info-share>
 <span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/k3s-nats-tls-openssl/ data-title="K3s Nats tls by openssl" data-via=CageChung data-hashtags=k3s,tls,nats,k8s><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/k3s-nats-tls-openssl/ data-hashtag=k3s><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/k3s-nats-tls-openssl/><i class="fab fa-linkedin fa-fw"></i></a></span>
-</div>
-</div>
-</div>
-<div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/k3s/>k3s</a>,&nbsp;<a href=/tags/tls/>tls</a>,&nbsp;<a href=/tags/nats/>NATS</a>,&nbsp;<a href=/tags/k8s/>k8s</a></section>
-<section>
+</div></div></div><div class=post-info-more>
+<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/k3s/>k3s</a>,&nbsp;<a href=/tags/tls/>tls</a>,&nbsp;<a href=/tags/nats/>NATS</a>,&nbsp;<a href=/tags/k8s/>k8s</a></section><section>
 <span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span>
-</section>
-</div>
-<div class=post-nav><a href=/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/ class=prev rel=prev title="Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks"><i class="fas fa-angle-left fa-fw"></i>Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks</a>
-<a href=/posts/cloud-next-21-pre-event/ class=next rel=next title="Cloud Next 21 Pre Event">Cloud Next 21 Pre Event<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-<div id=comments><div id=utterances></div><noscript>
+</section></div><div class=post-nav><a href=/posts/coscup-x-ruby-conf-tw-2021-google-cloud-buildpacks/ class=prev rel=prev title="Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks"><i class="fas fa-angle-left fa-fw"></i>Coscup X Ruby Conf Tw 2021 Google Cloud Buildpacks</a>
+<a href=/posts/cloud-next-21-pre-event/ class=next rel=next title="Cloud Next 21 Pre Event">Cloud Next 21 Pre Event<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>
 Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
-</noscript></div></article></div>
-</main><footer class=footer>
-<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.92.1">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div>
-</div>
-</footer></div>
-<div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
+</noscript></div></article></div></main><footer class=footer>
+<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.93.2">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
 <i class="fas fa-arrow-up fa-fw"></i>
 </a><a href=# id=view-comments class=fixed-button title="View Comments">
 <i class="fas fa-comment fa-fw"></i>
 </a>
-</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.en",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body>
-</html>
+</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.en",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>
