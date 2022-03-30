@@ -1,87 +1,18 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=robots content="noodp">
-<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
-<title>django getting started - KaiChu</title><meta name=Description content="簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm"><meta property="og:title" content="django getting started">
-<meta property="og:description" content="簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://kaichu.io/posts/django-getting-started/"><meta property="og:image" content="https://kaichu.io/posts/django-getting-started/img/django-getting-started-09.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2015-11-01T23:39:07+08:00">
-<meta property="article:modified_time" content="2022-03-06T07:11:52+00:00">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://kaichu.io/posts/django-getting-started/img/django-getting-started-09.png">
-<meta name=twitter:title content="django getting started">
-<meta name=twitter:description content="簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm">
-<meta name=application-name content="KaiChu">
-<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/django-getting-started/><link rel=prev href=https://kaichu.io/posts/docker-notebook-1/><link rel=next href=https://kaichu.io/posts/gae-appcfg-update-403/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"django getting started","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/django-getting-started\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/django-getting-started\/img\/django-getting-started-09.png","width":2744,"height":1754}],"genre":"posts","keywords":"Python, Django, twoscoops, PyCharm","wordcount":2002,"url":"https:\/\/kaichu.io\/posts\/django-getting-started\/","datePublished":"2015-11-01T23:39:07+08:00","dateModified":"2022-03-06T07:11:52+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script>
-<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
-<div class=header-wrapper>
-<div class=header-title>
-<a href=/ title=KaiChu>KaiChu</a>
-</div><div class=menu>
-<div class=menu-inner><a class=menu-item href=/ title=Home> Home </a><a class=menu-item href=/posts/> Posts </a><a class=menu-item href=/tags/> Tags </a><a class=menu-item href=/about/> About </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>django getting started - KaiChu</title><meta name=Description content="簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm"><meta property="og:title" content="django getting started"><meta property="og:description" content="簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/django-getting-started/"><meta property="og:image" content="https://kaichu.io/posts/django-getting-started/img/django-getting-started-09.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2015-11-01T23:39:07+08:00"><meta property="article:modified_time" content="2022-03-30T20:43:43+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/posts/django-getting-started/img/django-getting-started-09.png"><meta name=twitter:title content="django getting started"><meta name=twitter:description content="簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/django-getting-started/><link rel=prev href=https://kaichu.io/posts/docker-notebook-1/><link rel=next href=https://kaichu.io/posts/gae-appcfg-update-403/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"django getting started","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/django-getting-started\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/django-getting-started\/img\/django-getting-started-09.png","width":2744,"height":1754}],"genre":"posts","keywords":"Python, Django, twoscoops, PyCharm","wordcount":2002,"url":"https:\/\/kaichu.io\/posts\/django-getting-started\/","datePublished":"2015-11-01T23:39:07+08:00","dateModified":"2022-03-30T20:43:43+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/django-getting-started/ selected>English</option><option value=/zh-tw/posts/django-getting-started/>繁體中文</option></select>
-</a><span class="menu-item search" id=search-desktop>
-<input type=text placeholder="Search titles or contents..." id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search>
-<i class="fas fa-search fa-fw"></i>
-</a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear>
-<i class="fas fa-times-circle fa-fw"></i>
-</a>
-<span class="search-button search-loading" id=search-loading-desktop>
-<i class="fas fa-spinner fa-fw fa-spin"></i>
-</span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
-<i class="fas fa-adjust fa-fw"></i>
-</a>
-</div></div></div></header><header class=mobile id=header-mobile>
-<div class=header-container>
-<div class=header-wrapper>
-<div class=header-title>
-<a href=/ title=KaiChu>KaiChu</a>
-</div><div class=menu-toggle id=menu-toggle-mobile>
-<span></span><span></span><span></span>
-</div></div><div class=menu id=menu-mobile><div class=search-wrapper>
-<div class="search mobile" id=search-mobile>
-<input type=text placeholder="Search titles or contents..." id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search>
-<i class="fas fa-search fa-fw"></i>
-</a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear>
-<i class="fas fa-times-circle fa-fw"></i>
-</a>
-<span class="search-button search-loading" id=search-loading-mobile>
-<i class="fas fa-spinner fa-fw fa-spin"></i>
-</span>
-</div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
-Cancel
-</a>
-</div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+</a><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
 <i class="fas fa-adjust fa-fw"></i>
 </a><a href=javascript:void(0); class=menu-item title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
-<select class=language-select onchange="location=this.value"><option value=/posts/django-getting-started/ selected>English</option><option value=/zh-tw/posts/django-getting-started/>繁體中文</option></select>
-</a></div></div></header><div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div></div><main class=main>
-<div class=container><div class=toc id=toc-auto>
-<h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">django getting started</h1><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2015-11-01>2015-11-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2002 words&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept>
-<div class="details-summary toc-title">
-<span>Contents</span>
-<span><i class="details-icon fas fa-angle-right"></i></span>
-</div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
-<ul>
-<li><a href=#virtualenv>Virtualenv</a></li><li><a href=#django>Django</a></li><li><a href=#twoscoops>twoscoops</a></li><li><a href=#pycharm>Pycharm</a></li><li><a href=#reference>Reference</a></li></ul></nav></div></div><div class=content id=content><p>Django Quick Getting Started</p><ul>
-<li>pip</li><li>virtualenv</li><li>virtualenvwrapper</li><li>Django</li><li><a href=https://github.com/twoscoops/django-twoscoops-project target=_blank rel="noopener noreffer">twoscoops/django-twoscoops-project</a></li><li>PyCharm</li></ul><p>簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm</p><h2 id=virtualenv>Virtualenv</h2><p>Python 社群擁有非常多的好用的套件，所以 <code>pip</code> 的套件管理程式就變的非常的好用。但是這時候就有出現另一個問題。不同專案所需要函數庫可能不盡相同，所以 <code>Virtualenv</code> 可以隔離函數庫需求不同的專案，讓它們不會互相影響。</p><ul>
-<li>在沒有權限的情況下安裝新套件</li><li>不同專案可以使用不同版本的相同套件</li><li>套件版本升級時不會影響其他專案</li></ul><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<select class=language-select onchange="location=this.value"><option value=/posts/django-getting-started/ selected>English</option><option value=/zh-tw/posts/django-getting-started/>繁體中文</option></select></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">django getting started</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2015-11-01>2015-11-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;2002 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;4 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#virtualenv>Virtualenv</a></li><li><a href=#django>Django</a></li><li><a href=#twoscoops>twoscoops</a></li><li><a href=#pycharm>Pycharm</a></li><li><a href=#reference>Reference</a></li></ul></nav></div></div><div class=content id=content><p>Django Quick Getting Started</p><ul><li>pip</li><li>virtualenv</li><li>virtualenvwrapper</li><li>Django</li><li><a href=https://github.com/twoscoops/django-twoscoops-project target=_blank rel="noopener noreffer">twoscoops/django-twoscoops-project</a></li><li>PyCharm</li></ul><p>簡單說明如何快速建立一個 Django 專案及搭配 Virtualenv, PyCharm</p><h2 id=virtualenv>Virtualenv</h2><p>Python 社群擁有非常多的好用的套件，所以 <code>pip</code> 的套件管理程式就變的非常的好用。但是這時候就有出現另一個問題。不同專案所需要函數庫可能不盡相同，所以 <code>Virtualenv</code> 可以隔離函數庫需求不同的專案，讓它們不會互相影響。</p><ul><li>在沒有權限的情況下安裝新套件</li><li>不同專案可以使用不同版本的相同套件</li><li>套件版本升級時不會影響其他專案</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -94,8 +25,7 @@ Cancel
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># install virtualenv (會安裝在全域環境下)</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># install virtualenv (會安裝在全域環境下)</span>
 </span></span><span class=line><span class=cl>$ pip install virtualenv
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1># 建立一個 virtualenv, 建立完成後會在 quick_getting_started新增一個 env_QGS 的目錄</span>
@@ -108,10 +38,7 @@ Cancel
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1># 退出 virtualenv</span>
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $ deactivate
-</span></span></code></pre></td></tr></table></div></div><p><strong>Tips:</strong></p><p>Virtualenv 方便讓我隔離了不同專案下的函式庫，但是我們建立出來的 <code>env_QGS</code> (virtualenv 目錄) 會散落在各地，在管理上面還是有一點點麻煩。這時候就有另一個 <code>virtualenvwrapper</code> 幫我們解決這一個問題</p><p><a href=https://virtualenvwrapper.readthedocs.org/en/latest/ target=_blank rel="noopener noreffer">virtualenvwrapper</a> 是一個 virtualenv 的強加版，方便我們管理有的 virtualenv</p><ul>
-<li>將所有的虛擬環境整合在一個目錄下。</li><li>管理（新增、移除、複製）所有的虛擬環境。</li><li>可以使用一個命令切換虛擬環境。</li><li>Tab 補全虛擬環境的名字。</li><li>每個操作都提供允許使用者自訂的 hooks。</li><li>可撰寫容易分享的 extension plugin 系統。</li></ul><p>所以剛剛的操作步驟就可以得到簡化</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p><strong>Tips:</strong></p><p>Virtualenv 方便讓我隔離了不同專案下的函式庫，但是我們建立出來的 <code>env_QGS</code> (virtualenv 目錄) 會散落在各地，在管理上面還是有一點點麻煩。這時候就有另一個 <code>virtualenvwrapper</code> 幫我們解決這一個問題</p><p><a href=https://virtualenvwrapper.readthedocs.org/en/latest/ target=_blank rel="noopener noreffer">virtualenvwrapper</a> 是一個 virtualenv 的強加版，方便我們管理有的 virtualenv</p><ul><li>將所有的虛擬環境整合在一個目錄下。</li><li>管理（新增、移除、複製）所有的虛擬環境。</li><li>可以使用一個命令切換虛擬環境。</li><li>Tab 補全虛擬環境的名字。</li><li>每個操作都提供允許使用者自訂的 hooks。</li><li>可撰寫容易分享的 extension plugin 系統。</li></ul><p>所以剛剛的操作步驟就可以得到簡化</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -133,8 +60,7 @@ Cancel
 </span><span class=lnt>20
 </span><span class=lnt>21
 </span><span class=lnt>22
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># 列出所有的 virtualenv. 所有的 virtualenv 集中管理(~/.virtualenvs/)</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># 列出所有的 virtualenv. 所有的 virtualenv 集中管理(~/.virtualenvs/)</span>
 </span></span><span class=line><span class=cl>$ workon
 </span></span><span class=line><span class=cl>djago-oscar-api-test
 </span></span><span class=line><span class=cl>django-oscar-paypal
@@ -156,10 +82,7 @@ Cancel
 </span></span><span class=line><span class=cl>virtualenvwrapper.user_scripts creating /Users/cage/.virtualenvs/env_QGS/bin/postactivate
 </span></span><span class=line><span class=cl>virtualenvwrapper.user_scripts creating /Users/cage/.virtualenvs/env_QGS/bin/get_env_details
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $
-</span></span></code></pre></td></tr></table></div></div><h2 id=django>Django</h2><blockquote>
-<p>Django是一個開放原始碼的Web應用框架，由Python寫成。採用了MVC的軟體設計模式，即模型M，視圖V和控制器C。它最初是被開發來用於管理勞倫斯出版集團旗下的一些以新聞內容為主的網站的。並於2005年7月在BSD授權條款下釋出。這套框架是以比利時的吉普賽爵士吉他手Django Reinhardt來命名的。<a href=https://zh.wikipedia.org/wiki/Django target=_blank rel="noopener noreffer">Django - 維基百科，自由的百科全書</a></p></blockquote><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><h2 id=django>Django</h2><blockquote><p>Django是一個開放原始碼的Web應用框架，由Python寫成。採用了MVC的軟體設計模式，即模型M，視圖V和控制器C。它最初是被開發來用於管理勞倫斯出版集團旗下的一些以新聞內容為主的網站的。並於2005年7月在BSD授權條款下釋出。這套框架是以比利時的吉普賽爵士吉他手Django Reinhardt來命名的。<a href=https://zh.wikipedia.org/wiki/Django target=_blank rel="noopener noreffer">Django - 維基百科，自由的百科全書</a></p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -229,8 +152,7 @@ Cancel
 </span><span class=lnt>68
 </span><span class=lnt>69
 </span><span class=lnt>70
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># 使用 mkvirtualenv env_QGS, 列出預設安裝 Python 函式庫</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># 使用 mkvirtualenv env_QGS, 列出預設安裝 Python 函式庫</span>
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $ pip list
 </span></span><span class=line><span class=cl>pip <span class=o>(</span>7.1.2<span class=o>)</span>
 </span></span><span class=line><span class=cl>setuptools <span class=o>(</span>18.2<span class=o>)</span>
@@ -300,15 +222,7 @@ Cancel
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1># 基本上使用 django-admon 建立完後就可以接直執行</span>
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $ python mysite/manage.py runserver
-</span></span></code></pre></td></tr></table></div></div><a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-01.png title=/posts/django-getting-started/img/django-getting-started-01.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-01.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-01.png data-srcset="/posts/django-getting-started/img/django-getting-started-01.png, img/django-getting-started-01.png 1.5x, /posts/django-getting-started/img/django-getting-started-01.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-01.png>
-</a>
-<p><strong>Tips:</strong></p><p>使用 <code>django-admin.py</code> 可以快速的建立專案，但是在專案進行還是會遇到發開/測試/部署等執行階段，再這些階段會遇到函式庫不同(<code>requirments.txt</code>), 設定檔配置也會不同(<code>settings</code>)。空專案建立再手動調整的方式就會比較累，所以在專案建立時就引用 <code>twocoops template</code> 來加快專案檔案架構的配置</p><h2 id=twoscoops>twoscoops</h2><p><a href=http://twoscoopspress.org/ target=_blank rel="noopener noreffer">Two Scoops Press: Making Python and Django as fun as ice cream</a></p><a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-02.png title=/posts/django-getting-started/img/django-getting-started-02.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-02.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-02.png data-srcset="/posts/django-getting-started/img/django-getting-started-02.png, img/django-getting-started-02.png 1.5x, /posts/django-getting-started/img/django-getting-started-02.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-02.png>
-</a>
-<p>twocoops 是一本書，這本書教你如何最佳實踐 Django 1.8，如上一節提的問題(multiple requirements.txt、settings)等配置方式</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-01.png title=/posts/django-getting-started/img/django-getting-started-01.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-01.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-01.png data-srcset="/posts/django-getting-started/img/django-getting-started-01.png, img/django-getting-started-01.png 1.5x, /posts/django-getting-started/img/django-getting-started-01.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-01.png></a><p><strong>Tips:</strong></p><p>使用 <code>django-admin.py</code> 可以快速的建立專案，但是在專案進行還是會遇到發開/測試/部署等執行階段，再這些階段會遇到函式庫不同(<code>requirments.txt</code>), 設定檔配置也會不同(<code>settings</code>)。空專案建立再手動調整的方式就會比較累，所以在專案建立時就引用 <code>twocoops template</code> 來加快專案檔案架構的配置</p><h2 id=twoscoops>twoscoops</h2><p><a href=http://twoscoopspress.org/ target=_blank rel="noopener noreffer">Two Scoops Press: Making Python and Django as fun as ice cream</a></p><a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-02.png title=/posts/django-getting-started/img/django-getting-started-02.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-02.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-02.png data-srcset="/posts/django-getting-started/img/django-getting-started-02.png, img/django-getting-started-02.png 1.5x, /posts/django-getting-started/img/django-getting-started-02.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-02.png></a><p>twocoops 是一本書，這本書教你如何最佳實踐 Django 1.8，如上一節提的問題(multiple requirements.txt、settings)等配置方式</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -364,8 +278,7 @@ Cancel
 </span><span class=lnt>54
 </span><span class=lnt>55
 </span><span class=lnt>56
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># 我們接著上節的進度 (~/tmp/quick_gettting_started)</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># 我們接著上節的進度 (~/tmp/quick_gettting_started)</span>
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $ ls
 </span></span><span class=line><span class=cl>my_site <span class=c1># 剛剛建立的 my_site 專案</span>
 </span></span><span class=line><span class=cl>
@@ -421,21 +334,7 @@ Cancel
 </span></span><span class=line><span class=cl>    │   ├── production.txt
 </span></span><span class=line><span class=cl>    │   └── test.txt
 </span></span><span class=line><span class=cl>    └── requirements.txt
-</span></span></code></pre></td></tr></table></div></div><a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-03.png title=/posts/django-getting-started/img/django-getting-started-03.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-03.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-03.png data-srcset="/posts/django-getting-started/img/django-getting-started-03.png, img/django-getting-started-03.png 1.5x, /posts/django-getting-started/img/django-getting-started-03.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-03.png>
-</a>
-<p><strong>Tips:</strong></p><p>在執行 mysite2 之前需對建立出來的檔案進行一些修改(因為這個 template 是針對 Django 1.6，我們想要使用 Django 1.8.5 所以必修進行修正)</p><ol>
-<li><em>requirements</em>
-<ul>
-<li><code>mysite2/requirements/base.txt</code> : Django==1.6.5 &ndash;> Django==1.8.5</li><li><code>mysite2/requirements/local.txt</code> : django-debug-toolbar==1.2.1 &ndash;> django-debug-toolbar==1.4</li></ul></li><li><em>mysite2/mysite2/mysite2/settings</em>
-<ul>
-<li><code>base.py</code>
-<ol>
-<li>mark <strong>line 29</strong> <code># TEMPLATE_DEBUG = DEBUG</code></li><li>mark <strong>line 246</strong> <code># 'south',</code> (south support &lt; Django 1.7)</li></ol></li><li><code>local.py</code>
-<ol>
-<li>mark <strong>line 15</strong> <code># TEMPLATE_DEBUG = DEBUG</code></li></ol></li></ul></li></ol><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-03.png title=/posts/django-getting-started/img/django-getting-started-03.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-03.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-03.png data-srcset="/posts/django-getting-started/img/django-getting-started-03.png, img/django-getting-started-03.png 1.5x, /posts/django-getting-started/img/django-getting-started-03.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-03.png></a><p><strong>Tips:</strong></p><p>在執行 mysite2 之前需對建立出來的檔案進行一些修改(因為這個 template 是針對 Django 1.6，我們想要使用 Django 1.8.5 所以必修進行修正)</p><ol><li><em>requirements</em><ul><li><code>mysite2/requirements/base.txt</code> : Django==1.6.5 &ndash;> Django==1.8.5</li><li><code>mysite2/requirements/local.txt</code> : django-debug-toolbar==1.2.1 &ndash;> django-debug-toolbar==1.4</li></ul></li><li><em>mysite2/mysite2/mysite2/settings</em><ul><li><code>base.py</code><ol><li>mark <strong>line 29</strong> <code># TEMPLATE_DEBUG = DEBUG</code></li><li>mark <strong>line 246</strong> <code># 'south',</code> (south support &lt; Django 1.7)</li></ol></li><li><code>local.py</code><ol><li>mark <strong>line 15</strong> <code># TEMPLATE_DEBUG = DEBUG</code></li></ol></li></ul></li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -454,8 +353,7 @@ Cancel
 </span><span class=lnt>17
 </span><span class=lnt>18
 </span><span class=lnt>19
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># install package</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># install package</span>
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $ <span class=nb>cd</span> mysite2
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $ pip install -r requirements/local.txt
 </span></span><span class=line><span class=cl>
@@ -475,46 +373,12 @@ Cancel
 </span></span><span class=line><span class=cl><span class=c1># 執行</span>
 </span></span><span class=line><span class=cl><span class=o>(</span>env_QGS<span class=o>)</span> $ python mysite2/manage.py runserver --settings<span class=o>=</span>mysite2.settings.local
 </span></span></code></pre></td></tr></table></div></div><h2 id=pycharm>Pycharm</h2><p>Pycharm 是一個很好用的 Python 編輯器，我最喜歡的部份是可以拿來 debug。不過在開發環境上需要設定一下才能配合 <code>virtualenv</code> + <code>twoscoops</code></p><p><strong>Project structure 設定 <em>mysite2(django project level)</em> 為source</strong>
-<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-04.png title=/posts/django-getting-started/img/django-getting-started-04.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-04.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-04.png data-srcset="/posts/django-getting-started/img/django-getting-started-04.png, img/django-getting-started-04.png 1.5x, /posts/django-getting-started/img/django-getting-started-04.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-04.png>
-</a></p><p><strong>Project interpreter 加入已經建立好的 virtualenv</strong>
-<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-05.png title=/posts/django-getting-started/img/django-getting-started-05.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-05.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-05.png data-srcset="/posts/django-getting-started/img/django-getting-started-05.png, img/django-getting-started-05.png 1.5x, /posts/django-getting-started/img/django-getting-started-05.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-05.png>
-</a></p><p><strong>設定 Django (Django project, settings, manage.py path)</strong>
-<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-06.png title=/posts/django-getting-started/img/django-getting-started-06.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-06.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-06.png data-srcset="/posts/django-getting-started/img/django-getting-started-06.png, img/django-getting-started-06.png 1.5x, /posts/django-getting-started/img/django-getting-started-06.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-06.png>
-</a></p><p>**設定 Run/Debug Configration **
-<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-07.png title=/posts/django-getting-started/img/django-getting-started-07.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-07.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-07.png data-srcset="/posts/django-getting-started/img/django-getting-started-07.png, img/django-getting-started-07.png 1.5x, /posts/django-getting-started/img/django-getting-started-07.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-07.png>
-</a></p><p><strong>Run with fly</strong>
-<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-08.png title=/posts/django-getting-started/img/django-getting-started-08.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-08.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-08.png data-srcset="/posts/django-getting-started/img/django-getting-started-08.png, img/django-getting-started-08.png 1.5x, /posts/django-getting-started/img/django-getting-started-08.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-08.png>
-</a></p><p><strong>Enjoying debug mode</strong>
-<a class=lightgallery href=img/django-getting-started-09.png title=img/django-getting-started-09.png data-thumbnail=img/django-getting-started-09.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-09.png data-srcset="img/django-getting-started-09.png, img/django-getting-started-09.png 1.5x, img/django-getting-started-09.png 2x" data-sizes=auto alt=img/django-getting-started-09.png>
-</a></p><h2 id=reference>Reference</h2><ul>
-<li><a href=http://www.openfoundry.org/tw/tech-column/8516-pythons-virtual-environment-and-multi-version-programming-tools-virtualenv-and-pythonbrew target=_blank rel="noopener noreffer">Python 的虛擬環境及多版本開發利器─Virtualenv 與 Pythonbrew - OpenFoundry</a></li></ul></div><div class=post-footer id=post-footer>
-<div class=post-info>
-<div class=post-info-line>
-<div class=post-info-mod>
-<span>Updated on 2022-03-06&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9f430b82ed63fd18dfc684e45a829b615d1b79c0 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9f430b82ed63fd18dfc684e45a829b615d1b79c0: add Wason Language Translator CLI">
-<i class="fas fa-hashtag fa-fw"></i>9f430b8</a></span>
-</div><div class=post-info-license></div></div><div class=post-info-line>
-<div class=post-info-md><span>
-<a class=link-to-markdown href=/posts/django-getting-started/index.md target=_blank>Read Markdown</a>
-</span></div><div class=post-info-share>
-<span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/django-getting-started/ data-title="django getting started" data-via=CageChung data-hashtags=Python,Django,twoscoops,PyCharm><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/django-getting-started/ data-hashtag=Python><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/django-getting-started/><i class="fab fa-linkedin fa-fw"></i></a></span>
-</div></div></div><div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/python/>Python</a>,&nbsp;<a href=/tags/django/>Django</a>,&nbsp;<a href=/tags/twoscoops/>twoscoops</a>,&nbsp;<a href=/tags/pycharm/>PyCharm</a></section><section>
-<span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span>
-</section></div><div class=post-nav><a href=/posts/docker-notebook-1/ class=prev rel=prev title="[筆記] docker 1.8.2 rc"><i class="fas fa-angle-left fa-fw"></i>[筆記] docker 1.8.2 rc</a>
-<a href=/posts/gae-appcfg-update-403/ class=next rel=next title="gae appcfg update 403">gae appcfg update 403<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>
-Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
-</noscript></div></article></div></main><footer class=footer>
-<div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.93.2">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top">
-<i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title="View Comments">
-<i class="fas fa-comment fa-fw"></i>
-</a>
-</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.en",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>
+<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-04.png title=/posts/django-getting-started/img/django-getting-started-04.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-04.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-04.png data-srcset="/posts/django-getting-started/img/django-getting-started-04.png, img/django-getting-started-04.png 1.5x, /posts/django-getting-started/img/django-getting-started-04.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-04.png></a></p><p><strong>Project interpreter 加入已經建立好的 virtualenv</strong>
+<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-05.png title=/posts/django-getting-started/img/django-getting-started-05.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-05.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-05.png data-srcset="/posts/django-getting-started/img/django-getting-started-05.png, img/django-getting-started-05.png 1.5x, /posts/django-getting-started/img/django-getting-started-05.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-05.png></a></p><p><strong>設定 Django (Django project, settings, manage.py path)</strong>
+<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-06.png title=/posts/django-getting-started/img/django-getting-started-06.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-06.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-06.png data-srcset="/posts/django-getting-started/img/django-getting-started-06.png, img/django-getting-started-06.png 1.5x, /posts/django-getting-started/img/django-getting-started-06.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-06.png></a></p><p>**設定 Run/Debug Configration **
+<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-07.png title=/posts/django-getting-started/img/django-getting-started-07.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-07.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-07.png data-srcset="/posts/django-getting-started/img/django-getting-started-07.png, img/django-getting-started-07.png 1.5x, /posts/django-getting-started/img/django-getting-started-07.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-07.png></a></p><p><strong>Run with fly</strong>
+<a class=lightgallery href=/posts/django-getting-started/img/django-getting-started-08.png title=/posts/django-getting-started/img/django-getting-started-08.png data-thumbnail=/posts/django-getting-started/img/django-getting-started-08.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-08.png data-srcset="/posts/django-getting-started/img/django-getting-started-08.png, img/django-getting-started-08.png 1.5x, /posts/django-getting-started/img/django-getting-started-08.png 2x" data-sizes=auto alt=/posts/django-getting-started/img/django-getting-started-08.png></a></p><p><strong>Enjoying debug mode</strong>
+<a class=lightgallery href=img/django-getting-started-09.png title=img/django-getting-started-09.png data-thumbnail=img/django-getting-started-09.png><img class=lazyload src=/svg/loading.min.svg data-src=img/django-getting-started-09.png data-srcset="img/django-getting-started-09.png, img/django-getting-started-09.png 1.5x, img/django-getting-started-09.png 2x" data-sizes=auto alt=img/django-getting-started-09.png></a></p><h2 id=reference>Reference</h2><ul><li><a href=http://www.openfoundry.org/tw/tech-column/8516-pythons-virtual-environment-and-multi-version-programming-tools-virtualenv-and-pythonbrew target=_blank rel="noopener noreffer">Python 的虛擬環境及多版本開發利器─Virtualenv 與 Pythonbrew - OpenFoundry</a></li></ul></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2022-03-30&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/d389aeeba23319a1f3cbcdfb202618ffc7b2b6b1 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) d389aeeba23319a1f3cbcdfb202618ffc7b2b6b1: Posts/deploy gokit todo to gae with cloud build from GitHub repo (#1)">
+<i class="fas fa-hashtag fa-fw"></i>d389aee</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/django-getting-started/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/django-getting-started/ data-title="django getting started" data-via=CageChung data-hashtags=Python,Django,twoscoops,PyCharm><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/django-getting-started/ data-hashtag=Python><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/django-getting-started/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/python/>Python</a>,&nbsp;<a href=/tags/django/>Django</a>,&nbsp;<a href=/tags/twoscoops/>twoscoops</a>,&nbsp;<a href=/tags/pycharm/>PyCharm</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/docker-notebook-1/ class=prev rel=prev title="[筆記] docker 1.8.2 rc"><i class="fas fa-angle-left fa-fw"></i>[筆記] docker 1.8.2 rc</a>
+<a href=/posts/gae-appcfg-update-403/ class=next rel=next title="gae appcfg update 403">gae appcfg update 403<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.96.0">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.en",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>

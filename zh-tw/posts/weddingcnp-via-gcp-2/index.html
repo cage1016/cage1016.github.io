@@ -1,96 +1,18 @@
-<!doctype html><html lang=zh-tw>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=robots content="noodp">
-<meta http-equiv=x-ua-compatible content="IE=edge, chrome=1">
-<title>weddingcnp via GCP - 2. 前端頁面設計實作 - KaiChu</title><meta name=Description content="weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作"><meta property="og:title" content="weddingcnp via GCP - 2. 前端頁面設計實作">
-<meta property="og:description" content="weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_1.png"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2017-06-18T21:02:54+00:00">
-<meta property="article:modified_time" content="2022-03-06T07:11:52+00:00">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_1.png">
-<meta name=twitter:title content="weddingcnp via GCP - 2. 前端頁面設計實作">
-<meta name=twitter:description content="weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作">
-<meta name=application-name content="KaiChu">
-<meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/><link rel=prev href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-1/><link rel=next href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"weddingcnp via GCP - 2. 前端頁面設計實作","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-2\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-2\/img\/weddingcnp-via-gpc-2_1.png","width":1200,"height":323}],"genre":"posts","keywords":"GAE, GCE, Datastore, EndpointAPI, sendgrid, API","wordcount":1667,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-2\/","datePublished":"2017-06-18T21:02:54+00:00","dateModified":"2022-03-06T07:11:52+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script>
-<div id=mask></div><div class=wrapper><header class=desktop id=header-desktop>
-<div class=header-wrapper>
-<div class=header-title>
-<a href=/zh-tw/ title=KaiChu>KaiChu</a>
-</div><div class=menu>
-<div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁> 首頁 </a><a class=menu-item href=/zh-tw/posts/> 所有文章 </a><a class=menu-item href=/zh-tw/tags/> 標籤 </a><a class=menu-item href=/zh-tw/about/> 關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
+<!doctype html><html lang=zh-tw><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>weddingcnp via GCP - 2. 前端頁面設計實作 - KaiChu</title><meta name=Description content="weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作"><meta property="og:title" content="weddingcnp via GCP - 2. 前端頁面設計實作"><meta property="og:description" content="weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作"><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/"><meta property="og:image" content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_1.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-06-18T21:02:54+00:00"><meta property="article:modified_time" content="2022-03-30T20:43:43+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_1.png"><meta name=twitter:title content="weddingcnp via GCP - 2. 前端頁面設計實作"><meta name=twitter:description content="weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作"><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/><link rel=prev href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-1/><link rel=next href=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-3/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"weddingcnp via GCP - 2. 前端頁面設計實作","inLanguage":"zh-TW","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-2\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-2\/img\/weddingcnp-via-gpc-2_1.png","width":1200,"height":323}],"genre":"posts","keywords":"GAE, GCE, Datastore, EndpointAPI, sendgrid, API","wordcount":1667,"url":"https:\/\/kaichu.io\/zh-tw\/posts\/weddingcnp-via-gcp-2\/","datePublished":"2017-06-18T21:02:54+00:00","dateModified":"2022-03-30T20:43:43+08:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"weddingcnp frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作"}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/zh-tw/ title=KaiChu>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/zh-tw/ title=首頁>首頁 </a><a class=menu-item href=/zh-tw/posts/>所有文章 </a><a class=menu-item href=/zh-tw/tags/>標籤 </a><a class=menu-item href=/zh-tw/about/>關於 </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
 <select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/weddingcnp-via-gcp-2/>English</option><option value=/zh-tw/posts/weddingcnp-via-gcp-2/ selected>繁體中文</option></select>
-</a><span class="menu-item search" id=search-desktop>
-<input type=text placeholder=搜索文章標題或內容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索>
-<i class="fas fa-search fa-fw"></i>
-</a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清除>
-<i class="fas fa-times-circle fa-fw"></i>
-</a>
-<span class="search-button search-loading" id=search-loading-desktop>
-<i class="fas fa-spinner fa-fw fa-spin"></i>
-</span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
-<i class="fas fa-adjust fa-fw"></i>
-</a>
-</div></div></div></header><header class=mobile id=header-mobile>
-<div class=header-container>
-<div class=header-wrapper>
-<div class=header-title>
-<a href=/zh-tw/ title=KaiChu>KaiChu</a>
-</div><div class=menu-toggle id=menu-toggle-mobile>
-<span></span><span></span><span></span>
-</div></div><div class=menu id=menu-mobile><div class=search-wrapper>
-<div class="search mobile" id=search-mobile>
-<input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索>
-<i class="fas fa-search fa-fw"></i>
-</a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清除>
-<i class="fas fa-times-circle fa-fw"></i>
-</a>
-<span class="search-button search-loading" id=search-loading-mobile>
-<i class="fas fa-spinner fa-fw fa-spin"></i>
-</span>
-</div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>
-取消
-</a>
-</div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
+</a><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章標題或內容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清除><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/zh-tw/ title=KaiChu>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章標題或內容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清除><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/zh-tw/ title=首頁>首頁</a><a class=menu-item href=/zh-tw/posts/ title>所有文章</a><a class=menu-item href=/zh-tw/tags/ title>標籤</a><a class=menu-item href=/zh-tw/about/ title>關於</a><a href=javascript:void(0); class="menu-item theme-switch" title=切換主題>
 <i class="fas fa-adjust fa-fw"></i>
 </a><a href=javascript:void(0); class=menu-item title=選擇語言>繁體中文<i class="fas fa-chevron-right fa-fw"></i>
-<select class=language-select onchange="location=this.value"><option value=/posts/weddingcnp-via-gcp-2/>English</option><option value=/zh-tw/posts/weddingcnp-via-gcp-2/ selected>繁體中文</option></select>
-</a></div></div></header><div class="search-dropdown desktop">
-<div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile">
-<div id=search-dropdown-mobile></div></div><main class=main>
-<div class=container><div class=toc id=toc-auto>
-<h2 class=toc-title>目錄</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">weddingcnp via GCP - 2. 前端頁面設計實作</h1><div class=post-meta>
-<div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2017-06-18>2017-06-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 1667 字&nbsp;
-<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 4 分鐘&nbsp;</div></div><div class="details toc" id=toc-static kept>
-<div class="details-summary toc-title">
-<span>目錄</span>
-<span><i class="details-icon fas fa-angle-right"></i></span>
-</div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href=#weddingcnp-系例傳送門>weddingcnp 系例傳送門</a></li><li><a href=#weddingcnp-前端頁面設計實作>weddingcnp 前端頁面設計實作</a></li></ul></li></ul></li><li><a href=#google-app-engine-basic>Google App Engine Basic</a></li><li><a href=#google-app-engine-hello-example>Google App Engine: hello example</a></li><li><a href=#weddingcnp-frontend>Weddingcnp frontend</a></li></ul></nav></div></div><div class=content id=content><p>此篇就對 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作介紹</p><h4 id=weddingcnp-系例傳送門>weddingcnp 系例傳送門</h4><ol>
-<li><a href=https://kaichu.io/2017/06/08/weddingcnp-via-gcp/ target=_blank rel="noopener noreffer">weddingcnp via GCP 簡介</a></li><li><a href=https://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=https://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=https://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 3. endpointAPI 設計實作</a></li><li>weddingcnp 前端 vue.js 設計實作</li><li>weddingcnp edm 寄送 sendgrid</li></ol><h4 id=weddingcnp-前端頁面設計實作>weddingcnp 前端頁面設計實作</h4><p><a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> <strong>frontend Service(Module)</strong> 主要的功能如下</p><ul>
-<li>serve 靜態資源(audio、js、images、css)，serve 動態資源(婚紗照片由 Google Cloud Storage 提供)</li><li>服務整個主體的網站架構中模版
-<ul>
-<li><a href=https://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">首頁介紹頁</a></li><li><a href=https://weddingcnp.appspot.com/gallery target=_blank rel="noopener noreffer">婚妙相簿頁</a></li><li>婚宴地點介紹引導頁(<a href=https://weddingcnp.appspot.com/luzhu target=_blank rel="noopener noreffer">訂婚</a>、<a href=https://weddingcnp.appspot.com/chiayi target=_blank rel="noopener noreffer">結婚</a>)</li><li><a href=https://weddingcnp.appspot.com/rsvp target=_blank rel="noopener noreffer">報名頁面</a>(我要參加)<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup></li><li><a href=https://weddingcnp.appspot.com/greeting target=_blank rel="noopener noreffer">隱藏網頁</a>(求婚影片搶先看)，連結由喜帖中的 QR code 提供</li><li><a href=https://weddingcnp.appspot.com/bingo target=_blank rel="noopener noreffer">bingo 遊戲</a></li></ul></li></ul><a class=lightgallery href=img/weddingcnp-via-gpc-2_1.png title=img/weddingcnp-via-gpc-2_1.png data-thumbnail=img/weddingcnp-via-gpc-2_1.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gpc-2_1.png data-srcset="img/weddingcnp-via-gpc-2_1.png, img/weddingcnp-via-gpc-2_1.png 1.5x, img/weddingcnp-via-gpc-2_1.png 2x" data-sizes=auto alt=img/weddingcnp-via-gpc-2_1.png>
-</a>
-<p><strong>frontend Service</strong></p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<select class=language-select onchange="location=this.value"><option value=/posts/weddingcnp-via-gcp-2/>English</option><option value=/zh-tw/posts/weddingcnp-via-gcp-2/ selected>繁體中文</option></select></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目錄</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">weddingcnp via GCP - 2. 前端頁面設計實作</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/zh-tw/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2017-06-18>2017-06-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;約 1667 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;預計閱讀 4 分鐘&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目錄</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#weddingcnp-系例傳送門>weddingcnp 系例傳送門</a></li><li><a href=#weddingcnp-前端頁面設計實作>weddingcnp 前端頁面設計實作</a></li></ul></li></ul></li><li><a href=#google-app-engine-basic>Google App Engine Basic</a></li><li><a href=#google-app-engine-hello-example>Google App Engine: hello example</a></li><li><a href=#weddingcnp-frontend>Weddingcnp frontend</a></li></ul></nav></div></div><div class=content id=content><p>此篇就對 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> frontend Service 使用了 GAE standard runtime 搭配 echo 網頁框架實作介紹</p><h4 id=weddingcnp-系例傳送門>weddingcnp 系例傳送門</h4><ol><li><a href=https://kaichu.io/2017/06/08/weddingcnp-via-gcp/ target=_blank rel="noopener noreffer">weddingcnp via GCP 簡介</a></li><li><a href=https://kaichu.io/2017/06/12/weddingcnp-via-gcp-1/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 1. 專案架構切分</a></li><li><a href=https://kaichu.io/2017/06/18/weddingcnp-via-gcp-2/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 2. 前端頁面設計實作</a></li><li><a href=https://kaichu.io/2017/07/12/weddingcnp-via-gcp-3/ target=_blank rel="noopener noreffer">weddingcnp via GCP - 3. endpointAPI 設計實作</a></li><li>weddingcnp 前端 vue.js 設計實作</li><li>weddingcnp edm 寄送 sendgrid</li></ol><h4 id=weddingcnp-前端頁面設計實作>weddingcnp 前端頁面設計實作</h4><p><a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> <strong>frontend Service(Module)</strong> 主要的功能如下</p><ul><li>serve 靜態資源(audio、js、images、css)，serve 動態資源(婚紗照片由 Google Cloud Storage 提供)</li><li>服務整個主體的網站架構中模版<ul><li><a href=https://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">首頁介紹頁</a></li><li><a href=https://weddingcnp.appspot.com/gallery target=_blank rel="noopener noreffer">婚妙相簿頁</a></li><li>婚宴地點介紹引導頁(<a href=https://weddingcnp.appspot.com/luzhu target=_blank rel="noopener noreffer">訂婚</a>、<a href=https://weddingcnp.appspot.com/chiayi target=_blank rel="noopener noreffer">結婚</a>)</li><li><a href=https://weddingcnp.appspot.com/rsvp target=_blank rel="noopener noreffer">報名頁面</a>(我要參加)<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup></li><li><a href=https://weddingcnp.appspot.com/greeting target=_blank rel="noopener noreffer">隱藏網頁</a>(求婚影片搶先看)，連結由喜帖中的 QR code 提供</li><li><a href=https://weddingcnp.appspot.com/bingo target=_blank rel="noopener noreffer">bingo 遊戲</a></li></ul></li></ul><a class=lightgallery href=img/weddingcnp-via-gpc-2_1.png title=img/weddingcnp-via-gpc-2_1.png data-thumbnail=img/weddingcnp-via-gpc-2_1.png><img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gpc-2_1.png data-srcset="img/weddingcnp-via-gpc-2_1.png, img/weddingcnp-via-gpc-2_1.png 1.5x, img/weddingcnp-via-gpc-2_1.png 2x" data-sizes=auto alt=img/weddingcnp-via-gpc-2_1.png></a><p><strong>frontend Service</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -112,8 +34,7 @@
 </span><span class=lnt>20
 </span><span class=lnt>21
 </span><span class=lnt>22
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>.
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>.
 </span></span><span class=line><span class=cl>├── public                // static resource
 </span></span><span class=line><span class=cl>│   ├── audio
 </span></span><span class=line><span class=cl>│   ├── css
@@ -135,27 +56,19 @@
 </span></span><span class=line><span class=cl>├── app.yaml              // frontend services yaml
 </span></span><span class=line><span class=cl>├── index.yaml            // index <span class=k>for</span> Datastore
 </span></span><span class=line><span class=cl>└── main.go               // <span class=nb>echo</span> framework entry point
-</span></span></code></pre></td></tr></table></div></div><h2 id=google-app-engine-basic>Google App Engine Basic</h2><p><a href=https://cloud.google.com/appengine/docs target=_blank rel="noopener noreffer">Google App Engine</a> 現在有提供 <strong>Standard</strong> 及 <strong>Flexible</strong> 的版本</p><p><a href=https://cloud.google.com/appengine/docs/standard/ target=_blank rel="noopener noreffer">Standard</a>:</p><ul>
-<li>Python 2.7</li><li>Java 7</li><li>PHP 5.5</li><li>Go 1.6<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup></li></ul><p><a href=https://cloud.google.com/appengine/docs/flexible/ target=_blank rel="noopener noreffer">Flexible</a>:</p><ul>
-<li>Python 2.7/3.5</li><li>Java 8</li><li>Node.js</li><li>Go 1.8</li><li>Ruby</li><li>PHP 5,6,7</li><li>.Net</li><li>Custom Runtimes</li></ul><p>二者最大的差異是 <strong>Standard</strong> runtime 為 Google Fully management，所以享有每天 <strong>28</strong> instance FREE 的配額<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup>，<strong>Flexible</strong> runtime 是以 GCE 的 instance 來跑，所以基本上的計價方式就是以 GCE 的計算方式，以分計費(最少收 10 分鐘的錢)，且因為是 GCE 的方式來跑，因此彈性上就會比 <strong>Standard</strong> runtime 的來的大，不過缺點就是一開機器就開始算錢惹。在 weddingcnp 專案一開始就希望能夠少花一點錢，評估上 <strong>Standard</strong> runtime 就已經滿足需求</p><p><a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> <strong>frontend Service(Module)</strong> 選擇使用了 <strong>Standard</strong> runtime 中 <code>Go</code> 語言的實作方式。由於前端需求並不複雜且 <code>Go</code> 實作的方式要比 <code>Python</code> 來的簡潔，部署至 Google App Engine 上的專案大小、記憶體的表現都上 <code>Go</code> 的表現要來的比 <code>Python</code> 來的要好，因此選擇了 <code>Go</code> 來實作。</p><blockquote>
-<p>各位朋友就端看自己的需求來評估要使用那一種 runtime</p></blockquote><h2 id=google-app-engine-hello-example>Google App Engine: hello example</h2><p><strong>app.yaml</strong></p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><h2 id=google-app-engine-basic>Google App Engine Basic</h2><p><a href=https://cloud.google.com/appengine/docs target=_blank rel="noopener noreffer">Google App Engine</a> 現在有提供 <strong>Standard</strong> 及 <strong>Flexible</strong> 的版本</p><p><a href=https://cloud.google.com/appengine/docs/standard/ target=_blank rel="noopener noreffer">Standard</a>:</p><ul><li>Python 2.7</li><li>Java 7</li><li>PHP 5.5</li><li>Go 1.6<sup id=fnref:2><a href=#fn:2 class=footnote-ref role=doc-noteref>2</a></sup></li></ul><p><a href=https://cloud.google.com/appengine/docs/flexible/ target=_blank rel="noopener noreffer">Flexible</a>:</p><ul><li>Python 2.7/3.5</li><li>Java 8</li><li>Node.js</li><li>Go 1.8</li><li>Ruby</li><li>PHP 5,6,7</li><li>.Net</li><li>Custom Runtimes</li></ul><p>二者最大的差異是 <strong>Standard</strong> runtime 為 Google Fully management，所以享有每天 <strong>28</strong> instance FREE 的配額<sup id=fnref:3><a href=#fn:3 class=footnote-ref role=doc-noteref>3</a></sup>，<strong>Flexible</strong> runtime 是以 GCE 的 instance 來跑，所以基本上的計價方式就是以 GCE 的計算方式，以分計費(最少收 10 分鐘的錢)，且因為是 GCE 的方式來跑，因此彈性上就會比 <strong>Standard</strong> runtime 的來的大，不過缺點就是一開機器就開始算錢惹。在 weddingcnp 專案一開始就希望能夠少花一點錢，評估上 <strong>Standard</strong> runtime 就已經滿足需求</p><p><a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> <strong>frontend Service(Module)</strong> 選擇使用了 <strong>Standard</strong> runtime 中 <code>Go</code> 語言的實作方式。由於前端需求並不複雜且 <code>Go</code> 實作的方式要比 <code>Python</code> 來的簡潔，部署至 Google App Engine 上的專案大小、記憶體的表現都上 <code>Go</code> 的表現要來的比 <code>Python</code> 來的要好，因此選擇了 <code>Go</code> 來實作。</p><blockquote><p>各位朋友就端看自己的需求來評估要使用那一種 runtime</p></blockquote><h2 id=google-app-engine-hello-example>Google App Engine: hello example</h2><p><strong>app.yaml</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>runtime</span><span class=p>:</span><span class=w> </span><span class=l>go</span><span class=w>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>runtime</span><span class=p>:</span><span class=w> </span><span class=l>go</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>api_version</span><span class=p>:</span><span class=w> </span><span class=l>go1</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>handlers</span><span class=p>:</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span>- <span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>/.*</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>script</span><span class=p>:</span><span class=w> </span><span class=l>_go_app</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><p><strong>hello.go</strong></p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></span></code></pre></td></tr></table></div></div><p><strong>hello.go</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -169,8 +82,7 @@
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>hello</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>hello</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
 </span></span><span class=line><span class=cl>    <span class=s>&#34;fmt&#34;</span>
@@ -184,9 +96,7 @@
 </span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>handler</span><span class=p>(</span><span class=nx>w</span> <span class=nx>http</span><span class=p>.</span><span class=nx>ResponseWriter</span><span class=p>,</span> <span class=nx>r</span> <span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Request</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=nx>fmt</span><span class=p>.</span><span class=nf>Fprint</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=s>&#34;Hello, world!&#34;</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -196,8 +106,7 @@
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># start GAE server</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># start GAE server</span>
 </span></span><span class=line><span class=cl>$ dev_appserver.py app.yaml
 </span></span><span class=line><span class=cl>INFO     2017-06-18 04:02:36,963 devappserver2.py:692<span class=o>]</span> Skipping SDK update check.
 </span></span><span class=line><span class=cl>INFO     2017-06-18 04:02:37,519 api_server.py:272<span class=o>]</span> Starting API server at: http://localhost:54584
@@ -207,9 +116,7 @@
 </span></span><span class=line><span class=cl><span class=c1># fetch</span>
 </span></span><span class=line><span class=cl>$ curl http://localhost:8080
 </span></span><span class=line><span class=cl>Hello, world!
-</span></span></code></pre></td></tr></table></div></div><h2 id=weddingcnp-frontend>Weddingcnp frontend</h2><p><code>Go</code> 由語言中原生就有提供 <code>net/http</code> 的 package 可以使用，所以可以很輕易的建立一個 Google App Engine <code>Go</code> <strong>Standard</strong> 的應用程式，不過 Google App Engine 還是可以搭配使用其他的網頁框架: <a href=https://github.com/gin-gonic/gin target=_blank rel="noopener noreffer">gin-gonic/gin</a>、<a href=https://github.com/labstack/echo target=_blank rel="noopener noreffer">echo</a> 等，weddingcnp 使用了 <code>echo</code> 這一套輕量的網頁框架</p><p>Google App Engine <strong>Standard</strong> 是由 Google fully management，因此在使用 echo 框架<sup id=fnref:4><a href=#fn:4 class=footnote-ref role=doc-noteref>4</a></sup>需要特別的的調整一下</p><p><strong>app-engin.go</strong></p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><h2 id=weddingcnp-frontend>Weddingcnp frontend</h2><p><code>Go</code> 由語言中原生就有提供 <code>net/http</code> 的 package 可以使用，所以可以很輕易的建立一個 Google App Engine <code>Go</code> <strong>Standard</strong> 的應用程式，不過 Google App Engine 還是可以搭配使用其他的網頁框架: <a href=https://github.com/gin-gonic/gin target=_blank rel="noopener noreffer">gin-gonic/gin</a>、<a href=https://github.com/labstack/echo target=_blank rel="noopener noreffer">echo</a> 等，weddingcnp 使用了 <code>echo</code> 這一套輕量的網頁框架</p><p>Google App Engine <strong>Standard</strong> 是由 Google fully management，因此在使用 echo 框架<sup id=fnref:4><a href=#fn:4 class=footnote-ref role=doc-noteref>4</a></sup>需要特別的的調整一下</p><p><strong>app-engin.go</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -230,8 +137,7 @@
 </span><span class=lnt>19
 </span><span class=lnt>20
 </span><span class=lnt>21
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// +build appengine
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// +build appengine
 </span></span></span><span class=line><span class=cl><span class=c1></span>
 </span></span><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
 </span></span><span class=line><span class=cl>
@@ -252,9 +158,7 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>e</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p><strong>app-standalone.go</strong></p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p><strong>app-standalone.go</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -279,8 +183,7 @@
 </span><span class=lnt>23
 </span><span class=lnt>24
 </span><span class=lnt>25
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// +build !appengine,!appenginevm
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// +build !appengine,!appenginevm
 </span></span></span><span class=line><span class=cl><span class=c1></span>
 </span></span><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
 </span></span><span class=line><span class=cl>
@@ -305,20 +208,15 @@
 </span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>	<span class=nx>e</span><span class=p>.</span><span class=nf>Run</span><span class=p>(</span><span class=nx>standard</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;:8080&#34;</span><span class=p>))</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p><strong>app.go</strong></p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p><strong>app.go</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1>// reference our echo instance and create it early
 </span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>var</span> <span class=nx>e</span> <span class=p>=</span> <span class=nf>createMux</span><span class=p>()</span>
-</span></span></code></pre></td></tr></table></div></div><p><strong>main.go</strong></p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p><strong>main.go</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -349,8 +247,7 @@
 </span><span class=lnt>29
 </span><span class=lnt>30
 </span><span class=lnt>31
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=o>...</span>
 </span></span><span class=line><span class=cl>
@@ -381,39 +278,7 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>	<span class=nx>e</span><span class=p>.</span><span class=nf>SetHTTPErrorHandler</span><span class=p>(</span><span class=nx>ErrorHandler</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>透過 <code>app-engine.go</code>、<code>app-standalone.go</code>、<code>app.go</code>、<code>main.go</code> 的調整，就可以在 Google App Engine <strong>Standard</strong> runtime 上使用 <code>echo</code> 框架(不過僅限 Go 1.6)。在頁面 Render 的部份則是使用 <code>github.com/unrolled/render</code> 模版系統來建置。相簿的照片是放在 Google Cloud Storage 透過 Image API 來取存<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup>，大至上都是很單純的頁面</p><a class=lightgallery href=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png title=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png data-thumbnail=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png>
-<img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gpc-2_2.png data-srcset="/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png, img/weddingcnp-via-gpc-2_2.png 1.5x, /zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png 2x" data-sizes=auto alt=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png>
-</a>
-<p>此篇大至上說明 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> <strong>frontend Service(Module)</strong> 實作的方式。比較可惜的是目前 <code>Go</code> 主要的版本已經到 1.8.3, 1.9 Beta 也公佈了，而 Google App Engine <strong>Standard</strong> runtime 只有支援 <code>Go</code> 1.6 (1.8 應該快要支援), 當 Google App Engine <strong>Standard</strong> runtime 支援 <code>Go</code> 1.8 時才會有比較多的框架來搭配，目前就使用容易性來說還是 <strong>Flexible</strong> runtime 較好</p><section class=footnotes role=doc-endnotes>
-<hr>
-<ol>
-<li id=fn:1 role=doc-endnote>
-<p>報名頁面實作細節會再後序的篇幅說明&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote>
-<p>Google App Engine <strong>Standard</strong> 支援 1.8 的版本應該快了(1.9 Beta 都出來了 XD)&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote>
-<p>Google App Engine <strong>Standard</strong> 享有一些免費的配額，細項請看 <a href=https://cloud.google.com/appengine/quotas target=_blank rel="noopener noreffer">Quotas</a>&#160;<a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote>
-<p><a href=https://echo.labstack.com/cookbook/google-app-engine#standalone target=_blank rel="noopener noreffer">Google App Engine Recipe | Echo - High performance, minimalist Go web framework</a>, 由於 GAE 目前只有支持 Go 1.6，且 Go 1.7 以後將 <code>context</code> 改為內建 package，一些依賴的 package 也跟著升級了，所以目前建議使用 <strong>Flexible</strong> 會比較簡單&#160;<a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote>
-<p><a href=http://localhost:4000/2016/10/31/gae-go-image-api/ target=_blank rel="noopener noreffer">GAE go Image API for GCS · Kaichu.io</a>&#160;<a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post-footer id=post-footer>
-<div class=post-info>
-<div class=post-info-line>
-<div class=post-info-mod>
-<span>更新於 2022-03-06&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/9f430b82ed63fd18dfc684e45a829b615d1b79c0 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 9f430b82ed63fd18dfc684e45a829b615d1b79c0: add Wason Language Translator CLI">
-<i class="fas fa-hashtag fa-fw"></i>9f430b8</a></span>
-</div><div class=post-info-license></div></div><div class=post-info-line>
-<div class=post-info-md><span>
-<a class=link-to-markdown href=/zh-tw/posts/weddingcnp-via-gcp-2/index.md target=_blank>檢視原始程式碼</a>
-</span></div><div class=post-info-share>
-<span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/ data-title="weddingcnp via GCP - 2. 前端頁面設計實作" data-via=CageChung data-hashtags=GAE,GCE,Datastore,EndpointAPI,sendgrid,API><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/ data-hashtag=GAE><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/><i class="fab fa-linkedin fa-fw"></i></a></span>
-</div></div></div><div class=post-info-more>
-<section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/gae/>GAE</a>,&nbsp;<a href=/zh-tw/tags/gce/>GCE</a>,&nbsp;<a href=/zh-tw/tags/datastore/>Datastore</a>,&nbsp;<a href=/zh-tw/tags/endpointapi/>EndpointAPI</a>,&nbsp;<a href=/zh-tw/tags/sendgrid/>sendgrid</a>,&nbsp;<a href=/zh-tw/tags/api/>API</a></section><section>
-<span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span>
-</section></div><div class=post-nav><a href=/zh-tw/posts/weddingcnp-via-gcp-1/ class=prev rel=prev title="weddingcnp via GCP - 1. 專案架構切分"><i class="fas fa-angle-left fa-fw"></i>weddingcnp via GCP - 1. 專案架構切分</a>
-<a href=/zh-tw/posts/weddingcnp-via-gcp-3/ class=next rel=next title="weddingcnp via GCP - 3. endpointAPI 設計實作">weddingcnp via GCP - 3. endpointAPI 設計實作<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>
-Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.
-</noscript></div></article></div></main><footer class=footer>
-<div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.93.2">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-</div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部>
-<i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title=查看評論>
-<i class="fas fa-comment fa-fw"></i>
-</a>
-</div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>
+</span></span></code></pre></td></tr></table></div></div><p>透過 <code>app-engine.go</code>、<code>app-standalone.go</code>、<code>app.go</code>、<code>main.go</code> 的調整，就可以在 Google App Engine <strong>Standard</strong> runtime 上使用 <code>echo</code> 框架(不過僅限 Go 1.6)。在頁面 Render 的部份則是使用 <code>github.com/unrolled/render</code> 模版系統來建置。相簿的照片是放在 Google Cloud Storage 透過 Image API 來取存<sup id=fnref:5><a href=#fn:5 class=footnote-ref role=doc-noteref>5</a></sup>，大至上都是很單純的頁面</p><a class=lightgallery href=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png title=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png data-thumbnail=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png><img class=lazyload src=/svg/loading.min.svg data-src=img/weddingcnp-via-gpc-2_2.png data-srcset="/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png, img/weddingcnp-via-gpc-2_2.png 1.5x, /zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png 2x" data-sizes=auto alt=/zh-tw/posts/weddingcnp-via-gcp-2/img/weddingcnp-via-gpc-2_2.png></a><p>此篇大至上說明 <a href=http://weddingcnp.appspot.com/ target=_blank rel="noopener noreffer">Cage & Ping wedding</a> <strong>frontend Service(Module)</strong> 實作的方式。比較可惜的是目前 <code>Go</code> 主要的版本已經到 1.8.3, 1.9 Beta 也公佈了，而 Google App Engine <strong>Standard</strong> runtime 只有支援 <code>Go</code> 1.6 (1.8 應該快要支援), 當 Google App Engine <strong>Standard</strong> runtime 支援 <code>Go</code> 1.8 時才會有比較多的框架來搭配，目前就使用容易性來說還是 <strong>Flexible</strong> runtime 較好</p><section class=footnotes role=doc-endnotes><hr><ol><li id=fn:1 role=doc-endnote><p>報名頁面實作細節會再後序的篇幅說明&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:2 role=doc-endnote><p>Google App Engine <strong>Standard</strong> 支援 1.8 的版本應該快了(1.9 Beta 都出來了 XD)&#160;<a href=#fnref:2 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:3 role=doc-endnote><p>Google App Engine <strong>Standard</strong> 享有一些免費的配額，細項請看 <a href=https://cloud.google.com/appengine/quotas target=_blank rel="noopener noreffer">Quotas</a>&#160;<a href=#fnref:3 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:4 role=doc-endnote><p><a href=https://echo.labstack.com/cookbook/google-app-engine#standalone target=_blank rel="noopener noreffer">Google App Engine Recipe | Echo - High performance, minimalist Go web framework</a>, 由於 GAE 目前只有支持 Go 1.6，且 Go 1.7 以後將 <code>context</code> 改為內建 package，一些依賴的 package 也跟著升級了，所以目前建議使用 <strong>Flexible</strong> 會比較簡單&#160;<a href=#fnref:4 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li><li id=fn:5 role=doc-endnote><p><a href=http://localhost:4000/2016/10/31/gae-go-image-api/ target=_blank rel="noopener noreffer">GAE go Image API for GCS · Kaichu.io</a>&#160;<a href=#fnref:5 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p></li></ol></section></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新於 2022-03-30&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/d389aeeba23319a1f3cbcdfb202618ffc7b2b6b1 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) d389aeeba23319a1f3cbcdfb202618ffc7b2b6b1: Posts/deploy gokit todo to gae with cloud build from GitHub repo (#1)">
+<i class="fas fa-hashtag fa-fw"></i>d389aee</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/zh-tw/posts/weddingcnp-via-gcp-2/index.md target=_blank>檢視原始程式碼</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/ data-title="weddingcnp via GCP - 2. 前端頁面設計實作" data-via=CageChung data-hashtags=GAE,GCE,Datastore,EndpointAPI,sendgrid,API><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/ data-hashtag=GAE><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="分享到 Linkedin" data-sharer=linkedin data-url=https://kaichu.io/zh-tw/posts/weddingcnp-via-gcp-2/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/zh-tw/tags/gae/>GAE</a>,&nbsp;<a href=/zh-tw/tags/gce/>GCE</a>,&nbsp;<a href=/zh-tw/tags/datastore/>Datastore</a>,&nbsp;<a href=/zh-tw/tags/endpointapi/>EndpointAPI</a>,&nbsp;<a href=/zh-tw/tags/sendgrid/>sendgrid</a>,&nbsp;<a href=/zh-tw/tags/api/>API</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/zh-tw/>首頁</a></span></section></div><div class=post-nav><a href=/zh-tw/posts/weddingcnp-via-gcp-1/ class=prev rel=prev title="weddingcnp via GCP - 1. 專案架構切分"><i class="fas fa-angle-left fa-fw"></i>weddingcnp via GCP - 1. 專案架構切分</a>
+<a href=/zh-tw/posts/weddingcnp-via-gcp-3/ class=next rel=next title="weddingcnp via GCP - 3. endpointAPI 設計實作">weddingcnp via GCP - 3. endpointAPI 設計實作<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=utterances></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.96.0">Hugo</a> 強力驅動 | 主題 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/zh-tw/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到頂部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看評論><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"複製到剪貼板",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.zh-tw",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"沒有找到結果",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script></body></html>
