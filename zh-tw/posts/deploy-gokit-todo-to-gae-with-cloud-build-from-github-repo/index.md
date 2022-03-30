@@ -1,4 +1,4 @@
-# Deploy Gokit Todo to Gae With Cloud Build From Github Repo
+# Deploy Gokit Todo to GAE With Cloud Build From Github Repo
 
 
 <!--more-->
