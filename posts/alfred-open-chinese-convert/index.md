@@ -5,7 +5,7 @@
 
 ## Introduction
 
-Since Mac OS finally removed support for Python2 in `12.3`, the workflows written in Python2 in Alfred 4 are no longer available. The [amowu/alfred-chinese-converter](https://github.com/amowu/alfred-chinese-converter) I was using before is also no longer updated (it's still in Alfred 2). So I built one with Golang + [deanishe/awgo](https://github.com/deanishe/awgo), eliminating the dependency on Python, and Alfred upgrades no longer run into Python version problems.
+Since Mac OS finally removed support for Python2 in `12.3`, the workflows written in Python2 in Alfred 4 are no longer available. The [amowu/alfred-chinese-converter](https://github.com/amowu/alfred-chinese-converter) I was using before is also no longer updated (it's still in Alfred 2). So I built one with Golang + [deanishe/awgo](https://github.com/deanishe/awgo) + [longbridgeapp/opencc](https://github.com/longbridgeapp/opencc), eliminating the dependency on Python, and Alfred upgrades no longer run into Python version problems.
 
 ## alfred-opencc
 

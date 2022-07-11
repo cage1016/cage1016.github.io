@@ -6,7 +6,7 @@
 ## 原由
 
 由於 Mac OS 在 `12.3` 終於移除對 Python2 的支援，導至 Alfred 4 版本中原先使用的 Python2 編寫的 workflow 都不能運作了。又因為工作需要會有簡繁轉換的需求，之前使用的 [amowu/alfred-chinese-converter](https://github.com/amowu/alfred-chinese-converter) 作者也沒有再更新了 (停留在 Alfred2)
-。所以透過 Golang + [deanishe/awgo](https://github.com/deanishe/awgo) 自己造一個也省去了對 Python 的依賴, Alfred 升級也不會再遇到 Python 版本的問題。
+。所以透過 Golang + [deanishe/awgo](https://github.com/deanishe/awgo) + [longbridgeapp/opencc](https://github.com/longbridgeapp/opencc) 自己造一個也省去了對 Python 的依賴, Alfred 升級也不會再遇到 Python 版本的問題。
 
 ## alfred-opencc
 
