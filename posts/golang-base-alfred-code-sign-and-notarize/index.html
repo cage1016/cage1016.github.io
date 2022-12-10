@@ -1,0 +1,253 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Golang Base Alfred Code Sign and Notarize - KaiChu</title><meta name=Description content="After solving the problem with Gon Sign ErrSecInternalComponent in the previous post, we can now use Gon to sign and notarize code in Github Action to create a complete release process."><meta property="og:title" content="Golang Base Alfred Code Sign and Notarize"><meta property="og:description" content="After solving the problem with Gon Sign ErrSecInternalComponent in the previous post, we can now use Gon to sign and notarize code in Github Action to create a complete release process."><meta property="og:type" content="article"><meta property="og:url" content="https://kaichu.io/posts/golang-base-alfred-code-sign-and-notarize/"><meta property="og:image" content="https://kaichu.io/posts/golang-base-alfred-code-sign-and-notarize/img/placeholder.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-12-08T14:29:41+00:00"><meta property="article:modified_time" content="2022-12-10T03:25:12+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://kaichu.io/posts/golang-base-alfred-code-sign-and-notarize/img/placeholder.png"><meta name=twitter:title content="Golang Base Alfred Code Sign and Notarize"><meta name=twitter:description content="After solving the problem with Gon Sign ErrSecInternalComponent in the previous post, we can now use Gon to sign and notarize code in Github Action to create a complete release process."><meta name=application-name content="KaiChu"><meta name=apple-mobile-web-app-title content="KaiChu"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://kaichu.io/posts/golang-base-alfred-code-sign-and-notarize/><link rel=prev href=https://kaichu.io/posts/devfest22-taipei-skaffold2-deep-dive/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Golang Base Alfred Code Sign and Notarize","inLanguage":"en","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/kaichu.io\/posts\/golang-base-alfred-code-sign-and-notarize\/"},"image":[{"@type":"ImageObject","url":"https:\/\/kaichu.io\/posts\/golang-base-alfred-code-sign-and-notarize\/img\/placeholder.png","width":1494,"height":1192}],"genre":"posts","keywords":"gon, golang, codesign, certificate, alfred","wordcount":762,"url":"https:\/\/kaichu.io\/posts\/golang-base-alfred-code-sign-and-notarize\/","datePublished":"2022-12-08T14:29:41+00:00","dateModified":"2022-12-10T03:25:12+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"KAI CHU CHUNG","logo":"https:\/\/kaichu.io\/images\/avatar.png"},"author":{"@type":"Person","name":"KAI CHU CHUNG"},"description":"After solving the problem with Gon Sign ErrSecInternalComponent in the previous post, we can now use Gon to sign and notarize code in Github Action to create a complete release process."}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/ title=Home>Home </a><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/tags/>Tags </a><a class=menu-item href=/about/>About </a><span class="menu-item delimiter"></span><a href=javascript:void(0); class="menu-item language" title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select id=language-select-desktop onchange="location=this.value"><option value=/posts/golang-base-alfred-code-sign-and-notarize/ selected>English</option><option value=/zh-tw/posts/golang-base-alfred-code-sign-and-notarize/>繁體中文</option></select>
+</a><span class="menu-item search" id=search-desktop><input type=text placeholder="Search titles or contents..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme"><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=KaiChu>KaiChu</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="Search titles or contents..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=Search><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=Clear><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>Cancel</a></div><a class=menu-item href=/ title=Home>Home</a><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/tags/ title>Tags</a><a class=menu-item href=/about/ title>About</a><a href=javascript:void(0); class="menu-item theme-switch" title="Switch Theme">
+<i class="fas fa-adjust fa-fw"></i>
+</a><a href=javascript:void(0); class=menu-item title="Select Language">English<i class="fas fa-chevron-right fa-fw"></i>
+<select class=language-select onchange="location=this.value"><option value=/posts/golang-base-alfred-code-sign-and-notarize/ selected>English</option><option value=/zh-tw/posts/golang-base-alfred-code-sign-and-notarize/>繁體中文</option></select></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>Contents</h2><div class="toc-content always-active" id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Golang Base Alfred Code Sign and Notarize</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>KAI CHU CHUNG</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-12-08>2022-12-08</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;762 words&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;2 minutes&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>Contents</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#steps>Steps</a></li><li><a href=#prerequisite>Prerequisite</a></li><li><a href=#result>Result</a></li><li><a href=#reference>Reference</a></li></ul></nav></div></div><div class=content id=content><p><a href=https://www.alfredapp.com/ target=_blank rel="noopener noreffer">Alfred</a> is a great tool for improving Mac productivity, and Powerpack allows developers to develop their own workflows to make Alfred even more powerful. One problem when developing with Golang is that the artifact is a compiled binary, and there are security issues with running binary-based Alfred workflows on Mac OS.</p><h2 id=steps>Steps</h2><a class=lightgallery href=/posts/golang-base-alfred-code-sign-and-notarize/img/github-action.jpg title="Github Action" data-thumbnail=/posts/golang-base-alfred-code-sign-and-notarize/img/github-action.jpg><img class=lazyload src=/svg/loading.min.svg data-src=img/github-action.jpg data-srcset="/posts/golang-base-alfred-code-sign-and-notarize/img/github-action.jpg, img/github-action.jpg 1.5x, /posts/golang-base-alfred-code-sign-and-notarize/img/github-action.jpg 2x" data-sizes=auto alt="Github Action"></a><p>The entire process of building the Golang-based Alfred workflow package for Github Action consists of several parts</p><ol><li>Golang <code>Install</code>, <code>Test</code>, <code>Build</code> 等常規操作<ul><li>1.Install Go</li><li>2.Run unit tests</li><li>3.update codecov</li></ul></li><li>Alfred package packaging and use Gon Code Sign, Notarrize preparation and practical operation<ul><li>4.Import Code-Signing Certificates</li><li>5.Install gon via HomeBrew for code signing and app notarization</li><li>6.Build and pack</li><li>7.code sign and notarize</li></ul></li><li>Github Action Release<ul><li>8.upload release assets</li></ul></li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Install gon via HomeBrew for code signing and app notarization</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          brew tap mitchellh/gon
+</span></span></span><span class=line><span class=cl><span class=sd>          brew install mitchellh/gon/gon</span><span class=w>          
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Import Code-Signing Certificates</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>Apple-Actions/import-codesign-certs@v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># The certificates in a PKCS12 file encoded as a base64 string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>p12-file-base64</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># The password used to import the PKCS12 file.</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>p12-password</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>code sign and notarize</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>AC_USERNAME</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.AC_USERNAME }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>AC_PASSWORD</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.AC_PASSWORD }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          # gon code sign
+</span></span></span><span class=line><span class=cl><span class=sd>          cat &lt;&lt;EOF &gt;&gt; gon.json
+</span></span></span><span class=line><span class=cl><span class=sd>          {
+</span></span></span><span class=line><span class=cl><span class=sd>              &#34;source&#34; : [&#34;.workflow/exe&#34;],
+</span></span></span><span class=line><span class=cl><span class=sd>              &#34;bundle_id&#34; : &#34;com.kaichu.devtoys&#34;,
+</span></span></span><span class=line><span class=cl><span class=sd>              &#34;sign&#34; :{
+</span></span></span><span class=line><span class=cl><span class=sd>                  &#34;application_identity&#34; : &#34;Developer ID Application: KAI CHU CHUNG&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>              }
+</span></span></span><span class=line><span class=cl><span class=sd>          }
+</span></span></span><span class=line><span class=cl><span class=sd>          EOF
+</span></span></span><span class=line><span class=cl><span class=sd>          gon -log-level=debug -log-json ./gon.json
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          # pack alfredworkflow
+</span></span></span><span class=line><span class=cl><span class=sd>          cd .workflow
+</span></span></span><span class=line><span class=cl><span class=sd>          plutil -replace version -string &#34;${{ env.tag }}&#34; info.plist
+</span></span></span><span class=line><span class=cl><span class=sd>          zip -r ../&#34;DevToys-${{ env.tag }}.alfredworkflow&#34; .
+</span></span></span><span class=line><span class=cl><span class=sd>          cd ..
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          # zip alfredworkflow as zip archive for notarize
+</span></span></span><span class=line><span class=cl><span class=sd>          zip -r &#34;DevToys-${{ env.tag }}.alfredworkflow.zip&#34; &#34;DevToys-${{ env.tag }}.alfredworkflow&#34;
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          # gon notarize
+</span></span></span><span class=line><span class=cl><span class=sd>          cat &lt;&lt;EOF &gt;&gt; notarize.json
+</span></span></span><span class=line><span class=cl><span class=sd>          {
+</span></span></span><span class=line><span class=cl><span class=sd>              &#34;notarize&#34;: [{
+</span></span></span><span class=line><span class=cl><span class=sd>                  &#34;path&#34;: &#34;${PWD}/DevToys-${{ env.tag }}.alfredworkflow.zip&#34;,
+</span></span></span><span class=line><span class=cl><span class=sd>                  &#34;bundle_id&#34;: &#34;com.kaichu.devtoys&#34;,
+</span></span></span><span class=line><span class=cl><span class=sd>                  &#34;staple&#34;: false
+</span></span></span><span class=line><span class=cl><span class=sd>              }]
+</span></span></span><span class=line><span class=cl><span class=sd>          }
+</span></span></span><span class=line><span class=cl><span class=sd>          EOF
+</span></span></span><span class=line><span class=cl><span class=sd>          gon -log-level=debug -log-json ./notarize.json
+</span></span></span><span class=line><span class=cl><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>          echo &#34;artifact=$(echo &#34;DevToys-${{ env.tag }}.alfredworkflow&#34;)&#34; &gt;&gt; $GITHUB_ENV</span><span class=w>          
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=prerequisite>Prerequisite</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Install gon via HomeBrew for code signing and app notarization</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>    brew tap mitchellh/gon
+</span></span></span><span class=line><span class=cl><span class=sd>    brew install mitchellh/gon/gon</span><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Import Code-Signing Certificates</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>Apple-Actions/import-codesign-certs@v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c># The certificates in a PKCS12 file encoded as a base64 string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>p12-file-base64</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c># The password used to import the PKCS12 file.</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>p12-password</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>code sign and notarize</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>AC_USERNAME</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.AC_USERNAME }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>AC_PASSWORD</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.AC_PASSWORD }}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
+</span></span></span><span class=line><span class=cl><span class=sd>    </span><span class=w>    </span><span class=l>...</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>Prepare the relevant environment and environment variables and set them to Github (Settings -> Secrets –> Actions –> New repository secret).</p><ul><li>secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64</li><li>secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD</li><li>secrets.AC_USERNAME</li><li>secrets.AC_PASSWORD</li></ul><p><strong>gon.json</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; gon.json
+</span></span></span><span class=line><span class=cl><span class=s>{
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;source&#34; : [&#34;.workflow/exe&#34;],
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;bundle_id&#34; : &#34;com.kaichu.devtoys&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;sign&#34; :{
+</span></span></span><span class=line><span class=cl><span class=s>        &#34;application_identity&#34; : &#34;Developer ID Application: KAI CHU CHUNG&#34;
+</span></span></span><span class=line><span class=cl><span class=s>    }
+</span></span></span><span class=line><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><p>Using <code>Gon</code> to provide code signatures for Golang-based executables of the Alfred workflow package</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># pack alfredworkflow</span>
+</span></span><span class=line><span class=cl><span class=nb>cd</span> .workflow
+</span></span><span class=line><span class=cl>plutil -replace version -string <span class=s2>&#34;</span><span class=si>${</span><span class=p>{ env.tag </span><span class=si>}</span><span class=s2>}&#34;</span> info.plist
+</span></span><span class=line><span class=cl>zip -r ../<span class=s2>&#34;DevToys-</span><span class=si>${</span><span class=p>{ env.tag </span><span class=si>}</span><span class=s2>}.alfredworkflow&#34;</span> .
+</span></span><span class=line><span class=cl><span class=nb>cd</span> ..
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># zip alfredworkflow as zip archive for notarize</span>
+</span></span><span class=line><span class=cl>zip -r <span class=s2>&#34;DevToys-</span><span class=si>${</span><span class=p>{ env.tag </span><span class=si>}</span><span class=s2>}.alfredworkflow.zip&#34;</span> <span class=s2>&#34;DevToys-</span><span class=si>${</span><span class=p>{ env.tag </span><span class=si>}</span><span class=s2>}.alfredworkflow&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>After the code has been signed, package the complete Alfred workflow as <code>.alfredworkflow</code>. Since <code>.alfredworkflow</code> is not a file format supported by Notarize, we will need to package it again as a <code>.zip</code> file for subsequent work.</p><p><strong>notarize.json</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;&gt; notarize.json
+</span></span></span><span class=line><span class=cl><span class=s>{
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;notarize&#34;: [{
+</span></span></span><span class=line><span class=cl><span class=s>        &#34;path&#34;: &#34;${PWD}/DevToys-${{ env.tag }}.alfredworkflow.zip&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>        &#34;bundle_id&#34;: &#34;com.kaichu.devtoys&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>        &#34;staple&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>    }]
+</span></span></span><span class=line><span class=cl><span class=s>}
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><p>Because <code>.zip</code> packaging does not support <code>staple</code> action, in order to avoid subsequent <code>staple</code> operation failure, so here first set <code>staple</code> to <code>false</code>.</p><h2 id=result>Result</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;logFormatVersion&#34;</span><span class=p>:</span> <span class=mi>1</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;jobId&#34;</span><span class=p>:</span> <span class=s2>&#34;90eac292-fde7-4391-9a8c-1db0210c93aa&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;status&#34;</span><span class=p>:</span> <span class=s2>&#34;Accepted&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;statusSummary&#34;</span><span class=p>:</span> <span class=s2>&#34;Ready for distribution&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;statusCode&#34;</span><span class=p>:</span> <span class=mi>0</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;archiveFilename&#34;</span><span class=p>:</span> <span class=s2>&#34;DevToys-1.7.1.alfredworkflow.zip&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;uploadDate&#34;</span><span class=p>:</span> <span class=s2>&#34;2022-12-07T15:45:54Z&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;sha256&#34;</span><span class=p>:</span> <span class=s2>&#34;f7de035836559b9f105d5ba96b2b8bcda0d50a0802202b2fdf204e2bcee0d387&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;ticketContents&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;path&#34;</span><span class=p>:</span> <span class=s2>&#34;DevToys-1.7.1.alfredworkflow.zip/DevToys-1.7.1.alfredworkflow/exe&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;digestAlgorithm&#34;</span><span class=p>:</span> <span class=s2>&#34;SHA-256&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;cdhash&#34;</span><span class=p>:</span> <span class=s2>&#34;3733bbfae584c96a736b65f589c53edba490148f&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;arch&#34;</span><span class=p>:</span> <span class=s2>&#34;x86_64&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;path&#34;</span><span class=p>:</span> <span class=s2>&#34;DevToys-1.7.1.alfredworkflow.zip/DevToys-1.7.1.alfredworkflow/exe&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;digestAlgorithm&#34;</span><span class=p>:</span> <span class=s2>&#34;SHA-256&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;cdhash&#34;</span><span class=p>:</span> <span class=s2>&#34;111858b884a1ee1e11dca11628a7a3cf09183010&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;arch&#34;</span><span class=p>:</span> <span class=s2>&#34;arm64&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;issues&#34;</span><span class=p>:</span> <span class=kc>null</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>After the entire Github Action is successfully executed, you will get a <code>Ready for distribution</code> log and receive an email notification about it.</p><h2 id=reference>Reference</h2><p>The full github Action configuration file can be found at <a href=https://github.com/cage1016/alfred-devtoys/blob/master/.github/workflows/release.yml target=_blank rel="noopener noreffer">https://github.com/cage1016/alfred-devtoys/blob/master/.github/workflows/release.yml</a></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>Updated on 2022-12-10&nbsp;<a class=git-hash href=https://github.com/cage1016/kaichu.io.hugo/commit/6ebded1de92757217cbb80abcfe093f241e1a4b4 target=_blank title="commit by Kai-Chu Chung(cage.chung@gmail.com) 6ebded1de92757217cbb80abcfe093f241e1a4b4: add Golang Base Alfred Code Sign and Notarize">
+<i class="fas fa-hashtag fa-fw"></i>6ebded1</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/golang-base-alfred-code-sign-and-notarize/index.md target=_blank>Read Markdown</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="Share on Twitter" data-sharer=twitter data-url=https://kaichu.io/posts/golang-base-alfred-code-sign-and-notarize/ data-title="Golang Base Alfred Code Sign and Notarize" data-via=CageChung data-hashtags=gon,golang,codesign,certificate,alfred><i class="fab fa-twitter fa-fw"></i></a><a href=javascript:void(0); title="Share on Facebook" data-sharer=facebook data-url=https://kaichu.io/posts/golang-base-alfred-code-sign-and-notarize/ data-hashtag=gon><i class="fab fa-facebook-square fa-fw"></i></a><a href=javascript:void(0); title="Share on Linkedin" data-sharer=linkedin data-url=https://kaichu.io/posts/golang-base-alfred-code-sign-and-notarize/><i class="fab fa-linkedin fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/gon/>gon</a>,&nbsp;<a href=/tags/golang/>golang</a>,&nbsp;<a href=/tags/codesign/>codesign</a>,&nbsp;<a href=/tags/certificate/>certificate</a>,&nbsp;<a href=/tags/alfred/>alfred</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>Back</a></span>&nbsp;|&nbsp;<span><a href=/>Home</a></span></section></div><div class=post-nav><a href=/posts/devfest22-taipei-skaffold2-deep-dive/ class=prev rel=prev title="Devfest22 Taipei Skaffold2 Deep Dive"><i class="fas fa-angle-left fa-fw"></i>Devfest22 Taipei Skaffold2 Deep Dive</a></div></div><div id=comments><div id=utterances></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://utteranc.es/>Utterances</a>.</noscript></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>Powered by <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.108.0">Hugo</a> | Theme - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2019 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>KAI CHU CHUNG</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title="Back to Top"><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title="View Comments"><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/css/asciinema-player.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/sharer.js@0.4.0/sharer.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"Copy to clipboard",maxShownLines:1e3},comment:{utterances:{darkTheme:"github-dark",issueTerm:"pathname",label:"comment",lightTheme:"github-light",repo:"cage1016/cage1016.github.io"}},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"IB21BAKK19",algoliaIndex:"index.en",algoliaSearchKey:"8883d25f4767d3d2848450e3afa6cf05",highlightTag:"em",maxResultLength:10,noResultsFound:"No results found",snippetLength:30,type:"algolia"}}</script><script type=text/javascript src=/js/theme.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/asciinema-player@2.6.1/resources/public/js/asciinema-player.min.js></script><script type=text/javascript>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","UA-65308340-1",{anonymize_ip:!0})</script><script type=text/javascript src="https://www.googletagmanager.com/gtag/js?id=UA-65308340-1" async></script></body></html>
